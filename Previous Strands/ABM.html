@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accountancy, Business and Management</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'Fredoka', sans-serif;
+      color: white;
+      text-align: center;
+      overflow-y: auto;
+    }
+
+    .background {
+      background: url("Strands-bg.png") no-repeat center center fixed;
+      background-size: cover;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: -1;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      padding: 20px;
+      background: linear-gradient(90deg, #b075f0, #669eff);
+      border-radius: 20px;
+      margin: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+
+    .logo {
+      width: 60px;
+      height: 60px;
+      cursor: pointer;
+      border-radius: 50%;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.25);
+      transition: transform 0.2s ease;
+    }
+    .logo:hover { transform: scale(1.1); }
+
+    .header h1 { margin: 0; font-size: 2rem; font-weight: 700; }
+
+    .content {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 30px;
+      flex-wrap: wrap;
+      min-height: 80vh;    
+    }
+
+    .strands {
+      flex: 1;
+      min-width: 300px;
+      padding: 20px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      text-align: left;
+    }
+
+    .strands h2 { font-size: 3rem; margin-bottom: 15px; }
+    .strands h3 { font-size: 3rem; margin: 15px 0; }
+    .strands p { font-size: 1.5rem; line-height: 1.6; margin-bottom: 20px; }
+
+    /* Accordion */
+    .accordion {
+      margin: 15px 0;
+      border-radius: 15px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.1);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.25);
+    }
+
+    .accordion-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      font-size: 2rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: rgba(255,255,255,0.2);
+      transition: 0.3s;
+    }
+    .accordion-header:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .accordion-header span {
+      transition: transform 0.3s ease;
+    }
+    .accordion-header.active span {
+      transform: rotate(90deg);
+    }
+
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.4s ease;
+      padding: 0 30px;
+    }
+    .accordion-content.open {
+      max-height: 800px;
+      padding: 15px 30px;
+    }
+
+    .accordion-content.jobs-careers.open {
+      max-height: none;
+      overflow-y: visible;
+      padding: 15px 20px;
+    }
+
+    ul { margin-top: 10px; padding-left: 0; font-size: 1.5rem; font-weight: 400; list-style: none; }
+    .job-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 30px;
+      background: rgba(255,255,255,0.15);
+      padding: 10px;
+      border-radius: 15px;
+      backdrop-filter: blur(8px);
+      flex-direction: row-reverse;
+    }
+    .job-item img {
+      width: 250px;
+      height: auto;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.25);
+      flex-shrink: 0;
+    }
+    .job-item p { 
+      text-align: justify;
+      font-size: 1.3rem;
+      line-height: 1.5;
+      margin: 0;
+      color: white;
+    }
+
+    footer { margin: 30px 0; }
+    .home-btn {
+      background: linear-gradient(90deg, #478ae8, #185a9d);
+      border: none;
+      padding: 15px 30px;
+      border-radius: 25px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      font-family: 'Fredoka', sans-serif;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.25);
+      transition: transform 0.2s ease;
+    }
+    .home-btn:hover { transform: scale(1.05); }
+  </style>
+</head>
+<body>
+  <div class="background"></div>
+
+  <header class="header">
+    <img src="career-icon.png" alt="Logo" class="logo" onclick="window.location.href='result.html'">
+    <h1>Associated Strands and Career</h1>
+  </header>
+
+  <main class="content">
+    <section class="strands">
+      <h3>Accountancy, Business, and Management (ABM)</h3>
+      <p>
+        The ABM strand is designed for students who are interested in pursuing careers in business, finance, marketing, and management. 
+        This strand provides a solid foundation in business principles, accounting, economics, and entrepreneurship, preparing students for various roles in the corporate world.
+      </p>
+
+      <!-- Accordion 1 -->
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <h4>What You Will Study?</h4>
+          <span>▶</span>
+        </div>
+        <div class="accordion-content">
+          <ul>
+            <li><strong>Accountancy:</strong> Principles of accounting, financial accounting, and cost accounting.</li>
+            <li><strong>Business:</strong> Business management, entrepreneurship, and marketing.</li>
+            <li><strong>Management:</strong> Organizational behavior, human resource management, and strategic planning.</li>
+            <li><strong>Economics:</strong> Principles of economics, microeconomics, and macroeconomics.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Accordion 2 -->
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <h4>Key Skills You Will Develop</h4>
+          <span>▶</span>
+        </div>
+        <div class="accordion-content">
+          <ul>
+            <li><strong>Analytical & Critical Thinking:</strong> Analyzing case studies and making informed business decisions.</li>
+            <li><strong>Problem-solving:</strong> Handling real-world business challenges.</li>
+            <li><strong>Financial Literacy:</strong> Managing finances effectively.</li>
+            <li><strong>Communication:</strong> Presenting ideas and leading teams.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Accordion 3 -->
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <h4>Jobs And Careers</h4>
+          <span>▶</span>
+        </div>
+        <div class="accordion-content jobs-careers">
+          <div class="job-item">
+            <img src="clipart (ABM)/ACC.png" alt="Accountant">
+            <p>
+              <style>
+                .job-item p {
+                  font-size: 30px;
+                  line-height: 1.5;
+                  margin: 1;
+                  color: white;
+                }
+              </style><strong>Accountant:</strong> Accountants record, analyze, and interpret financial transactions. They ensure compliance with tax laws and regulations and provide financial insights to help businesses make informed decisions.</p>
+          </div> 
+        
+
+          <div class="job-item">
+            <img src="clipart (ABM)/financial analysis.png" alt="Financial Analyst">
+            <p><strong>Financial Analyst:</strong> Financial analysts evaluate financial data to help businesses make informed decisions. They analyze market trends, assess investment opportunities, and provide recommendations.</p>
+          </div>
+
+          <div class="job-item">
+            <img src="clipart (ABM)/marketing manager.png" alt="Marketing Manager">
+            <p><strong>Marketing Manager:</strong> Marketing managers develop and implement marketing strategies to promote products or services. They analyze market trends, identify target audiences, and coordinate marketing campaigns.</p>
+          </div>
+
+          <div class="job-item">
+            <img src="clipart (ABM)/entrepreneur.png" alt="Entrepreneur">
+            <p><strong>Entrepreneur:</strong> An entrepreneur is a visionary individual who identifies a market need or opportunity, then creates and launches a new business or venture, taking on financial risks to develop innovative products or services, manage operations, and earn profits. They are risk-takers, innovators, and leaders who organize resources, face uncertainty, and drive economic growth by introducing new solutions.</p>
+          </div>
+
+          <div class="job-item">
+            <img src="clipart (ABM)/hr specialist.png" alt="HR Specialist">
+            <p><strong>HR Specialist:</strong> HR specialists manage human resources within organizations. They handle recruitment, employee relations, benefits administration, and ensure compliance with labor laws.</p>
+          </div>
+
+          <div class="job-item">
+            <img src="clipart (ABM)/business consultant.png" alt="Business Consultant">
+            <p><strong>Business Consultant:</strong> Business consultants provide expert advice to organizations to improve performance and efficiency. They analyze business processes, identify areas for improvement, and implement strategic solutions.</p>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <footer>
+    <button class="home-btn" onclick="window.location.href='Homepage.html'">Back to Home</button>
+  </footer>
+
+  <script>
+    function toggleAccordion(header) {
+      const content = header.nextElementSibling;
+      const arrow = header.querySelector("span");
+
+      header.classList.toggle("active");
+      content.classList.toggle("open");
+    }
+  </script>
+</body>
+</html>
