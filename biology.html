@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Biology Quiz</title>
+
+<style>
+/* ===== YOUR UI (UNCHANGED) ===== */
+body{
+  margin:0;
+  font-family:'Segoe UI', sans-serif;
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  overflow:hidden;
+  background:black;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  width:200%;
+  height:200%;
+  background:
+    radial-gradient(white 1px, transparent 1px),
+    radial-gradient(#00d4ff 1px, transparent 1px),
+    radial-gradient(#7b2ff7 1px, transparent 1px);
+  background-size:100px 100px, 150px 150px, 200px 200px;
+  animation:moveStars 60s linear infinite;
+  opacity:0.3;
+}
+
+@keyframes moveStars{
+  from{transform:translate(0,0);}
+  to{transform:translate(-500px,-500px);}
+}
+
+.quiz-container{width:900px;text-align:center;z-index:1;}
+.counter{font-size:20px;margin-bottom:20px;}
+.question-box{
+  padding:50px;margin-bottom:50px;border-radius:40px;
+  border:3px solid #00d4ff;box-shadow:0 0 30px #00d4ff;
+  background:rgba(255,255,255,0.05);font-size:28px;
+}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:30px;}
+.option{
+  padding:25px;font-size:20px;border-radius:40px;
+  border:2px solid #7b2ff7;cursor:pointer;transition:0.3s;
+  background:rgba(255,255,255,0.05);
+}
+.option:hover{transform:scale(1.05);}
+.correct{ background:#00c853 !important; }
+.wrong{ background:#d50000 !important; }
+
+/* Fun Fact Popup Styles */
+.fun-fact-popup{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:linear-gradient(135deg,#1a1a2e,#16213e);
+  border:3px solid #00d4ff;border-radius:20px;
+  padding:30px;max-width:500px;width:90%;
+  text-align:center;z-index:100;
+  box-shadow:0 0 50px rgba(0,212,255,0.5);
+}
+.fun-fact-popup h3{
+  color:#00d4ff;font-size:24px;margin-bottom:15px;
+}
+.fun-fact-popup p{
+  color:white;font-size:18px;line-height:1.6;margin-bottom:20px;
+}
+.fun-fact-popup .correct-answer{
+  color:#00c853;font-weight:bold;font-size:20px;margin-bottom:15px;
+}
+.fun-fact-popup button{
+  padding:12px 30px;font-size:16px;border-radius:25px;
+  border:none;cursor:pointer;background:linear-gradient(45deg,#00d4ff,#7b2ff7);
+  color:white;font-weight:bold;transition:0.3s;
+}
+.fun-fact-popup button:hover{transform:scale(1.05);}
+.overlay{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.7);z-index:99;
+}
+
+.back-btn{
+position:absolute;left:20px;top:18px;width:60px;height:60px;
+border-radius:50%;border:none;background:rgba(255,255,255,0.12);
+color:#fff;font-size:36px;cursor:pointer;z-index:10;
+display:flex;align-items:center;justify-content:center;transition:0.3s;
+}
+.back-btn:hover{transform:scale(1.1);}
+
+.final-screen{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:black;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;text-align:center;
+}
+.final-screen h1{ font-size:50px; }
+.final-screen h2{ font-size:30px; }
+.rank{ font-size:28px;margin-top:10px;color:#00d4ff; }
+.final-buttons{ margin-top:40px; }
+.final-buttons button{
+  margin:10px;padding:15px 40px;font-size:18px;
+  border-radius:40px;border:none;cursor:pointer;
+}
+.retake{ background: linear-gradient(45deg, #00d4ff, #7b2ff7); color: black; }
+.home{ background: linear-gradient(45deg, #7b2ff7, #00d4ff); color: white; }
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .quiz-container {
+    width: 95%;
+    padding: 15px;
+  }
+  
+  .counter {
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
+  
+  .question-box {
+    padding: 25px;
+    margin-bottom: 30px;
+    border-radius: 25px;
+    font-size: 20px;
+  }
+  
+  .options {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .option {
+    padding: 18px;
+    font-size: 16px;
+    border-radius: 25px;
+  }
+  
+  .back-btn {
+    left: 10px;
+    top: 10px;
+    width: 45px;
+    height: 45px;
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .quiz-container {
+    width: 100%;
+    padding: 10px;
+  }
+  
+  .question-box {
+    padding: 18px;
+    margin-bottom: 20px;
+    border-radius: 20px;
+    font-size: 16px;
+  }
+  
+  .option {
+    padding: 14px;
+    font-size: 14px;
+    border-radius: 20px;
+  }
+  
+  .counter {
+    font-size: 14px;
+  }
+  
+  .back-btn {
+    left: 8px;
+    top: 8px;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+  
+  .final-screen h1 {
+    font-size: 32px;
+  }
+  
+  .final-screen h2 {
+    font-size: 20px;
+  }
+  
+  .rank {
+    font-size: 20px;
+  }
+  
+  .final-buttons button {
+    padding: 12px 25px;
+    font-size: 14px;
+    margin: 8px;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .option:hover {
+    transform: none;
+  }
+  
+  .option:active {
+    transform: scale(0.98);
+  }
+}
+</style>
+</head>
+<body>
+
+<button class="back-btn" onclick="window.location.href='science.html'">←</button>
+
+<div class="quiz-container">
+  <div class="counter" id="counter"></div>
+  <div class="question-box" id="question"></div>
+  <div class="options" id="options"></div>
+</div>
+
+<script>
+
+// ✅ IMPORTANT — DEFINE STORAGE KEY
+const highScoreKey = "bioHighScore";
+
+const questionBank = [
+{q:"What is the basic unit of life?",a:["Cell","Atom","Organ","Tissue"],correct:0,fact:"Cells are the building blocks of life! Your body has about 37 trillion cells working together!"},
+{q:"DNA is found in the?",a:["Membrane","Nucleus","Cytoplasm","Ribosome"],correct:1,fact:"DNA is stored in the nucleus, which acts like the cell's library! It contains all the instructions for building and running your body."},
+{q:"Process by which plants make food?",a:["Respiration","Photosynthesis","Digestion","Fermentation"],correct:1,fact:"Photosynthesis is amazing! Plants use sunlight, water, and CO2 to make food. They also release the oxygen we breathe!"},
+{q:"Largest human organ?",a:["Heart","Skin","Liver","Brain"],correct:1,fact:"Your skin is the largest organ! It covers about 20 square feet and protects you from germs, regulates temperature, and lets you feel sensations."},
+{q:"Red blood cells carry?",a:["Oxygen","Carbon dioxide","Water","Nutrients"],correct:0,fact:"Red blood cells are like tiny oxygen delivery trucks! Each cell contains hemoglobin, which binds to oxygen and carries it through your body."},
+{q:"Plants absorb water through?",a:["Leaves","Roots","Stem","Flower"],correct:1,fact:"Roots are like straws for plants! They absorb water and minerals from the soil and transport them up to the leaves."},
+{q:"Human heart has how many chambers?",a:["2","3","4","5"],correct:2,fact:"The heart has 4 chambers - 2 atria (upper) and 2 ventricles (lower). They work together to pump blood throughout your body!"},
+{q:"Organism that makes its own food?",a:["Consumer","Producer","Decomposer","Parasite"],correct:1,fact:"Producers like plants make their own food through photosynthesis. Consumers (like animals) must eat other organisms for energy."},
+{q:"Genetic material is called?",a:["Protein","DNA","Enzyme","Hormone"],correct:1,fact:"DNA (Deoxyribonucleic Acid) is the blueprint of life! It contains all the genetic instructions for building and maintaining living organisms."},
+{q:"Cell membrane controls?",a:["Movement in/out","Energy making","DNA storage","Protein building"],correct:0,fact:"The cell membrane is like a security guard - it decides what enters and exits the cell! It protects the cell and maintains its internal balance."},
+{q:"Gas needed for breathing?",a:["Oxygen","Nitrogen","Hydrogen","Helium"],correct:0,fact:"Oxygen is essential for cellular respiration! Your cells use oxygen to convert food into energy. Without it, cells can't produce enough energy to function."},
+{q:"Process of cell division?",a:["Mitosis","Fusion","Photosynthesis","Respiration"],correct:0,fact:"Mitosis is how your body grows and repairs itself! One cell divides into two identical daughter cells, each with the same DNA."},
+{q:"Bones protect the?",a:["Muscles","Organs","Blood","Nerves"],correct:1,fact:"Bones form a protective cage around your vital organs! Your skull protects your brain, and your ribs shield your heart and lungs."},
+{q:"Green pigment in plants?",a:["Chlorophyll","Hemoglobin","Melanin","Keratin"],correct:0,fact:"Chlorophyll is what makes plants green! It captures light energy from the sun and uses it for photosynthesis."},
+{q:"Smallest level of organization?",a:["Cell","Tissue","Organ","System"],correct:0,fact:"Cells are the smallest living units! Even tiny organisms like bacteria consist of just one cell."},
+{q:"Organ that pumps blood?",a:["Brain","Heart","Lungs","Liver"],correct:1,fact:"The heart beats about 100,000 times per day, pumping 2,000 gallons of blood! It's one of the hardest-working organs in your body."},
+{q:"Living things respond to?",a:["Stimuli","Metal","Plastic","Rocks"],correct:0,fact:"Stimuli are environmental changes that living things respond to! Plants grow toward light, and you pull your hand away from something hot."},
+{q:"Energy currency of cell?",a:["ATP","DNA","RNA","Protein"],correct:0,fact:"ATP (Adenosine Triphosphate) is the energy currency of cells! It's like a rechargeable battery that powers cellular activities."},
+{q:"Part of plant that makes seeds?",a:["Root","Stem","Flower","Leaf"],correct:2,fact:"Flowers are the reproductive parts of plants! They produce seeds through pollination and fertilization."},
+{q:"Blood vessels that carry blood away from heart?",a:["Veins","Arteries","Capillaries","Nerves"],correct:1,fact:"Arteries carry oxygen-rich blood away from the heart to the body! They're thick-walled and elastic to handle the high pressure."},
+{q:"Scientific study of life?",a:["Biology","Chemistry","Physics","Geology"],correct:0,fact:"Biology comes from Greek words 'bios' (life) and 'logia' (study). It encompasses all living things from bacteria to blue whales!"},
+{q:"Animals that eat plants only?",a:["Carnivores","Herbivores","Omnivores","Decomposers"],correct:1,fact:"Herbivores have special digestive systems to break down plant material! Cows, rabbits, and deer are all herbivores."},
+{q:"Control center of cell?",a:["Nucleus","Membrane","Wall","Cytoplasm"],correct:0,fact:"The nucleus is the cell's control center! It contains DNA and directs all cell activities, including growth and reproduction."},
+{q:"Photosynthesis needs?",a:["Sunlight","Metal","Sand","Plastic"],correct:0,fact:"Sunlight provides the energy for photosynthesis! Plants capture light energy and convert it into chemical energy (food)."},
+{q:"Organ for breathing?",a:["Lungs","Kidney","Heart","Stomach"],correct:0,fact:"Lungs are like balloons that fill with air! They transfer oxygen into your blood and remove carbon dioxide waste."},
+{q:"Basic unit of heredity?",a:["Gene","Cell","Organ","Tissue"],correct:0,fact:"Genes are segments of DNA that determine traits like eye color and height! You have about 20,000-25,000 genes."},
+{q:"Group of same cells?",a:["Tissue","Organ","System","Organism"],correct:0,fact:"Tissues are groups of similar cells working together! Muscle tissue, nervous tissue, and connective tissue are examples."},
+{q:"Structure that gives plant support?",a:["Cell wall","Membrane","Ribosome","Nucleus"],correct:0,fact:"Cell walls give plants rigidity and support! They're made of cellulose and help plants stand upright."},
+{q:"Breaking down food for energy?",a:["Respiration","Photosynthesis","Diffusion","Osmosis"],correct:0,fact:"Cellular respiration breaks down food (glucose) to release energy! It happens in the mitochondria - the powerhouses of the cell."},
+{q:"Organ that filters blood?",a:["Kidney","Liver","Heart","Lungs"],correct:0,fact:"Kidneys filter about 120-150 quarts of blood daily! They remove waste and excess water, producing urine."}
+];
+
+function showFunFactPopup(correctAnswer, fact, isCorrect) {
+  // Create overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  document.body.appendChild(overlay);
+  
+  // Determine button text based on current question
+  const isLastQuestion = current === quiz.length - 1;
+  const buttonText = isLastQuestion ? "Finish Test" : "Next Question ➜";
+  
+  // Create popup
+  const popup = document.createElement('div');
+  popup.className = 'fun-fact-popup';
+  
+  if (isCorrect) {
+    popup.innerHTML = `
+      <h3>✅ Correct!</h3>
+      <p class="correct-answer">The answer is: ${correctAnswer}</p>
+      <p>${fact}</p>
+      <button onclick="closePopup()">${buttonText}</button>
+    `;
+  } else {
+    popup.innerHTML = `
+      <h3>❌ Not Quite!</h3>
+      <p class="correct-answer">The correct answer is: ${correctAnswer}</p>
+      <p>${fact}</p>
+      <button onclick="closePopup()">${buttonText}</button>
+    `;
+  }
+  
+  document.body.appendChild(popup);
+  
+  window.closePopup = function() {
+    overlay.remove();
+    popup.remove();
+    current++;
+    loadQuestion();
+  };
+}
+
+function shuffle(array){
+  for(let i=array.length-1;i>0;i--){
+    let j=Math.floor(Math.random()*(i+1));
+    [array[i],array[j]]=[array[j],array[i]];
+  }
+  return array;
+}
+
+let quiz = shuffle([...questionBank]).slice(0,10);
+let current=0;
+let score=0;
+
+function loadQuestion(){
+  if(current>=quiz.length){ showFinal(); return; }
+
+  document.getElementById("counter").innerText =
+    (current+1) + " / " + quiz.length;
+
+  let q = quiz[current];
+  document.getElementById("question").innerText=q.q;
+
+  let options = shuffle([...q.a]);
+  let correctAnswer = q.a[q.correct];
+  let fact = q.fact;
+  const opts=document.getElementById("options");
+  opts.innerHTML="";
+
+  options.forEach(choice=>{
+    const btn=document.createElement("div");
+    btn.className="option";
+    btn.innerText=choice;
+
+    btn.onclick=function(){
+      if(choice===correctAnswer){ 
+        btn.classList.add("correct"); 
+        score++; 
+        showFunFactPopup(correctAnswer, fact, true);
+      } else { 
+        btn.classList.add("wrong"); 
+        showFunFactPopup(correctAnswer, fact, false);
+      }
+    };
+
+    opts.appendChild(btn);
+  });
+}
+
+function showFinal(){
+
+  let savedHigh = parseInt(localStorage.getItem(highScoreKey)) || 0;
+
+  if(score > savedHigh){
+    localStorage.setItem(highScoreKey, score);
+    savedHigh = score;
+  }
+
+  let ranking="";
+  if(score>=9) ranking="🌟 Excellent!";
+  else if(score>=7) ranking="👍 Great Job!";
+  else if(score>=5) ranking="🙂 Good Effort!";
+  else ranking="📘 Keep Practicing!";
+
+  document.body.innerHTML=`
+    <div class="final-screen">
+      <h1>🎉 Good Job! 🎉</h1>
+      <h2>Your Final Score: ${score} / ${quiz.length}</h2>
+      <h2>🏆 High Score: ${savedHigh}</h2>
+      <div class="rank">${ranking}</div>
+      <div class="final-buttons">
+        <button class="retake" onclick="location.reload()">Retake Quiz</button>
+        <button class="home" onclick="window.location.href='science.html'">Go Back to Topics</button>
+      </div>
+    </div>
+  `;
+}
+
+loadQuestion();
+</script>
+</body>
+</html>
+

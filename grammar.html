@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grammar Quiz</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<style>
+body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #f0e6d2;
+}
+
+.quiz-container {
+    width: 600px;
+    background: #fffdf5;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 12px 35px rgba(0,0,0,0.3);
+    border: 1px solid #e2d7c3;
+    position: relative;
+}
+
+/* Paper edges effect */
+.quiz-container::before, .quiz-container::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 1px solid #d6cbb2;
+    border-radius: 15px;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+.quiz-container::after {
+    top: 5px;
+    left: 5px;
+    border-color: #d0c4a8;
+}
+
+.quiz-title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #5a331a;
+}
+
+.question {
+    margin-bottom: 25px;
+}
+
+.question-text {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.options {
+    list-style: none;
+    padding: 0;
+}
+
+.options li {
+    padding: 12px 20px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    border: 2px solid #d6cbb2;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: #faf5eb;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.options li:hover {
+    background: #f0e6d2;
+    border-color: #c2a76f;
+}
+
+.options li.selected {
+    background: #ffd966;
+    border-color: #e1b700;
+}
+
+.submit-btn {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    margin-top: 20px;
+    background: #9c375f;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.submit-btn:hover {
+    background: #b84b7b;
+}
+</style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <div class="quiz-title">Grammar Quiz</div>
+
+    <div class="question">
+        <div class="question-text">1. Identify the correct verb form:</div>
+        <ul class="options">
+            <li data-value="a"><i class="bi bi-circle"></i> Runs</li>
+            <li data-value="b"><i class="bi bi-circle"></i> Runed</li>
+            <li data-value="c"><i class="bi bi-circle"></i> Runned</li>
+            <li data-value="d"><i class="bi bi-circle"></i> Running</li>
+        </ul>
+    </div>
+
+    <div class="question">
+        <div class="question-text">2. Choose the correct sentence:</div>
+        <ul class="options">
+            <li data-value="a"><i class="bi bi-circle"></i> She go to school yesterday.</li>
+            <li data-value="b"><i class="bi bi-circle"></i> She went to school yesterday.</li>
+            <li data-value="c"><i class="bi bi-circle"></i> She going to school yesterday.</li>
+            <li data-value="d"><i class="bi bi-circle"></i> She gone to school yesterday.</li>
+        </ul>
+    </div>
+
+    <button class="submit-btn">Submit Answers</button>
+</div>
+
+<script>
+// Option selection
+document.querySelectorAll(".options li").forEach(option => {
+    option.addEventListener("click", () => {
+        const siblings = option.parentElement.querySelectorAll("li");
+        siblings.forEach(sib => sib.classList.remove("selected"));
+        option.classList.add("selected");
+    });
+});
+</script>
+
+</body>
+</html>

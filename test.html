@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Aptitude Test - Questions</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --card-grad: linear-gradient(90deg,#8b5bff,#43e0d6);
+      --card-grad-alt: linear-gradient(90deg,#8c56ff,#70e0d6);
+      --shadow: 0 20px 40px rgba(0,0,0,0.35);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:'Fredoka',sans-serif;overflow:hidden}
+    body{
+      background: url("Background.png") center/cover no-repeat fixed;
+      color:#fff;
+    }
+
+    .page{
+      width:95%;
+      max-width:1300px;
+      margin:18px auto;
+      position:relative;
+      min-height:calc(100vh - 36px);
+    }
+
+    .back-btn-page{
+      position: absolute;
+      left: 20px;
+      top: 18px;
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      border: none;
+      color: #fff;
+      font-size: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+
+    .header{text-align:center;padding-top:24px;}
+    .title{font-size:62px;margin:0;}
+    .progress{margin-top:10px;font-size:18px;}
+    
+    .progress-container{
+      width:100%;
+      max-width:800px;
+      height:24px;
+      background:rgba(255,255,255,0.15);
+      border-radius:12px;
+      margin:15px auto;
+      overflow:hidden;
+      box-shadow:inset 0 2px 6px rgba(0,0,0,0.2);
+    }
+    
+    .progress-bar{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg,#9b5cff,#00d4ff);
+      border-radius:12px;
+      transition:width 0.4s ease;
+    }
+
+    .question-bar{
+      margin:40px auto 24px;
+      background: rgba(2,6,53,0.9);
+      padding:18px 26px;
+      border-radius:40px;
+      max-width:1100px;
+      font-size:28px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+    }
+
+    .options-row{
+      display:flex;
+      gap:28px;
+      flex-wrap:wrap;
+      justify-content:space-between;
+      max-width:1200px;
+      margin:12px auto;
+    }
+
+    .option{
+      flex:1 1 calc(33% - 20px);
+      min-height:300px;
+      border-radius:32px;
+      padding:28px 26px;
+      display:flex;
+      flex-direction:column;
+      cursor:pointer;
+      color:#fff;
+      box-shadow: var(--shadow);
+      transition: transform 0.14s ease, box-shadow .14s ease;
+      user-select:none;
+      font-size:34px;
+    }
+
+    .option:hover { transform: translateY(-6px); }
+
+    .opt-a{ background: linear-gradient(135deg,#8f43ff,#44e0d6);}
+    .opt-b{ background: linear-gradient(135deg,#7b4bff,#66d8f2);}
+    .opt-c{ background: linear-gradient(135deg,#a453ff,#4ff0d9);}
+
+    .option .label{
+      font-size:50px;
+      font-weight:800;
+      margin-bottom:14px;
+    }
+
+    .option .txt{
+      font-size:40px;
+      line-height:1.5;
+      opacity:1;
+      margin-top:auto;
+    }
+
+    .nav{
+      margin-top:28px;
+      display:flex;
+      justify-content:center;
+      gap:24px;
+    }
+
+    .btn{
+      padding:16px 30px;
+      border-radius:34px;
+      font-weight:800;
+      font-size:20px;
+      background: linear-gradient(90deg,#9b5cff,#00d4ff);
+      color:#fff;
+      border:none;
+      cursor:pointer;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+    }
+
+    @media (max-width:900px){
+      .title{font-size:36px}
+      .question-bar{font-size:22px}
+      .option{min-height:220px;font-size:22px}
+      .option .label{font-size:30px}
+      .option .txt{font-size:20px}
+      .option{flex-basis:100%}
+    }
+
+    /* Mobile responsive */
+    @media (max-width: 600px) {
+      .page {
+        width: 100%;
+        margin: 10px auto;
+        padding: 10px;
+      }
+      
+      .back-btn-page {
+        left: 10px;
+        top: 10px;
+        width: 45px;
+        height: 45px;
+        font-size: 24px;
+      }
+      
+      .title {
+        font-size: 28px;
+        padding-top: 60px;
+      }
+      
+      .progress {
+        font-size: 14px;
+      }
+      
+      .progress-container {
+        height: 18px;
+        border-radius: 9px;
+      }
+      
+      .question-bar {
+        font-size: 18px;
+        padding: 14px 18px;
+        border-radius: 25px;
+        margin: 25px auto 18px;
+      }
+      
+      .options-row {
+        flex-direction: column;
+        gap: 15px;
+        padding: 0 5px;
+      }
+      
+      .option {
+        flex-basis: 100%;
+        min-height: 140px;
+        border-radius: 20px;
+        padding: 18px 15px;
+        font-size: 16px;
+      }
+      
+      .option .label {
+        font-size: 24px;
+        margin-bottom: 8px;
+      }
+      
+      .option .txt {
+        font-size: 16px;
+        line-height: 1.4;
+      }
+      
+      .nav {
+        gap: 12px;
+        margin-top: 20px;
+      }
+      
+      .btn {
+        padding: 12px 20px;
+        font-size: 16px;
+        border-radius: 25px;
+      }
+    }
+
+    /* Small mobile */
+    @media (max-width: 400px) {
+      .question-bar {
+        font-size: 16px;
+        padding: 12px 14px;
+      }
+      
+      .option {
+        min-height: 120px;
+        padding: 14px 12px;
+      }
+      
+      .option .label {
+        font-size: 20px;
+      }
+      
+      .option .txt {
+        font-size: 14px;
+      }
+    }
+
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+      .option:hover {
+        transform: none;
+      }
+      
+      .option:active {
+        transform: scale(0.98);
+      }
+    }
+
+    @keyframes flowIn {
+      from { opacity:0; transform: translateY(40px);}
+      to { opacity:1; transform: translateY(0);}
+    }
+    @keyframes flowOut {
+      from { opacity:1; transform: translateY(0);}
+      to { opacity:0; transform: translateY(-40px);}
+    }
+    .flow-in{ animation: flowIn 0.6s ease forwards; }
+    .flow-out{ animation: flowOut 0.6s ease forwards; }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <button class="back-btn-page" onclick="window.location='intelligence.html'">←</button>
+
+    <div class="header">
+      <h1 class="title">TEST YOUR INTELLIGENCE</h1>
+      <div class="progress" id="progressText">Question 1 / 40</div>
+      <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </div>
+
+    <div class="question-bar" id="questionText">Loading...</div>
+
+    <div class="options-row">
+      <div class="option opt-a" id="optA">
+        <div class="label">A.</div>
+        <div class="txt" id="optAText"></div>
+      </div>
+      <div class="option opt-b" id="optB">
+        <div class="label">B.</div>
+        <div class="txt" id="optBText"></div>
+      </div>
+      <div class="option opt-c" id="optC">
+        <div class="label">C.</div>
+        <div class="txt" id="optCText"></div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn" id="prevBtn">← Back</button>
+    </div>
+  </div>
+
+  <script>
+    const INT_NAMES = ["Linguistic","Logical/Mathematical","Spatial","Bodily Kinesthetic","Musical","Interpersonal","Intrapersonal","Naturalistic","Existential"];
+
+    const QUESTIONS = [
+      {q:"When you learn a new topic, you prefer to...", opts:[
+        {t:"Read and explain it in words", idx:0},
+        {t:"Use logic and numbers to understand it", idx:1},
+        {t:"See diagrams, images or visual examples", idx:2}
+      ]},
+      {q:"Which activity appeals most to you?", opts:[
+        {t:"Writing stories, essays or reports", idx:0},
+        {t:"Solving puzzles and math problems", idx:1},
+        {t:"Drawing, designing or imagining objects", idx:2}
+      ]},
+      {q:"In a group project, you often...", opts:[
+        {t:"Lead discussions and present ideas", idx:0},
+        {t:"Plan the steps and manage data", idx:1},
+        {t:"Create visual aids or prototypes", idx:2}
+      ]},
+      {q:"Which sounds most fun?", opts:[
+        {t:"Acting, dancing, or hands-on crafts", idx:3},
+        {t:"Composing or listening to music", idx:4},
+        {t:"Organizing an outdoor activity", idx:7}
+      ]},
+      {q:"You remember things best when you...", opts:[
+        {t:"Say them aloud or tell a story", idx:0},
+        {t:"Make patterns, logical lists or charts", idx:1},
+        {t:"Picture them in your mind", idx:2}
+      ]},
+      {q:"Which job would you prefer?", opts:[
+        {t:"A journalist or writer", idx:0},
+        {t:"A scientist or programmer", idx:1},
+        {t:"An architect or graphic designer", idx:2}
+      ]},
+      {q:"On a free afternoon you'd rather...", opts:[
+        {t:"Play an instrument or sing", idx:4},
+        {t:"Train in a sport or do physical activity", idx:3},
+        {t:"Go for a nature walk and observe plants", idx:7}
+      ]},
+      {q:"What describes you in social settings?", opts:[
+        {t:"I like understanding others' feelings", idx:5},
+        {t:"I prefer working independently and reflecting", idx:6},
+        {t:"I enjoy leading group activities", idx:5}
+      ]},
+      {q:"You solve problems by...", opts:[
+        {t:"Talking through ideas with others", idx:5},
+        {t:"Thinking quietly and reflecting", idx:6},
+        {t:"Creating a model or drawing to test", idx:2}
+      ]},
+      {q:"Which class did you enjoy most in school?", opts:[
+        {t:"Literature / Language", idx:0},
+        {t:"Math / Science", idx:1},
+        {t:"Art / Design", idx:2}
+      ]},
+      {q:"Which hobby appeals most?", opts:[
+        {t:"Coding/Logic games", idx:1},
+        {t:"Sports / dance / building things", idx:3},
+        {t:"Composing/playing music", idx:4}
+      ]},
+      {q:"If you lead a team, you mainly...", opts:[
+        {t:"Listen and encourage cooperation", idx:5},
+        {t:"Set tasks and measure results", idx:1},
+        {t:"Assign roles based on strengths", idx:5}
+      ]},
+      {q:"Which phrase fits you?", opts:[
+        {t:"I learn by talking and reading", idx:0},
+        {t:"I learn by doing and moving", idx:3},
+        {t:"I learn by visualizing and sketching", idx:2}
+      ]},
+      {q:"You feel satisfied when you...", opts:[
+        {t:"Compose a song or rhythm", idx:4},
+        {t:"Understand your own feelings and goals", idx:6},
+        {t:"Work with plants, animals or nature", idx:7}
+      ]},
+      {q:"Which problem would you enjoy solving?", opts:[
+        {t:"Create a persuasive article", idx:0},
+        {t:"Design a mechanical solution", idx:3},
+        {t:"Plan an experiment with clear logic", idx:1}
+      ]},
+      {q:"Which environment energizes you?", opts:[
+        {t:"A quiet place to think", idx:6},
+        {t:"A busy team with lots of interaction", idx:5},
+        {t:"An outdoor setting with plants and animals", idx:7}
+      ]},
+      {q:"If you had to teach someone you'd...", opts:[
+        {t:"Use stories and words", idx:0},
+        {t:"Give step-by-step logical instructions", idx:1},
+        {t:"Show diagrams and models", idx:2}
+      ]},
+      {q:"Which childhood activity did you enjoy?", opts:[
+        {t:"Building forts or manipulating objects", idx:3},
+        {t:"Playing musical games or rhythms", idx:4},
+        {t:"Drawing maps or visual puzzles", idx:2}
+      ]},
+      {q:"You feel proud when you...", opts:[
+        {t:"Give a good speech or write well", idx:0},
+        {t:"Crack a hard puzzle or solve a proof", idx:1},
+        {t:"Win a team sport or physical challenge", idx:3}
+      ]},
+      {q:"Which research topic would interest you?", opts:[
+        {t:"Ethics and the meaning of life", idx:8},
+        {t:"Patterns in nature and ecosystems", idx:7},
+        {t:"How the brain processes language", idx:0}
+      ]},
+      {q:"When choosing entertainment you prefer:", opts:[
+        {t:"Dramatic plays or readings", idx:0},
+        {t:"Instrumental or melodic music", idx:4},
+        {t:"Movies with strong visuals and design", idx:2}
+      ]},
+      {q:"Your friends say you are good at:", opts:[
+        {t:"Explaining and persuading others", idx:0},
+        {t:"Helping them understand feelings", idx:5},
+        {t:"Designing ideas and visual concepts", idx:2}
+      ]},
+      {q:"Which activity would you add to school?", opts:[
+        {t:"Outdoor nature exploration", idx:7},
+        {t:"Robotics and logic lab", idx:1},
+        {t:"Dance and body-awareness classes", idx:3}
+      ]},
+      {q:"A favorite pastime is:", opts:[
+        {t:"Journaling your thoughts and goals", idx:6},
+        {t:"Playing in a band or listening to live music", idx:4},
+        {t:"Sketching spaces or mapping routes", idx:2}
+      ]},
+      {q:"If you had to pick a club, you'd join:", opts:[
+        {t:"Book or creative writing club", idx:0},
+        {t:"Chess / math club", idx:1},
+        {t:"Art / design / photography club", idx:2}
+      ]},
+      {q:"You often notice:", opts:[
+        {t:"Patterns and regularities in data", idx:1},
+        {t:"Changes in mood and interpersonal cues", idx:5},
+        {t:"Tiny details in landscapes or species", idx:7}
+      ]},
+      {q:"Which statement fits you?", opts:[
+        {t:"I reflect a lot about myself", idx:6},
+        {t:"I enjoy movement, building or fixing", idx:3},
+        {t:"I hum or whistle to remember things", idx:4}
+      ]},
+      {q:"When solving a problem you prefer to:", opts:[
+        {t:"Talk it through with others", idx:5},
+        {t:"Model it visually", idx:2},
+        {t:"Try a hands-on prototype", idx:3}
+      ]},
+      {q:"Which concept intrigues you most?", opts:[
+        {t:"Why humans ask 'why' (meaning & purpose)", idx:8},
+        {t:"How ecosystems adapt", idx:7},
+        {t:"How rhythm affects memory", idx:4}
+      ]},
+      {q:"You enjoy tasks that require:", opts:[
+        {t:"Precise body control or coordination", idx:3},
+        {t:"Thinking about personal growth", idx:6},
+        {t:"Making graphs, maps or visual arrangements", idx:2}
+      ]},
+      {q:"Which career seems appealing?", opts:[
+        {t:"Therapist or counselor (people-focus)", idx:5},
+        {t:"Composer or sound engineer", idx:4},
+        {t:"Environmental scientist", idx:7}
+      ]},
+      {q:"Which activity would keep you focused?", opts:[
+        {t:"Editing an article or proofreading", idx:0},
+        {t:"Designing a 3D model or drawing", idx:2},
+        {t:"Solving logic/algorithmic challenges", idx:1}
+      ]},
+      {q:"You are energized by:", opts:[
+        {t:"Deep personal reflection and meditation", idx:6},
+        {t:"Large group collaboration with roles", idx:5},
+        {t:"Physical practice and skill rehearsal", idx:3}
+      ]},
+      {q:"When remembering routes you...", opts:[
+        {t:"Tell yourself a story about the path", idx:0},
+        {t:"Picture landmarks and maps", idx:2},
+        {t:"Remember how you moved (steps, turns)", idx:3}
+      ]},
+      {q:"Which topic would make you stay up late reading?", opts:[
+        {t:"Philosophy, purpose, big questions", idx:8},
+        {t:"Nature documentaries and species", idx:7},
+        {t:"Musical history and song structure", idx:4}
+      ]},
+      {q:"A successful project for you is one that...", opts:[
+        {t:"Helps people communicate and collaborate", idx:5},
+        {t:"Challenges your own self-understanding", idx:6},
+        {t:"Demonstrates technical/physical skill", idx:3}
+      ]},
+      {q:"You prefer learning by:", opts:[
+        {t:"Listening to explanations and discussing", idx:0},
+        {t:"Following logical steps and proofs", idx:1},
+        {t:"Drawing and visualizing relationships", idx:2}
+      ]},
+      {q:"Question38", opts:[
+        {t:"Listening to explanations and discussing", idx:0},
+        {t:"Following logical steps and proofs", idx:1},
+        {t:"Drawing and visualizing relationships", idx:2}
+      ]},
+      {q:"Question39", opts:[
+        {t:"Listening to explanations and discussing", idx:0},
+        {t:"Following logical steps and proofs", idx:1},
+        {t:"Drawing and visualizing relationships", idx:2}
+      ]},
+      {q:"Question40", opts:[
+        {t:"Listening to explanations and discussing", idx:0},
+        {t:"Following", idx:1},
+        {t:"Drawing and visualizing logical steps and proofs relationships", idx:2}
+      ]}
+    ];
+
+    const TOTAL = QUESTIONS.length;
+    let scores = new Array(9).fill(0);
+    let qIndex = 0;
+    let selectedThis = null;
+    let history = [];
+
+    const qText = document.getElementById('questionText');
+    const pText = document.getElementById('progressText');
+    const optA = document.getElementById('optA');
+    const optB = document.getElementById('optB');
+    const optC = document.getElementById('optC');
+    const optAText = document.getElementById('optAText');
+    const optBText = document.getElementById('optBText');
+    const optCText = document.getElementById('optCText');
+    const prevBtn = document.getElementById('prevBtn');
+    const progressBar = document.getElementById('progressBar');
+
+    function renderQuestion(direction="next"){
+      const Q = QUESTIONS[qIndex];
+
+      if(qText.textContent !== "Loading..."){
+        [qText,optA,optB,optC].forEach(el=>{
+          el.classList.remove("flow-in");
+          el.classList.add("flow-out");
+        });
+
+        setTimeout(()=>{ updateContent(Q); },600);
+      } else {
+        updateContent(Q);
+      }
+    }
+
+    function updateContent(Q){
+      qText.textContent = `${qIndex+1}. ${Q.q}`;
+      optAText.textContent = Q.opts[0].t;
+      optBText.textContent = Q.opts[1].t;
+      optCText.textContent = Q.opts[2].t;
+      pText.textContent = `Question ${qIndex+1} / ${TOTAL}`;
+      
+      // Update progress bar
+      const progressPercent = ((qIndex) / TOTAL) * 100;
+      progressBar.style.width = progressPercent + "%";
+      
+      selectedThis = null;
+      [optA,optB,optC].forEach(el=> el.style.outline="none");
+
+      [qText,optA,optB,optC].forEach(el=>{
+        el.className = el.className.replace("flow-out","").trim();
+        el.classList.add("flow-in");
+      });
+
+      prevBtn.disabled = (qIndex === 0);
+    }
+
+    optA.addEventListener('click', ()=> selectOption(0));
+    optB.addEventListener('click', ()=> selectOption(1));
+    optC.addEventListener('click', ()=> selectOption(2));
+
+    function selectOption(optIdx){
+      [optA,optB,optC].forEach(el=> el.style.outline="none");
+      const el = [optA,optB,optC][optIdx];
+      el.style.outline = "6px solid rgba(255,255,255,0.25)";
+      el.style.outlineOffset = "6px";
+      selectedThis = QUESTIONS[qIndex].opts[optIdx].idx;
+      
+      // Automatically proceed to next question
+      scores[selectedThis]+=1;
+      history[qIndex]=selectedThis;
+      qIndex++;
+      if(qIndex>=TOTAL){
+        localStorage.setItem("mi_scores", JSON.stringify(scores));
+        window.location="result.html";
+        return;
+      }
+      renderQuestion("next");
+    }
+
+    function prevQuestion(){
+      if(qIndex>0){
+        const prevAns=history[qIndex-1];
+        if(prevAns!==null && prevAns!==undefined){ scores[prevAns]-=1; }
+        qIndex--;
+        renderQuestion("prev");
+      }
+    }
+
+    prevBtn.addEventListener('click', prevQuestion);
+    renderQuestion();
+  </script>
+</body>
+</html>

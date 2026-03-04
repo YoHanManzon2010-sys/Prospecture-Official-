@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>RIASEC Test - Questions</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --card-grad: linear-gradient(90deg, #8b5bff, #43e0d6);
+      --card-grad-alt: linear-gradient(90deg, #8c56ff, #70e0d6);
+      --shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; font-family: 'Fredoka', sans-serif; }
+    body {
+      background: url("Background.png") center/cover no-repeat fixed;
+      color: #fff;
+    }
+    .page {
+      width: 95%;
+      max-width: 1300px;
+      margin: 18px auto;
+      position: relative;
+      min-height: calc(100vh - 36px);
+    }
+    .back-btn-page {
+      position: absolute;
+      left: 20px;
+      top: 18px;
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.12);
+      border: none;
+      color: #fff;
+      font-size: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    }
+    .header { text-align: center; padding-top: 24px; }
+    .title { font-size: 62px; margin: 0; }
+    .progress { margin-top: 10px; font-size: 18px; }
+    .question-bar {
+      margin: 40px auto 24px;
+      background: rgba(2, 6, 53, 0.9);
+      padding: 18px 26px;
+      border-radius: 40px;
+      max-width: 1100px;
+      font-size: 28px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    }
+    .options-row {
+      display: flex;
+      gap: 28px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      max-width: 1200px;
+      margin: 12px auto;
+    }
+    .option {
+      flex: 1 1 calc(33% - 20px);
+      min-height: 300px;
+      border-radius: 32px;
+      border: white 2px solid;
+      padding: 28px 26px;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      color: #fff;
+      box-shadow: var(--shadow);
+      transition: transform 0.14s ease, box-shadow .14s ease;
+      user-select: none;
+      font-size: 34px;
+    }
+    .option:hover { transform: translateY(-6px); }
+    .opt-a { background: linear-gradient(135deg, #8f43ff, #44e0d6); }
+    .opt-b { background: linear-gradient(135deg, #7b4bff, #66d8f2); }
+    .opt-c { background: linear-gradient(135deg, #a453ff, #4ff0d9); }
+    .option .label {
+      font-size: 50px;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+    .option .txt {
+      font-size: 40px;
+      line-height: 1.5;
+      opacity: 1;
+      margin-top: auto;
+    }
+    .nav {
+      margin-top: 28px;
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+    }
+    .btn {
+      padding: 16px 30px;
+      border-radius: 34px;
+      font-weight: 800;
+      font-size: 20px;
+      background: linear-gradient(90deg, #9b5cff, #00d4ff);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    }
+    @media (max-width: 900px) {
+      .title { font-size: 36px; }
+      .question-bar { font-size: 22px; }
+      .option { min-height: 220px; font-size: 22px; }
+      .option .label { font-size: 30px; }
+      .option .txt { font-size: 20px; }
+      .option { flex-basis: 100%; }
+    }
+    @keyframes flowIn {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes flowOut {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(-40px); }
+    }
+    .flow-in { animation: flowIn 0.6s ease forwards; }
+    .flow-out { animation: flowOut 0.6s ease forwards; }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <button class="back-btn-page" onclick="window.location='index.html'">←</button>
+
+    <div class="header">
+      <h1 class="title">RIASEC TEST</h1>
+      <div class="progress" id="progressText">Question 1 / 36</div>
+    </div>
+
+    <div class="question-bar" id="questionText">Loading...</div>
+
+    <div class="options-row">
+      <div class="option opt-a" id="optA">
+        <div class="label">Yes</div>
+      </div>
+      <div class="option opt-b" id="optB">
+        <div class="label">No</div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn" id="prevBtn">← Back</button>
+      <button class="btn" id="nextBtn" disabled>Next →</button>
+    </div>
+  </div>
+
+  <script>
+    // RIASEC categories and question data (Realistic, Investigative, Artistic, Social, Enterprising, Conventional)
+    const RIASEC_CATEGORIES = ["Realistic", "Investigative", "Artistic", "Social", "Enterprising", "Conventional"];
+
+    const QUESTIONS = [
+      // Realistic (6 Questions)
+      {q:"Do you enjoy working with tools or machinery?", idx:0}, // Realistic
+      {q:"Do you prefer outdoor or hands-on work?", idx:0},     // Realistic
+      {q:"Do you like fixing or building things?", idx:0},      // Realistic
+      {q:"Would you enjoy working as a mechanic or engineer?", idx:0}, // Realistic
+      {q:"Do you prefer practical, hands-on solutions to problems?", idx:0}, // Realistic
+      {q:"Do you enjoy working with physical objects or machinery?", idx:0}, // Realistic
+
+      // Investigative (6 Questions)
+      {q:"Do you like solving complex problems or puzzles?", idx:1}, // Investigative
+      {q:"Do you enjoy conducting scientific research?", idx:1},    // Investigative
+      {q:"Would you prefer a career as a scientist or analyst?", idx:1}, // Investigative
+      {q:"Do you enjoy analyzing data or experimenting?", idx:1},    // Investigative
+      {q:"Do you like working in a research or laboratory setting?", idx:1}, // Investigative
+      {q:"Would you prefer to solve problems through research?", idx:1}, // Investigative
+
+      // Artistic (6 Questions)
+      {q:"Do you enjoy expressing yourself through art?", idx:2},     // Artistic
+      {q:"Do you like designing or creating visual art?", idx:2},     // Artistic
+      {q:"Would you like a career in design or creative arts?", idx:2}, // Artistic
+      {q:"Do you prefer creating new artistic or visual ideas?", idx:2}, // Artistic
+      {q:"Do you enjoy drawing, painting, or other creative activities?", idx:2}, // Artistic
+      {q:"Do you find satisfaction in creating something new or artistic?", idx:2}, // Artistic
+
+      // Social (6 Questions)
+      {q:"Do you enjoy helping others or providing care?", idx:3},    // Social
+      {q:"Would you prefer to work in education or healthcare?", idx:3}, // Social
+      {q:"Do you enjoy working with people in need of assistance?", idx:3}, // Social
+      {q:"Would you prefer a career as a teacher, counselor, or therapist?", idx:3}, // Social
+      {q:"Do you find satisfaction in helping others solve their problems?", idx:3}, // Social
+      {q:"Do you enjoy volunteering or working in community organizations?", idx:3}, // Social
+      {q:"Would you like to work with children or the elderly?", idx:3}, // Social
+
+      // Enterprising (6 Questions)
+      {q:"Do you like leading or motivating others?", idx:4},  // Enterprising
+      {q:"Would you enjoy a job that involves selling or marketing?", idx:4}, // Enterprising
+      {q:"Do you prefer making decisions and taking charge of situations?", idx:4}, // Enterprising
+      {q:"Do you enjoy persuading others or leading groups?", idx:4}, // Enterprising
+      {q:"Would you be interested in a career in business or entrepreneurship?", idx:4}, // Enterprising
+      {q:"Do you enjoy taking risks to achieve goals?", idx:4}, // Enterprising
+
+      // Conventional (6 Questions)
+      {q:"Do you prefer working with data or detailed information?", idx:5}, // Conventional
+      {q:"Would you enjoy a job that requires managing or organizing tasks?", idx:5}, // Conventional
+      {q:"Do you prefer structured environments with clear rules?", idx:5}, // Conventional
+      {q:"Do you like working with numbers, records, or spreadsheets?", idx:5}, // Conventional
+      {q:"Would you enjoy a career in accounting or administration?", idx:5}, // Conventional
+      {q:"Do you prefer working in an organized and efficient environment?", idx:5}, // Conventional
+    ];
+
+    let currentQuestion = 0;
+    const totalQuestions = QUESTIONS.length;
+    let answers = Array(totalQuestions).fill(null);
+
+    function loadQuestion() {
+      const question = QUESTIONS[currentQuestion];
+      document.getElementById('questionText').textContent = question.q;
+      document.getElementById('progressText').textContent = `Question ${currentQuestion + 1} / 36`;
+
+      document.getElementById('nextBtn').disabled = true;
+
+      // Reset options
+      const optA = document.getElementById('optA');
+      const optB = document.getElementById('optB');
+      optA.textContent = "Yes";
+      optB.textContent = "No";
+
+      // Set click listeners for Yes and No
+      optA.onclick = () => handleAnswer(true);
+      optB.onclick = () => handleAnswer(false);
+    }
+
+    function handleAnswer(answer) {
+      answers[currentQuestion] = answer;
+
+      // Enable Next button
+      document.getElementById('nextBtn').disabled = false;
+    }
+
+    function nextQuestion() {
+      if (currentQuestion < totalQuestions - 1) {
+        currentQuestion++;
+        loadQuestion();
+      } else {
+        // End of the test
+        showResults();
+      }
+    }
+
+    function prevQuestion() {
+      if (currentQuestion > 0) {
+        currentQuestion--;
+        loadQuestion();
+      }
+    }
+
+    function showResults() {
+      // Summarize results
+      let scores = { Realistic: 0, Investigative: 0, Artistic: 0, Social: 0, Enterprising: 0, Conventional: 0 };
+      
+      for (let i = 0; i < totalQuestions; i++) {
+        const answer = answers[i];
+        const categoryIndex = QUESTIONS[i].idx;
+
+        if (answer) {
+          switch (categoryIndex) {
+            case 0: scores.Realistic++; break;
+            case 1: scores.Investigative++; break;
+            case 2: scores.Artistic++; break;
+            case 3: scores.Social++; break;
+            case 4: scores.Enterprising++; break;
+            case 5: scores.Conventional++; break;
+          }
+        }
+      }
+
+      // Show the result
+      let resultText = "Your RIASEC Test Results:\n\n";
+      for (const category of RIASEC_CATEGORIES) {
+        resultText += `${category}: ${scores[category]} points\n`;
+      }
+
+      alert(resultText);
+    }
+
+    // Event listeners for Next and Previous buttons
+    document.getElementById('nextBtn').addEventListener('click', nextQuestion);
+    document.getElementById('prevBtn').addEventListener('click', prevQuestion);
+
+    // Initialize the test
+    loadQuestion();
+  </script>
+</body>
+</html>

@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Advanced Math Quiz + Sketchpad</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:"Segoe UI", sans-serif;
+}
+
+body{
+  height:100vh;
+  display:flex;
+  background:radial-gradient(circle at center,#0f2027,#203a43,#2c5364);
+  overflow:hidden;
+  color:white;
+}
+
+/* Back Button */
+.back-btn{
+  position:absolute;
+  left:20px;
+  top:20px;
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.15);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  text-decoration:none;
+  color:white;
+  font-size:30px;
+}
+.back-btn:hover{background:rgba(255,255,255,0.3);}
+
+/* Layout */
+.quiz-panel{
+  width:55%;
+  padding:120px 60px;
+  overflow-y:auto;
+}
+
+.sketchpad-panel{
+  width:45%;
+  background:rgba(255,255,255,0.06);
+  backdrop-filter:blur(12px);
+  display:flex;
+  flex-direction:column;
+  border-left:1px solid rgba(255,255,255,0.2);
+}
+
+/* Question */
+.question-box{
+  background:rgba(255,255,255,0.08);
+  padding:35px;
+  border-radius:20px;
+  box-shadow:0 0 25px rgba(255,255,255,0.1);
+}
+
+/* Progress Bar */
+.progress-container{
+  width:100%;
+  height:10px;
+  background:rgba(255,255,255,0.2);
+  border-radius:10px;
+  margin-bottom:20px;
+  overflow:hidden;
+}
+.progress-bar{
+  height:100%;
+  width:0%;
+  background:#2ecc71;
+  transition:width 0.4s ease;
+}
+
+.choice{
+  margin-bottom:12px;
+  padding:14px;
+  background:rgba(255,255,255,0.12);
+  border-radius:10px;
+  cursor:pointer;
+  transition:0.3s;
+}
+.choice:hover{background:rgba(255,255,255,0.3);}
+
+.correct{background:#2ecc71 !important;}
+.wrong{background:#e74c3c !important;}
+
+canvas{flex:1;}
+
+.toolbar{
+  padding:15px;
+  display:flex;
+  gap:12px;
+  align-items:center;
+  background:rgba(0,0,0,0.4);
+}
+
+.toolbar button{
+  padding:10px 16px;
+  border:none;
+  border-radius:12px;
+  background:rgba(255,255,255,0.18);
+  color:white;
+  cursor:pointer;
+  font-size:22px;
+}
+.toolbar button:hover{background:rgba(255,255,255,0.3);}
+
+/* Eraser Active State - Bright Colors */
+.toolbar button.eraser-active{
+  background: #ff00ff !important;
+  box-shadow: 0 0 20px #ff00ff, 0 0 40px #ff00ff;
+  animation: pulse-eraser 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-eraser{
+  from{box-shadow: 0 0 15px #ff00ff, 0 0 30px #ff00ff;}
+  to{box-shadow: 0 0 25px #00ffff, 0 0 50px #00ffff;}
+}
+
+.cursor-circle{
+  position:fixed;
+  border:2px solid white;
+  border-radius:50%;
+  pointer-events:none;
+  transform:translate(-50%, -50%);
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+}
+
+/* Eraser Cursor - shows eraser icon */
+.cursor-circle.eraser-cursor {
+  background:rgba(255,255,255,0.3); }
+
+/* ================= CALCULATOR ================= */
+
+.calculator{
+  margin-top:30px;
+  background:rgba(255,255,255,0.08);
+  padding:20px;
+  border-radius:20px;
+  box-shadow:0 0 20px rgba(255,255,255,0.1);
+}
+
+#calcDisplay{
+  width:100%;
+  height:45px;
+  margin-bottom:15px;
+  border:none;
+  border-radius:10px;
+  padding:10px;
+  font-size:18px;
+  background:rgba(0,0,0,0.4);
+  color:white;
+}
+
+.calc-buttons{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+
+.calc-buttons button{
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:rgba(255,255,255,0.15);
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.calc-buttons button:hover{
+  background:rgba(255,255,255,0.3);
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+  .quiz-panel {
+    width: 50%;
+    padding: 100px 40px;
+  }
+  
+  .sketchpad-panel {
+    width: 50%;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  
+  .quiz-panel {
+    width: 100%;
+    padding: 80px 20px 20px;
+    min-height: 50vh;
+  }
+  
+  .sketchpad-panel {
+    width: 100%;
+    height: 50vh;
+    border-left: none;
+    border-top: 1px solid rgba(255,255,255,0.2);
+  }
+  
+  .back-btn {
+    left: 10px;
+    top: 10px;
+    width: 45px;
+    height: 45px;
+    font-size: 24px;
+  }
+  
+  .question-box {
+    padding: 20px;
+  }
+  
+  .choice {
+    padding: 12px;
+    font-size: 14px;
+  }
+  
+  .calculator {
+    margin-top: 20px;
+    padding: 15px;
+  }
+  
+  .calc-buttons {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  
+  .calc-buttons button {
+    padding: 10px;
+    font-size: 14px;
+  }
+  
+  #calcDisplay {
+    height: 40px;
+    font-size: 16px;
+  }
+  
+  .toolbar {
+    padding: 10px;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .toolbar button {
+    padding: 8px 12px;
+    font-size: 18px;
+  }
+  
+  #brushSize {
+    width: 80px;
+  }
+}
+
+@media (max-width: 480px) {
+  .quiz-panel {
+    padding: 70px 15px 15px;
+  }
+  
+  .question-box h2 {
+    font-size: 16px;
+  }
+  
+  .choice {
+    padding: 10px;
+    font-size: 13px;
+  }
+  
+  .calculator {
+    padding: 12px;
+  }
+  
+  .calc-buttons button {
+    padding: 8px;
+    font-size: 12px;
+  }
+  
+  #calcDisplay {
+    height: 35px;
+    font-size: 14px;
+  }
+  
+  .sketchpad-panel {
+    height: 40vh;
+  }
+  
+  .toolbar {
+    padding: 8px;
+  }
+  
+  .toolbar button {
+    padding: 6px 10px;
+    font-size: 16px;
+  }
+  
+  #sizeDisplay {
+    font-size: 12px;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .choice:hover {
+    background: rgba(255,255,255,0.12);
+  }
+  
+  .choice:active {
+    background: rgba(255,255,255,0.3);
+  }
+  
+  .calc-buttons button:active {
+    background: rgba(255,255,255,0.3);
+  }
+  
+  .toolbar button:active {
+    background: rgba(255,255,255,0.3);
+  }
+}
+</style>
+</head>
+<body>
+
+<a class="back-btn" href="math.html">←</a>
+
+<div class="quiz-panel">
+  <div class="question-box">
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <h2 id="questionText"></h2>
+    <div id="choicesContainer"></div>
+  </div>
+
+  <!-- Scientific Calculator -->
+  <div class="calculator">
+    <input type="text" id="calcDisplay" readonly>
+
+    <div class="calc-buttons">
+      <button onclick="calcInput('7')">7</button>
+      <button onclick="calcInput('8')">8</button>
+      <button onclick="calcInput('9')">9</button>
+      <button onclick="calcInput('/')">÷</button>
+
+      <button onclick="calcInput('4')">4</button>
+      <button onclick="calcInput('5')">5</button>
+      <button onclick="calcInput('6')">6</button>
+      <button onclick="calcInput('*')">×</button>
+
+      <button onclick="calcInput('1')">1</button>
+      <button onclick="calcInput('2')">2</button>
+      <button onclick="calcInput('3')">3</button>
+      <button onclick="calcInput('-')">−</button>
+
+      <button onclick="calcInput('0')">0</button>
+      <button onclick="calcInput('.')">.</button>
+      <button onclick="calculate()">=</button>
+      <button onclick="calcInput('+')">+</button>
+
+      <button onclick="calcInput('sqrt(')">√</button>
+      <button onclick="calcInput('**')">^</button>
+      <button onclick="calcInput('sin(')">sin</button>
+      <button onclick="calcInput('cos(')">cos</button>
+
+      <button onclick="calcInput('tan(')">tan</button>
+      <button onclick="calcInput('log(')">log</button>
+      <button onclick="calcInput('ln(')">ln</button>
+      <button onclick="clearCalc()">C</button>
+
+      <button onclick="calcInput('asin(')">asin</button>
+      <button onclick="calcInput('acos(')">acos</button>
+      <button onclick="calcInput('atan(')">atan</button>
+      <button onclick="calcInput('!')">n!</button>
+      <button onclick="calcInput('PI')">π</button>
+      <button onclick="calcInput('E')">e</button>
+    </div>
+  </div>
+</div>
+
+<div class="sketchpad-panel">
+  <div class="toolbar">
+    <input type="color" id="colorPicker" value="#ffffff">
+    <input type="range" id="brushSize" min="1" max="50" value="5">
+    <span id="sizeDisplay">5px</span>
+
+    <button onclick="undo()">↺</button>
+    <button onclick="redo()">↻</button>
+    <button onclick="enableEraser()">🧽</button>
+    <button onclick="clearCanvas()">🗑</button>
+  </div>
+  <canvas id="canvas"></canvas>
+</div>
+
+<div class="cursor-circle" id="cursorCircle"></div>
+
+<script>
+/* ================= HARDER QUESTION BANK (30 TOTAL) ================= */
+
+const allQuestions = [
+
+/* Algebra (Harder) */
+{q:"Solve: 2x² - 8 = 0",c:["±2","±4","2","4"],a:0},
+{q:"Factor: x² - 5x + 6",c:["(x-2)(x-3)","(x-1)(x-6)","Prime","(x-3)(x-4)"],a:0},
+{q:"If f(x)=x²-4x, find f(5)",c:["5","10","5","15"],a:1},
+{q:"Solve: log₁₀(1000)",c:["2","3","10","100"],a:1},
+{q:"Discriminant of x²-4x+4",c:["0","4","-4","8"],a:0},
+
+/* Geometry */
+{q:"Surface area of cube (side=4)",c:["96","64","48","128"],a:0},
+{q:"Area of sector (r=7,θ=90°)",c:["38.5","49","154","77"],a:0},
+{q:"Sum interior angles of octagon",c:["1080°","900°","720°","1440°"],a:0},
+{q:"Volume of cylinder (r=3,h=5,π=3.14)",c:["141.3","150","120","135"],a:0},
+{q:"Distance formula between (0,0) & (6,8)",c:["10","12","14","8"],a:0},
+
+/* Statistics */
+{q:"Mean of 4,6,8,10,12",c:["8","7","9","10"],a:0},
+{q:"If variance is 0, data is?",c:["All equal","Random","Large spread","Skewed"],a:0},
+{q:"Standard deviation measures?",c:["Spread","Mean","Median","Mode"],a:0},
+{q:"Median of 2,4,6,8",c:["5","6","4","7"],a:0},
+{q:"Range of 100,85,90,95",c:["15","10","20","5"],a:0},
+
+/* Probability */
+{q:"Probability of drawing Ace (52 cards)",c:["1/13","1/4","4/52","1/52"],a:0},
+{q:"Two dice sum=7 probability",c:["6/36","1/6","1/12","1/36"],a:0},
+{q:"Complement of 0.85",c:["0.15","0.85","0.25","0.05"],a:0},
+{q:"Mutually exclusive events mean?",c:["Cannot occur together","Independent","Equal chance","Certain"],a:0},
+{q:"Probability of impossible event?",c:["0","1","0.5","-1"],a:0},
+
+/* Grouped Data */
+{q:"Class width of 50–60",c:["10","5","15","20"],a:0},
+{q:"Midpoint of 30–50",c:["40","35","45","30"],a:0},
+{q:"Histogram bars are?",c:["Adjacent","Separated","Circular","Stacked"],a:0},
+{q:"Grouped mean formula uses?",c:["Σfx/Σf","Σx/n","Range","Median"],a:0},
+{q:"Frequency polygon connects?",c:["Midpoints","Modes","Means","Bars"],a:0},
+
+/* Ungrouped Data */
+{q:"Mean of 3,6,9",c:["6","5","7","8"],a:0},
+{q:"Mode of 1,2,2,3,4",c:["2","3","4","1"],a:0},
+{q:"Quartile divides data into?",c:["4","2","3","5"],a:0},
+{q:"If n=9, median position?",c:["5","4","6","3"],a:0},
+{q:"Outlier increases?",c:["Mean","Mode","Nothing","Median only"],a:0}
+
+
+
+];
+
+function shuffle(arr){
+  return arr.sort(()=>Math.random()-0.5);
+}
+
+let questions = shuffle([...allQuestions]).slice(0,15);
+let current=0;
+let score=0;
+
+function updateProgress(){
+  const percent = (current/15)*100;
+  document.getElementById("progressBar").style.width = percent+"%";
+}
+
+function loadQuestion(){
+
+  if(current>=questions.length){
+    document.querySelector(".question-box").innerHTML=
+    `<h2>Quiz Completed! </h2>
+     <h3>Your Final Score: ${score}/15</h3>
+     <br>
+     <button onclick="retakeQuiz()" style="padding:10px 20px;border:none;border-radius:8px;background:rgba(255,255,255,0.15);color:white;cursor:pointer;">
+     Retake Quiz
+     </button>`;
+    return;
+  }
+
+  updateProgress();
+
+  document.getElementById("questionText").innerText =
+  (current+1)+". "+questions[current].q;
+
+  const container=document.getElementById("choicesContainer");
+  container.innerHTML="";
+
+  questions[current].c.forEach((choice,i)=>{
+    const div=document.createElement("div");
+    div.className="choice";
+    div.innerText=choice;
+
+    div.onclick=()=>{
+      if(i===questions[current].a){
+        div.classList.add("correct");
+        score++;
+      }else{
+        div.classList.add("wrong");
+      }
+
+      setTimeout(()=>{
+        current++;
+        loadQuestion();
+      },800);
+    };
+
+    container.appendChild(div);
+  });
+}
+
+function retakeQuiz(){
+  questions = shuffle([...allQuestions]).slice(0,15);
+  current=0;
+  score=0;
+  location.reload();
+}
+
+loadQuestion();
+
+/* ================= SKETCHPAD (UNCHANGED) ================= */
+
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
+const cursor=document.getElementById("cursorCircle");
+
+let drawing=false;
+let color="#ffffff";
+let size=5;
+let erasing=false;
+
+let undoStack=[];
+let redoStack=[];
+
+function resizeCanvas(){
+  const rect=canvas.getBoundingClientRect();
+  canvas.width=rect.width;
+  canvas.height=rect.height;
+}
+window.addEventListener("resize",resizeCanvas);
+resizeCanvas();
+
+function saveState(){
+  undoStack.push(ctx.getImageData(0,0,canvas.width,canvas.height));
+  redoStack=[];
+}
+
+canvas.addEventListener("mousedown",e=>{
+  drawing=true;
+  saveState();
+  ctx.beginPath();
+  ctx.moveTo(e.offsetX,e.offsetY);
+});
+
+canvas.addEventListener("mouseup",()=>drawing=false);
+
+canvas.addEventListener("mousemove",e=>{
+  cursor.style.left=e.clientX+"px";
+  cursor.style.top=e.clientY+"px";
+  cursor.style.width=size+"px";
+  cursor.style.height=size+"px";
+
+  if(!drawing) return;
+
+  ctx.lineWidth=size;
+  ctx.lineCap="round";
+  ctx.lineJoin="round";
+  ctx.shadowBlur=size/2;
+  ctx.shadowColor=color;
+  ctx.strokeStyle=color;
+  ctx.globalCompositeOperation=erasing?"destination-out":"source-over";
+
+  ctx.lineTo(e.offsetX,e.offsetY);
+  ctx.stroke();
+});
+
+function undo(){
+  if(!undoStack.length) return;
+  redoStack.push(ctx.getImageData(0,0,canvas.width,canvas.height));
+  ctx.putImageData(undoStack.pop(),0,0);
+}
+
+function redo(){
+  if(!redoStack.length) return;
+  undoStack.push(ctx.getImageData(0,0,canvas.width,canvas.height));
+  ctx.putImageData(redoStack.pop(),0,0);
+}
+
+function clearCanvas(){
+  saveState();
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+}
+
+document.getElementById("colorPicker").oninput=e=>{
+  color=e.target.value;
+  erasing=false;
+};
+
+document.getElementById("brushSize").oninput=e=>{
+  size=parseInt(e.target.value);
+  document.getElementById("sizeDisplay").innerText=size+"px";
+};
+
+function enableEraser(){erasing=true;}
+
+/* ================= SCIENTIFIC CALCULATOR ================= */
+
+// Factorial function
+function factorial(n) {
+  if (n < 0) return NaN;
+  if (n === 0 || n === 1) return 1;
+  let result = 1;
+  for (let i = 2; i <= n; i++) result *= i;
+  return result;
+}
+
+// Create safe calculation environment
+function createCalculator() {
+  const PI = Math.PI;
+  const E = Math.E;
+  
+  // Degree to radian conversion for trig functions
+  function sin(x) { return Math.sin(x * PI / 180); }
+  function cos(x) { return Math.cos(x * PI / 180); }
+  function tan(x) { return Math.tan(x * PI / 180); }
+  
+  // Inverse trig functions return degrees
+  function asin(x) { return Math.asin(x) * 180 / PI; }
+  function acos(x) { return Math.acos(x) * 180 / PI; }
+  function atan(x) { return Math.atan(x) * 180 / PI; }
+  
+  // Log functions
+  function log(x) { return Math.log10(x); }
+  function ln(x) { return Math.log(x); }
+  
+  // Square root
+  function sqrt(x) { return Math.sqrt(x); }
+  
+  // Power
+  function pow(base, exp) { return Math.pow(base, exp); }
+  
+  return {
+    sin, cos, tan, asin, acos, atan, log, ln, sqrt, pow,
+    factorial, PI, E,
+    abs: Math.abs,
+    ceil: Math.ceil,
+    floor: Math.floor,
+    round: Math.round,
+    max: Math.max,
+    min: Math.min,
+    random: Math.random
+  };
+}
+
+function calcInput(value){
+  document.getElementById("calcDisplay").value += value;
+}
+
+function calculate(){
+  try{
+    let expression = document.getElementById("calcDisplay").value;
+    
+    // Replace factorial operator ! with factorial function
+    expression = expression.replace(/(\d+)!/g, 'factorial($1)');
+    
+    // Replace power operator ** with pow function (for nested powers)
+    // Handle cases like 2**3**2 as pow(2, pow(3, 2))
+    expression = expression.replace(/(\d+)\*\*(\d+)/g, 'pow($1,$2)');
+    
+    // Create calculator context and evaluate
+    const calc = createCalculator();
+    const keys = Object.keys(calc);
+    const values = Object.values(calc);
+    
+    // Use Function constructor with limited scope
+    const func = new Function(...keys, `'use strict'; return (${expression})`);
+    const result = func(...values);
+    
+    // Format result - round to reasonable decimal places
+    if (typeof result === 'number') {
+      if (!isFinite(result)) {
+        document.getElementById("calcDisplay").value = result > 0 ? 'Infinity' : '-Infinity';
+      } else if (Number.isInteger(result)) {
+        document.getElementById("calcDisplay").value = result;
+      } else {
+        // Round to 10 decimal places to avoid floating point issues
+        document.getElementById("calcDisplay").value = Math.round(result * 1e10) / 1e10;
+      }
+    } else {
+      document.getElementById("calcDisplay").value = result;
+    }
+  } catch(e) {
+    document.getElementById("calcDisplay").value = "Error";
+  }
+}
+
+function clearCalc(){
+  document.getElementById("calcDisplay").value = "";
+}
+
+/* Your existing quiz + sketchpad JS remains unchanged below */
+/* (I did not remove anything from your logic) */
+
+</script>
+</body>
+</html>

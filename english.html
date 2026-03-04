@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Science</title>
+
+<style>
+*{box-sizing:border-box;font-family:"Segoe UI", Tahoma, sans-serif;}
+
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:url("Academic Subs/science.gif") no-repeat center/cover fixed;
+  overflow:hidden;
+  opacity:0;
+  transition:opacity 0.5s ease-in-out;
+}
+
+body.page-visible{opacity:1;}
+
+.back-btn{
+  position:absolute;
+  left:20px;
+  top:18px;
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  border:none;
+  background:rgba(255,255,255,0.12);
+  color:#fff;
+  font-size:36px;
+  cursor:pointer;
+  z-index:10;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:0.3s;
+}
+
+.back-btn:hover{transform:scale(1.1);}
+
+/* 📖 IMPROVED 3D BOOK DESIGN */
+
+.book-container{
+  perspective:2000px;
+}
+
+.book{
+  width:380px;
+  height:480px;
+  position:relative;
+  transform-style:preserve-3d;
+  transition:transform 1s ease;
+}
+
+/* Spine */
+.book::before{
+  content:"";
+  position:absolute;
+  left:-12px;
+  width:24px;
+  height:100%;
+  background:linear-gradient(to right,#2a170d,#5a3b1e);
+  border-radius:10px 0 0 10px;
+  box-shadow:inset 4px 0 8px rgba(0,0,0,0.5);
+}
+
+/* Front Cover */
+.book-cover{
+  position:absolute;
+  width:100%;
+  height:100%;
+  background:linear-gradient(145deg,#6b4526,#3e2514);
+  border-radius:12px;
+  box-shadow:
+    0 25px 50px rgba(0,0,0,0.6),
+    inset 5px 0 15px rgba(0,0,0,0.4);
+  transform-origin:left;
+  transform-style:preserve-3d;
+  transition:transform 1.2s cubic-bezier(.65,.05,.36,1);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  font-size:30px;
+  font-weight:bold;
+  letter-spacing:3px;
+  cursor:pointer;
+  backface-visibility:hidden;
+}
+
+/* Inner Page Content */
+.book-content{
+  position:absolute;
+  width:100%;
+  height:100%;
+  background:#fdfaf3;
+  border-radius:12px;
+  padding:35px;
+  box-shadow:
+    0 20px 40px rgba(0,0,0,0.4),
+    inset 0 0 20px rgba(0,0,0,0.08);
+  overflow:auto;
+  backface-visibility:hidden;
+}
+
+/* Page edge illusion */
+.book-content::after{
+  content:"";
+  position:absolute;
+  right:-8px;
+  top:10px;
+  width:12px;
+  height:95%;
+  background:linear-gradient(to right,#ddd,#bbb);
+  border-radius:4px;
+}
+
+/* Open Animation */
+.book.open .book-cover{
+  transform:rotateY(-180deg);
+}
+
+/* Typography */
+.book-content h2{
+  text-align:center;
+  margin-bottom:15px;
+}
+
+.book-content p{
+  margin-bottom:12px;
+  line-height:1.6;
+}
+</style>
+</head>
+
+<body>
+
+<button class="back-btn" onclick="window.location.href='skill-test.html'">←</button>
+
+<div class="book-container">
+  <div class="book" id="book">
+    <div class="book-cover" onclick="openBook()">
+      ENGLISH
+    </div>
+
+    <div class="book-content">
+      <h2>English</h2>
+      <p><strong>Why Learn English?</strong></p>
+      <p>• Improves communication skills.</p>
+      <p>• Expands vocabulary and grammar mastery.</p>
+      <p>• Strengthens reading comprehension.</p>
+      <p>• Enhances writing and critical thinking.</p>
+      <p>• Boosts confidence in speaking and presentations.</p>
+
+      <p><strong>Benefits of Answering English Quizzes:</strong></p>
+      <p>• Tests understanding of lessons.</p>
+      <p>• Improves memory retention.</p>
+      <p>• Identifies strengths and weaknesses.</p>
+      <p>• Builds exam readiness.</p>
+      <p>• Makes learning interactive and engaging.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded",()=>{
+  document.body.classList.add("page-visible");
+});
+
+function openBook(){
+  document.getElementById("book").classList.toggle("open");
+}
+</script>
+
+</body>
+</html>

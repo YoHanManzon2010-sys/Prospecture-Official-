@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prospecture - Tests</title>
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Fredoka", sans-serif;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: url("background.png") no-repeat center center/cover;
+      text-align: center;
+      color: white;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 90%;
+      max-width: 1200px;
+    }
+
+    .header h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .header p {
+      font-size: 1.2rem;
+      margin-bottom: 40px;
+    }
+
+    .cards {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    .card {
+      flex: 1;
+      min-width: 250px;
+      max-width: 350px;
+      background: linear-gradient(to bottom right, #7f7fd5, #86a8e7, #91eae4);
+      border-radius: 20px;
+      padding: 30px 20px;
+      text-align: center;
+      color: white;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+    }
+
+    .card h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    /* Specific fixed sizes for icons */
+    .card img {
+      width: 260px;
+      height: 260px;
+      object-fit: contain;
+    }
+
+    @media (max-width: 800px) {
+      .header h1 {
+        font-size: 2.2rem;
+      }
+
+      .header p {
+        font-size: 1rem;
+      }
+
+      .cards {
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .card img {
+        width: 120px;
+        height: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>Prospecture</h1>
+      <p>Uncertain Future Career</p>
+    </div>
+
+    <!-- Cards -->
+    <div class="cards">
+      <div class="card" onclick="window.location.href='intelligence.html'">
+        <h2>Test your Intelligence</h2>
+        <img src="brain.png" alt="Brain Icon">
+      </div>
+      <div class="card" onclick="window.location.href='skills.html'">
+        <h2>Test your Skills</h2>
+        <img src="skills.png" alt="Skills Icon">
+      </div>
+    </div>
+  </div>
+</body>
+</html>

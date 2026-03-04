@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flip Book - English</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+
+/* =========================
+   YOUR ORIGINAL CSS (UNCHANGED)
+   ========================= */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --dark-color: rgb(2, 4, 8);
+    --dark-hover: rgba(255, 255, 255, 0.1);
+    --light-color: rgb(245, 245, 245);
+    --light-hover: rgba(0, 0, 0, 0.1);
+    --primary-color: #9c375f;
+    --secondary-color: #5c2f7a;
+    --accent-color: #f3c9a2;
+}
+
+body {
+    width: 100%;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+body.light-mode {
+    background-color: var(--light-color);
+    color: var(--dark-color);
+}
+
+body.dark-mode {
+    background-color: var(--dark-color);
+    color: var(--light-color);
+}
+
+ /* TOGGLE MODE BUTTON */
+        #toggle-mode-btn {
+            width: 2.5rem;
+            height: 2.5rem;
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 0.5rem;
+            background-color: transparent;
+            transition: background-color 0.3s;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        body.light-mode #toggle-mode-btn {
+            color: var(--dark-color);
+        }
+
+        body.light-mode #toggle-mode-btn:hover {
+            background-color: var(--light-hover);
+        }
+
+        body.dark-mode #toggle-mode-btn {
+            color: var(--light-color);
+        }
+
+        body.dark-mode #toggle-mode-btn:hover {
+            background-color: var(--dark-hover);
+        }
+
+        /* BACK BUTTON */
+        .back-btn {
+            position: fixed;
+            left: 1rem;
+            top: 1rem;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 1000;
+            transition: background-color 0.3s;
+        }
+
+       body.light-mode {
+    background:
+        radial-gradient(circle at center, #f5e6d3 0%, #c8b6a6 60%, #8d6e63 100%);
+}
+
+body.dark-mode {
+    background:
+        radial-gradient(circle at center, #000000 0%, #140c0c 70%, #000 100%);
+    
+}
+
+        body.light-mode .back-btn {
+            color: var(--dark-color);
+        }
+
+        body.light-mode .back-btn:hover {
+            background-color: var(--light-hover);
+        }
+
+        body.dark-mode .back-btn {
+            color: var(--light-color);
+        }
+
+        body.dark-mode .back-btn:hover {
+            background-color: var(--dark-hover);
+        }
+
+        /* INPUT CHECKBOXES - HIDDEN */
+        input[type="checkbox"] {
+            display: none;
+        }
+
+        /* FLIP BOOK */
+        #flip_book {
+            width: 520px;
+            height: 650px;
+            position: relative;
+            transition-duration: 1s;
+            perspective: 2000px;
+        }
+
+        /* Front Cover */
+        .front_cover {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 18px 10px 10px 18px;
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 40px 70px rgba(0, 0, 0, 0.6);
+            position: absolute;
+            cursor: pointer;
+            transform-origin: center left;
+            transition: transform 0.5s;
+            z-index: 99;
+            
+        }
+
+        .front_cover label {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            cursor: pointer;
+            
+        }
+
+        .front_cover .book-title {
+            font-size: 52px;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+           
+        }
+
+        .front_cover .book-subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+            
+        }
+
+        /* Spine */
+        .spine {
+            position: absolute;
+            left: -20px;
+            top: 0;
+            width: 20px;
+            height: 100%;
+            background: var(--secondary-color);
+            border-radius: 8px 0 0 8px;
+            z-index: 100;
+        }
+
+        /* Latch */
+        .latch {
+            position: absolute;
+            right: -25px;
+            top: 290px;
+            width: 45px;
+            height: 90px;
+            background: var(--accent-color);
+            border-radius: 6px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+            border: 3px solid #b59b61;
+            z-index: 10;
+        }
+
+        /* Pages */
+        .page {
+            width: 500px;
+            height: 630px;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            border-radius: 10px;
+            background-color: #f5f0e6;
+            transform-origin: left;
+            transform-style: preserve-3d;
+            transform: rotateY(0deg);
+            transition-duration: 0.5s;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        body.dark-mode .page {
+            background-color: #2a2a2a;
+        }
+
+        .front_page {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            backface-visibility: hidden;
+            border-radius: 10px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        body.dark-mode .front_page {
+            background-color: #2a2a2a;
+            color: #f5f0e6;
+        }
+
+        .front_page label {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            cursor: pointer;
+            z-index: 100;
+
+        }
+
+        .front_cover {
+    background: linear-gradient(145deg, #b14673, #7d274b);
+    border: 4px solid #4a1c2c;
+    overflow: hidden;
+}
+
+/* Gold Decorative Border */
+.front_cover::before {
+    content: "";
+    position: absolute;
+    inset: 15px;
+    border: 3px solid var(--accent-color);
+    border-radius: 12px;
+    pointer-events: none;
+}
+
+/* Inner Glow */
+.front_cover::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.2), transparent 60%);
+    pointer-events: none;
+}
+
+.front_cover .book-title {
+    text-shadow: 
+        0 2px 0 #4a1c2c,
+        0 4px 10px rgba(0,0,0,0.6);
+}
+
+.front_cover .book-subtitle {
+    letter-spacing: 3px;
+    font-style: italic;
+    opacity: 0.85;
+}
+
+.front_cover {
+    background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.15), transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(0,0,0,0.3), transparent 50%),
+        repeating-linear-gradient(
+            45deg,
+            rgba(0,0,0,0.05) 0px,
+            rgba(0,0,0,0.05) 2px,
+            transparent 2px,
+            transparent 6px
+        ),
+        linear-gradient(145deg, #7a1f3f, #4a0f26);
+    border: 4px solid #2a0a15;
+    box-shadow:
+        inset 0 0 40px rgba(0,0,0,0.6),
+        0 40px 70px rgba(0,0,0,0.7);
+    overflow: hidden;
+}
+
+.front_cover::before,
+.front_cover::after {
+    content: "";
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    border: 4px solid #d4af37;
+    border-radius: 12px;
+    box-shadow:
+        inset 0 0 10px rgba(0,0,0,0.6),
+        0 0 15px rgba(212,175,55,0.4);
+}
+
+.front_cover::before {
+    top: 15px;
+    left: 15px;
+    border-right: none;
+    border-bottom: none;
+}
+
+.front_cover::after {
+    bottom: 15px;
+    right: 15px;
+    border-left: none;
+    border-top: none;
+}
+
+.front_cover .book-title {
+    text-shadow:
+        0 2px 0 #5a3b00,
+        0 0 10px rgba(212,175,55,0.6),
+        0 5px 15px rgba(0,0,0,0.6);
+    color: #f5d67b;
+}
+
+.spine {
+    position: absolute;
+    left: -25px;
+    top: 0;
+    width: 25px;
+    height: 100%;
+    background:
+        repeating-linear-gradient(
+            0deg,
+            rgba(0,0,0,0.15) 0px,
+            rgba(0,0,0,0.15) 3px,
+            transparent 3px,
+            transparent 8px
+        ),
+        linear-gradient(to right, #5c2f7a, #2e173d);
+    border-radius: 8px 0 0 8px;
+    box-shadow:
+        inset -5px 0 10px rgba(0,0,0,0.7),
+        5px 0 20px rgba(0,0,0,0.5);
+}
+        .back_page {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            backface-visibility: hidden;
+            transform: rotateY(180deg);
+            border-radius: 10px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        body.dark-mode .back_page {
+            background-color: #2a2a2a;
+            color: #f5f0e6;
+        }
+
+        .back_page label {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            cursor: pointer;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .back_cover::before {
+    content: "";
+    position: absolute;
+    inset: 18px;
+    border: 3px solid #d4af37;
+    border-radius: 14px;
+    box-shadow:
+        inset 0 0 10px rgba(0,0,0,0.6),
+        0 0 12px rgba(212,175,55,0.4);
+    pointer-events: none;
+}
+
+.back_cover::after {
+    content: "";
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    top: 15px;
+    left: 15px;
+    border: 4px solid #d4af37;
+    border-right: none;
+    border-bottom: none;
+    border-radius: 12px;
+    box-shadow:
+        inset 0 0 10px rgba(0,0,0,0.6),
+        0 0 10px rgba(212,175,55,0.5);
+}
+
+.back_cover .corner-br {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    bottom: 15px;
+    right: 15px;
+    border: 4px solid #d4af37;
+    border-left: none;
+    border-top: none;
+    border-radius: 12px;
+    box-shadow:
+        inset 0 0 10px rgba(0,0,0,0.6),
+        0 0 10px rgba(212,175,55,0.5);
+
+        
+}
+
+.back_cover .center-emblem {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 60px;
+    color: rgba(212,175,55,0.25);
+    text-shadow:
+        0 0 15px rgba(212,175,55,0.4),
+        0 5px 20px rgba(0,0,0,0.6);
+    pointer-events: none;
+}
+        /* FIX: Disable front page label when flipped to show back */
+        #page1_checkbox:checked ~ #flip_book #page1 .front_page label {
+            pointer-events: none;
+        }
+
+        #page1_checkbox:checked ~ #flip_book #page1 .back_page label {
+            pointer-events: auto;
+        }
+
+        #page2_checkbox:checked ~ #flip_book #page2 .front_page label {
+            pointer-events: none;
+        }
+
+        #page2_checkbox:checked ~ #flip_book #page2 .back_page label {
+            pointer-events: auto;
+        }
+
+        #page3_checkbox:checked ~ #flip_book #page3 .front_page label {
+            pointer-events: none;
+        }
+
+        #page3_checkbox:checked ~ #flip_book #page3 .back_page label {
+            pointer-events: auto;
+        }
+
+        #page4_checkbox:checked ~ #flip_book #page4 .front_page label {
+            pointer-events: none;
+        }
+
+        #page4_checkbox:checked ~ #flip_book #page4 .back_page label {
+            pointer-events: auto;
+        }
+
+        /* Allow clicks on topic cards to pass through */
+        .back_page .topic-row {
+            position: relative;
+            z-index: 200;
+            pointer-events: auto;
+        }
+
+        .back_page .topic-card {
+            position: relative;
+            z-index: 300;
+            pointer-events: auto;
+        }
+
+        /* Page Content Styling */
+        .page-title {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #5a331a;
+        }
+
+        body.dark-mode .page-title {
+            color: var(--accent-color);
+        }
+
+        .page-subtitle {
+            font-size: 18px;
+            margin-bottom: 30px;
+            opacity: 0.8;
+        }
+
+        .page-divider {
+            width: 60%;
+            height: 3px;
+            background: #5a331a;
+            margin: 20px 0;
+        }
+
+        body.dark-mode .page-divider {
+            background: var(--accent-color);
+        }
+
+        /* Topic Cards */
+        .topic-row {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .topic-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 3px solid #333;
+            cursor: pointer;
+            transition: 0.3s;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            color: #333;
+        }
+
+        body.dark-mode .topic-card {
+            background: #3a3a3a;
+            color: #f5f0e6;
+            border-color: #555;
+        }
+
+        .topic-card:hover {
+            transform: scale(1.05);
+            background: #f0e6d6;
+        }
+
+        body.dark-mode .topic-card:hover {
+            background: #4a4a4a;
+        }
+
+        /* Back Cover */
+        .back_cover {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 18px 10px 10px 18px;
+            background: var(--secondary-color);
+            color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 40px 70px rgba(0, 0, 0, 0.7);
+            position: relative;
+            z-index: -1;
+        }
+
+        /* Z-Index for pages - Updated for 8 pages */
+        #page1 { z-index: 4; }
+        #page2 { z-index: 3; }
+        #page3 { z-index: 2; }
+        #page4 { z-index: 1; }
+        /* Page Flip Animations */
+        #cover_checkbox:checked ~ #flip_book {
+            transform: translateX(250px);
+        }
+
+        #cover_checkbox:checked ~ #flip_book .front_cover {
+            transform: rotateY(-180deg);
+            transition: transform 1.5s, z-index 0.5s 0.5s;
+            z-index: 1;
+        }
+
+        #page1_checkbox:checked ~ #flip_book #page1 {
+    transform: rotateY(-180deg);
+    z-index: 1;
+}
+
+#page2_checkbox:checked ~ #flip_book #page2 {
+    transform: rotateY(-180deg);
+    z-index: 2;
+}
+
+#page3_checkbox:checked ~ #flip_book #page3 {
+    transform: rotateY(-180deg);
+    z-index: 3;
+}
+
+#page4_checkbox:checked ~ #flip_book #page4 {
+    transform: rotateY(-180deg);
+    z-index: 4;
+}
+
+        /* Page Number */
+        .page-number {
+            position: absolute;
+            bottom: 20px;
+            font-size: 14px;
+            opacity: 0.6;
+        }
+
+        .front_page .page-number {
+            right: 20px;
+        }
+
+        .back_page .page-number {
+            left: 20px;
+        }
+
+        /* Instructions */
+        .instructions {
+            position: fixed;
+            bottom: 1rem;
+            font-size: 0.85rem;
+            opacity: 0.7;
+            text-align: center;
+        }
+
+        /* RESPONSIVE WARNING */
+        #responsive-warning {
+            width: 100%;
+            height: 100%;
+            padding: 2rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            font-size: 1rem;
+            text-align: center;
+            z-index: 9999;
+        }
+
+        .warning-icons {
+            font-size: 5rem;
+        }
+
+        @media (max-width: 768px) {
+            #responsive-warning.show {
+                display: flex;
+            }
+            
+            #flip_book, .front_cover, .back_cover, .page, .front_page, .back_page {
+                display: none;
+            }
+        }
+
+/* =========================
+   ✅ FIX: Allow buttons to be clickable
+   ========================= */
+
+.topic-row {
+    position: relative;
+    z-index: 200;
+    pointer-events: auto;
+}
+
+.topic-card {
+    position: relative;
+    z-index: 300;
+    pointer-events: auto;
+}
+
+.back_page .topic-row {
+    pointer-events: auto;
+}
+
+.back_page .topic-card {
+    pointer-events: auto;
+}
+
+/* =========================
+   INFO CONTAINER CSS
+   ========================= */
+
+.info-container {
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    width: 100%;
+}
+
+.info-container.active {
+    max-height: 300px;
+    margin-top: 10px;
+}
+
+.info-box {
+    background: #fff7e6;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 14px;
+    text-align: center;
+    border: 2px solid #5a331a;
+    line-height: 1.6;
+}
+
+body.dark-mode .info-box {
+    background: #3a3a3a;
+    border-color: var(--accent-color);
+    color: #f5f0e6;
+}
+
+/* =========================
+   BACK PAGE INFO BUTTON CLASS
+   ========================= */
+
+.back-page-info-btn {
+    background: #e8d5c4;
+    padding: 20px;
+    border-radius: 12px;
+    border: 3px solid #8b5a2b;
+    cursor: pointer;
+    transition: 0.3s;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    color: #5a331a;
+}
+
+body.dark-mode .back-page-info-btn {
+    background: #4a3f3a;
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.back-page-info-btn:hover {
+    transform: scale(1.05);
+    background: #dcc8b4;
+}
+
+body.dark-mode .back-page-info-btn:hover {
+    background: #5a4f4a;
+}
+
+.back-text {
+    position: relative;
+    font-size: 18px;
+    letter-spacing: 2px;
+    color: #f5d67b;
+    text-shadow:
+        0 2px 0 #5a3b00,
+        0 0 10px rgba(212,175,55,0.6),
+        0 5px 15px rgba(0,0,0,0.6);
+}
+/* =========================
+   ADDITIONAL INFO STYLES (BACK PAGES)
+   ========================= */
+
+.additional-info {
+    text-align: left;
+    max-width: 400px;
+}
+
+.additional-info h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #5a331a;
+}
+
+body.dark-mode .additional-info h3 {
+    color: var(--accent-color);
+}
+
+.additional-info p {
+    font-size: 13px;
+    line-height: 1.8;
+    margin-bottom: 10px;
+}
+
+.additional-info .tip-box {
+    background: #fff;
+    border: 2px dashed #8b5a2b;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+body.dark-mode .additional-info .tip-box {
+    background: #4a3f3a;
+    border-color: var(--accent-color);
+}
+
+.additional-info .tip-box strong {
+    color: #8b5a2b;
+}
+
+body.dark-mode .additional-info .tip-box strong {
+    color: var(--accent-color);
+}
+
+/* Landscape Required Overlay for Mobile */
+.landscape-warning {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  z-index: 9999;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+.landscape-warning .rotate-icon {
+  font-size: 60px;
+  margin-bottom: 20px;
+  animation: rotateHint 1.5s ease-in-out infinite;
+}
+
+.landscape-warning p {
+  font-size: 18px;
+  opacity: 0.9;
+  max-width: 300px;
+}
+
+@keyframes rotateHint {
+  0%, 100% { transform: rotate(-90deg); }
+  50% { transform: rotate(0deg); }
+}
+
+/* Show landscape warning on mobile portrait */
+@media screen and (orientation: portrait) and (max-width: 768px) {
+  .landscape-warning {
+    display: flex;
+  }
+  body {
+    display: none;
+  }
+}
+
+/* Mobile Landscape - Larger Buttons */
+@media screen and (orientation: landscape) and (max-width: 900px) {
+  #flip_book {
+    transform: scale(0.7);
+  }
+  .back-btn, #toggle-mode-btn {
+    width: 3rem;
+    height: 3rem;
+    font-size: 1.8rem;
+  }
+  .topic-card {
+    padding: 25px;
+    font-size: 18px;
+  }
+  .page-title {
+    font-size: 28px;
+  }
+  .page-subtitle {
+    font-size: 14px;
+  }
+  .additional-info p {
+    font-size: 11px;
+  }
+}
+
+</style>
+</head>
+
+<body class="light-mode">
+
+<!-- Landscape Required Overlay for Mobile -->
+<div class="landscape-warning">
+  <div class="rotate-icon">📱</div>
+  <p>Please rotate your device to landscape mode for the best experience!</p>
+</div>
+
+<!-- BACK BUTTON -->
+<button class="back-btn" onclick="window.location.href='skill-test.html'">
+<i class="bi bi-arrow-left"></i>
+</button>
+
+<!-- TOGGLE MODE BUTTON -->
+<button id="toggle-mode-btn">
+<i class="bi bi-moon-stars-fill"></i>
+</button>
+
+<!-- CHECKBOXES FOR FLIP CONTROL - 8 Pages Total -->
+<input type="checkbox" id="cover_checkbox">
+<input type="checkbox" id="page1_checkbox">
+<input type="checkbox" id="page2_checkbox">
+<input type="checkbox" id="page3_checkbox">
+<input type="checkbox" id="page4_checkbox">
+
+<div id="flip_book">
+
+  <!-- FRONT COVER -->
+  <div class="front_cover">
+    <label for="cover_checkbox"></label>
+    <div class="book-title">English</div>
+    <div class="book-subtitle">Language & Literature</div>
+  </div>
+
+  <!-- ================= PAGE 1: GRAMMAR ================= -->
+  <div class="page" id="page1">
+    <!-- FRONT: Grammar Quiz -->
+    <div class="back_page">
+      <label for="page1_checkbox"></label>
+      <div class="page-title">Grammar</div>
+      <div class="page-divider"></div>
+      <div class="page-subtitle">Test Your Knowledge</div>
+
+      <div class="topic-row">
+        <div class="topic-card quiz-btn" data-link="grammarquiz1.html">Start Quiz</div>
+      </div>
+      
+      <div class="page-number">2</div>
+    </div>
+
+    <!-- BACK: Grammar Additional Info -->
+    <div class="front_page">
+      <label for="page1_checkbox"></label>
+      <div class="page-title">Grammar</div>
+      <div class="page-divider"></div>
+      
+      <div class="additional-info">
+        <h3>Key Concepts</h3>
+        <p>• <strong>Parts of Speech:</strong> Nouns, verbs, adjectives, adverbs, pronouns, prepositions, conjunctions, and interjections</p>
+        <p>• <strong>Sentence Structure:</strong> Subject-verb agreement, proper punctuation, and sentence types (simple, compound, complex)</p>
+        <p>• <strong>Tenses:</strong> Present, past, and future tenses in all forms</p>
+        
+        <div class="tip-box">
+          <strong>💡 Study Tip:</strong> Practice writing daily to improve your grammar skills!
+        </div>
+      </div>
+      
+      
+      
+      <div class="page-number">1</div>
+    </div>
+  </div>
+
+  <!-- ================= PAGE 2: READING ================= -->
+  <div class="page" id="page2">
+    <!-- FRONT: Reading Quiz -->
+    <div class="back_page">
+      <label for="page2_checkbox"></label>
+      <div class="page-title">Reading</div>
+      <div class="page-divider"></div>
+      <div class="page-subtitle">Test Your Comprehension</div>
+
+      <div class="topic-row">
+        <div class="topic-card quiz-btn" data-link="quiz-reading.html">Start Quiz</div>
+      </div>
+      
+      <div class="page-number">4</div>
+    </div>
+
+    <!-- BACK: Reading Additional Info -->
+    <div class="front_page">
+      <label for="page2_checkbox"></label>
+      <div class="page-title">Reading</div>
+      <div class="page-divider"></div>
+      
+      <div class="additional-info">
+        <h3>Key Concepts</h3>
+        <p>• <strong>Comprehension:</strong> Understanding main ideas, supporting details, and author's purpose</p>
+        <p>• <strong>Vocabulary:</strong> Building word knowledge through context clues and word structure</p>
+        <p>• <strong>Critical Analysis:</strong> Making inferences, evaluating arguments, and synthesizing information</p>
+        
+        <div class="tip-box">
+          <strong>💡 Study Tip:</strong> Read various genres to expand your understanding and perspective!
+        </div>
+      </div>
+      
+      <div class="page-number">3</div>
+    </div>
+  </div>
+
+  <!-- ================= PAGE 3: WRITING ================= -->
+  <div class="page" id="page3">
+    <!-- FRONT: Writing Quiz -->
+    <div class="back_page">
+      <label for="page3_checkbox"></label>
+      <div class="page-title">Vocabulary</div>
+      <div class="page-divider"></div>
+      <div class="page-subtitle">Test Your Skills</div>
+
+      <div class="topic-row">
+        <div class="topic-card quiz-btn" data-link="quiz-vocabulary.html">Start Quiz</div>
+      </div>
+      
+      <div class="page-number">6</div>
+    </div>
+
+    <!-- BACK: Writing Additional Info -->
+    <div class="front_page">
+      <label for="page3_checkbox"></label>
+      <div class="page-title">Vocabulary</div>
+      <div class="page-divider"></div>
+      
+      <div class="additional-info">
+        <h3>Key Concepts</h3>
+        <p>• <strong>Word Knowledge:</strong> Understanding definitions, synonyms, antonyms, and usage</p>
+        <p>• <strong>Context Clues:</strong> Using surrounding text to determine word meanings</p>
+        <p>• <strong>Word Structure:</strong> Prefixes, suffixes, roots, and compound words</p>
+        
+        <div class="tip-box">
+          <strong>💡 Study Tip:</strong> Consistently learning new words, using them in sentences, and reviewing them regularly is the key to building a strong and lasting vocabulary.
+        </div>
+      </div>
+      
+      <div class="page-number">5</div>
+    </div>
+  </div>
+
+  <!-- ================= PAGE 4: LITERATURE ================= -->
+  <div class="page" id="page4">
+    <!-- FRONT: Literature Quiz -->
+    <div class="back_page">
+      <label for="page4_checkbox"></label>
+      <div class="page-title">Literature</div>
+      <div class="page-divider"></div>
+      <div class="page-subtitle">Test Your Knowledge</div>
+
+      <div class="topic-row">
+        <div class="topic-card quiz-btn" data-link="quiz-literature.html">Start Quiz</div>
+      </div>
+      
+      <div class="page-number">8</div>
+    </div>
+
+    <!-- BACK: Literature Additional Info -->
+    <div class="front_page">
+      <label for="page4_checkbox"></label>
+      <div class="page-title">Literature</div>
+      <div class="page-divider"></div>
+      
+      <div class="additional-info">
+        <h3>Key Concepts</h3>
+        <p>• <strong>Literary Devices:</strong> Metaphor, simile, personification, hyperbole, and more</p>
+        <p>• <strong>Themes & Symbols:</strong> Understanding deeper meanings and recurring motifs</p>
+        <p>• <strong>Genre Analysis:</strong> Poetry, prose, drama, and their unique characteristics</p>
+        
+        <div class="tip-box">
+          <strong>💡 Study Tip:</strong> Connect literature to real-life experiences for deeper understanding!
+        </div>
+      </div>
+      
+      <div class="page-number">7</div>
+    </div>
+  </div>
+
+  <!-- BACK COVER -->
+  <div class="back_cover">
+    <div class="corner-br"></div>
+    <div class="center-emblem">✦</div>
+    <p class="back-text">End of English Flip Book</p>
+</div>
+
+</div>
+
+<script>
+/* =========================
+   RESET FLIP BOOK ON PAGE LOAD
+   ========================= */
+document.addEventListener("DOMContentLoaded", function() {
+  // Reset all flip book checkboxes to unchecked when page loads
+  // This prevents the book from staying "flipped" when returning to the page
+  const checkboxes = document.querySelectorAll('#flip_book input[type="checkbox"]');
+  checkboxes.forEach(checkbox => {
+    checkbox.checked = false;
+  });
+});
+
+/* =========================
+   DARK / LIGHT MODE TOGGLE
+   ========================= */
+const toggleModeBtn = document.getElementById("toggle-mode-btn");
+const body = document.body;
+
+function applyMode(mode) {
+  body.classList.remove("light-mode", "dark-mode");
+  body.classList.add(mode);
+
+  if (mode === "dark-mode") {
+    toggleModeBtn.innerHTML = '<i class="bi bi-sun-fill"></i>';
+  } else {
+    toggleModeBtn.innerHTML = '<i class="bi bi-moon-stars-fill"></i>';
+  }
+}
+
+let savedMode = localStorage.getItem("mode");
+if (savedMode === null) savedMode = "light-mode";
+applyMode(savedMode);
+
+toggleModeBtn.addEventListener("click", function() {
+  let newMode = body.classList.contains("light-mode") ? "dark-mode" : "light-mode";
+  applyMode(newMode);
+  localStorage.setItem("mode", newMode);
+});
+
+/* =========================
+   QUIZ BUTTON REDIRECT
+   ========================= */
+document.querySelectorAll(".quiz-btn").forEach(btn => {
+  btn.addEventListener("click", function(e) {
+    e.stopPropagation(); // stop page flip
+    const link = this.getAttribute("data-link");
+    if (link) {
+      window.location.href = link;
+    }
+  });
+});
+
+/* =========================
+   INFO RETRACTABLE TOGGLE (FRONT PAGES)
+   ========================= */
+document.querySelectorAll(".info-btn").forEach(button => {
+  button.addEventListener("click", function(e) {
+    e.stopPropagation(); // prevent page flip
+    const container = this.nextElementSibling;
+    const box = container.querySelector(".info-box");
+
+    if (container.classList.contains("active")) {
+      container.classList.remove("active");
+    } else {
+      document.querySelectorAll(".info-container").forEach(c => c.classList.remove("active"));
+      box.textContent = this.getAttribute("data-info");
+      container.classList.add("active");
+    }
+  });
+});
+
+/* =========================
+   INFO RETRACTABLE TOGGLE (BACK PAGES)
+   ========================= */
+document.querySelectorAll(".back-page-info-btn").forEach(button => {
+  button.addEventListener("click", function(e) {
+    e.stopPropagation(); // prevent page flip
+    const container = this.nextElementSibling;
+    const box = container.querySelector(".info-box");
+
+    if (container.classList.contains("active")) {
+      container.classList.remove("active");
+    } else {
+      document.querySelectorAll(".info-container").forEach(c => c.classList.remove("active"));
+      box.textContent = this.getAttribute("data-info");
+      container.classList.add("active");
+    }
+  });
+});
+</script>
+
+</body>
+</html>

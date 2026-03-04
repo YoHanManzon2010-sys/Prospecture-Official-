@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Spatial Intelligence</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;font-family:'Fredoka',sans-serif;color:#fff}
+    body{
+      background: url("Background.png") center/cover no-repeat fixed;
+    }
+    .container{
+      width:90%;
+      max-width:1200px;
+      margin:30px auto;
+    }
+    .back-btn{
+      position:absolute;
+      left:20px;
+      top:20px;
+      width:100px;
+      height:100px;
+      border:none;
+      background:transparent;
+      cursor:pointer;
+      transition: transform 0.3s ease;
+    }
+    .back-btn:hover {
+      transform: scale(1.1);
+    }
+    .back-btn img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+    }
+    .card{
+      background: linear-gradient(90deg,#493dd1,#6bb7e3);
+      border-radius:25px;
+      padding:25px;
+      text-align:center;
+      font-size:36px;
+      font-weight:800;
+      margin-bottom:20px;
+      color:#00210a;
+    }
+    .description{
+      font-size:30px;
+      line-height:1.6;
+      font-weight:500;
+      margin-bottom:30px;
+    }
+    .btn{
+      position: fixed;
+      left: 50%;
+      bottom: 40px;
+      transform: translateX(-50%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding:35px 60px;
+      border-radius:50px;
+      background: linear-gradient(90deg,#7a4bff,#4fe2dd);
+      color:#fff;
+      font-size:45px;
+      font-weight:700;
+      text-decoration:none;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+  </style>
+</head>
+<body>
+  <!-- 🔙 Back button to results -->
+  <button class="back-btn" onclick="window.location='result.html'">
+    <img src="career-icon.png" alt="Back to Results">
+  </button>
+
+  <div class="container">
+    <div class="card">Spatial Intelligence</div>
+
+    <div class="description">
+     Spatial intelligence is the ability to visualize and think in images. People strong in this area can imagine shapes, designs, maps, and layouts easily. They are good at drawing, designing, reading maps, and understanding how objects fit together in space.
+
+    <a href="TechPro.html" class="btn">Associated Strands</a>
+  </div>
+</body>
+</html>

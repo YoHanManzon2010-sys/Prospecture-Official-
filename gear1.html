@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Gear Puzzle World</title>
+
+<style>
+/* Unified styling with skill-test page */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", sans-serif;
+  min-height: 100vh;
+  background: url("Background.png") no-repeat center/cover fixed;
+}
+
+/* LEFT TRAY */
+#tray{
+    position:fixed;
+    left:0;
+    top:0;
+    width:200px;
+    height:100vh;
+    background:rgba(26, 26, 26, 0.95);
+    border-right:3px solid #8b5cf6;
+    display:flex;
+    flex-direction:column;
+    z-index:20;
+    box-shadow: 4px 0 15px rgba(139, 92, 246, 0.3);
+}
+
+.trayTitle{
+    color:white;
+    text-align:center;
+    padding:15px 0;
+    border-bottom:2px solid #8b5cf6;
+    font-size:18px;
+    font-weight:bold;
+    flex-shrink:0;
+    background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+#gearContainer{
+    flex:1;
+    overflow-y:auto;
+    padding:10px;
+}
+
+/* Individual gear container */
+.gearBox{
+    width:100%;
+    height:85px;
+    border:2px solid #444;
+    margin-bottom:8px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:#222;
+    overflow:hidden;
+    transition:border-color 0.2s, box-shadow 0.2s;
+    border-radius:8px;
+}
+
+.gearBox:hover{
+    border-color:#00ff88;
+    box-shadow: 0 0 10px rgba(0,255,136,0.3);
+}
+
+/* Make gears relative when inside gearBox (tray) */
+.gearBox .gear {
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+}
+
+/* WORLD */
+#world{
+    position:absolute;
+    left:200px;
+    top:0;
+    width:calc(100vw - 200px);
+    height:100vh;
+    background:
+    radial-gradient(#333 1px, transparent 1px),
+    #2b2b2b;
+    background-size:40px 40px;
+    overflow:hidden;
+}
+
+/* Grid pattern overlay */
+#world::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size:40px 40px;
+    pointer-events:none;
+}
+
+.gear{
+    position:absolute;
+    cursor:pointer;
+    transition:transform 0.1s;
+    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
+}
+
+.gear:hover{
+    filter: drop-shadow(2px 2px 8px rgba(0,255,136,0.5));
+}
+
+.gear.snapping{
+    animation: snapGear 0.3s ease-out;
+}
+
+@keyframes snapGear {
+    0% { transform: scale(1.1); }
+    50% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+}
+
+/* Powered gear glow effect */
+.gear.powered {
+    filter: drop-shadow(0 0 5px rgba(255,255,255,0.3));
+}
+
+/* Particle effects */
+.particle{
+    position:absolute;
+    pointer-events:none;
+    border-radius:50%;
+    animation: particleFade 1s ease-out forwards;
+}
+
+@keyframes particleFade {
+    0% { opacity:1; transform:scale(1); }
+    100% { opacity:0; transform:scale(0); }
+}
+
+#message{
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    font-size:56px;
+    color:#00ff88;
+    z-index:50;
+    pointer-events:none;
+    text-align:center;
+    text-shadow: 0 0 20px #00ff88, 0 0 40px #00ff88;
+    font-family:'Arial Black', sans-serif;
+    letter-spacing: 3px;
+}
+
+/* Level Indicator - RIGHT SIDE */
+#levelIndicator{
+    position:absolute;
+    top:20px;
+    right:40px;
+    font-size:28px;
+    color:white;
+    z-index:50;
+    font-weight:bold;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    background:rgba(0,0,0,0.5);
+    padding:15px 25px;
+    border-radius:10px;
+    border:2px solid #333;
+    backdrop-filter: blur(5px);
+}
+
+#instruction{
+    position:absolute;
+    bottom:20px;
+    left:50%;
+    transform:translateX(-50%);
+    font-size:18px;
+    color:#aaa;
+    z-index:50;
+    text-align:center;
+    background:rgba(0,0,0,0.5);
+    padding:10px 20px;
+    border-radius:20px;
+    backdrop-filter: blur(5px);
+}
+
+/* Audio Button - Bottom Right */
+#audioBtn{
+    position:absolute;
+    bottom:20px;
+    right:40px;
+    font-size:24px;
+    color:white;
+    z-index:50;
+    cursor:pointer;
+    background:rgba(0,0,0,0.5);
+    padding:10px;
+    border-radius:50%;
+    width:40px;
+    height:40px;
+    text-align:center;
+    line-height:30px;
+    border:2px solid #333;
+    transition: background 0.2s, transform 0.2s;
+}
+
+#audioBtn:hover{
+    background:#333;
+    transform: scale(1.1);
+}
+
+/* About Button - Bottom Right */
+#aboutBtn{
+    position:absolute;
+    bottom:20px;
+    right:100px;
+    font-size:24px;
+    color:white;
+    z-index:50;
+    cursor:pointer;
+    background:rgba(0,0,0,0.5);
+    padding:10px;
+    border-radius:50%;
+    width:40px;
+    height:40px;
+    text-align:center;
+    line-height:30px;
+    border:2px solid #333;
+    font-weight:bold;
+    transition: background 0.2s, transform 0.2s;
+}
+
+#aboutBtn:hover{
+    background:#333;
+    transform: scale(1.1);
+}
+
+/* Reset Score Button */
+#resetScoreBtn{
+    position:fixed;
+    bottom:20px;
+    left:20px;
+    width:50px;
+    height:50px;
+    border-radius:50%;
+    border:none;
+    background:rgba(255,255,255,.12);
+    color:#fff;
+    font-size:28px;
+    cursor:pointer;
+    transition: 0.3s;
+    z-index:100;
+}
+
+#resetScoreBtn:hover { background: rgba(255,255,255,0.3); }
+
+/* Modal Styles */
+#aboutModal{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.8);
+    z-index:200;
+    justify-content:center;
+    align-items:center;
+    backdrop-filter: blur(5px);
+}
+
+#aboutModal.show{
+    display:flex;
+}
+
+.modal-content{
+    background:#1a1a1a;
+    border:3px solid #8b5cf6;
+    border-radius:15px;
+    padding:30px;
+    max-width:500px;
+    text-align:center;
+    color:white;
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
+}
+
+.modal-content h2{
+    color:#8b5cf6;
+    margin-top:0;
+    font-size:28px;
+}
+
+.modal-content p{
+    font-size:16px;
+    line-height:1.6;
+    color:#ccc;
+    text-align:left;
+    margin:15px 0;
+}
+
+.modal-content .close-btn{
+    margin-top:20px;
+    padding:12px 30px;
+    font-size:18px;
+    background:#8b5cf6;
+    color:#111;
+    border:none;
+    border-radius:25px;
+    cursor:pointer;
+    font-weight:bold;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.modal-content .close-btn:hover{
+    background:#7c3aed;
+    transform: scale(1.05);
+}
+
+/* Split screen transition */
+.split-overlay{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    z-index:100;
+    pointer-events:none;
+    opacity:0;
+}
+
+.split-left, .split-right{
+    position:absolute;
+    top:0;
+    width:50%;
+    height:100%;
+    background:#111;
+    transition:transform 0.5s ease-in-out;
+}
+
+.split-left{
+    left:0;
+    transform:translateX(-100%);
+}
+
+.split-right{
+    right:0;
+    transform:translateX(100%);
+}
+
+.split-active .split-left{
+    transform:translateX(0);
+}
+
+.split-active .split-right{
+    transform:translateX(0);
+}
+
+.split-active{
+    opacity:1;
+    pointer-events:auto;
+}
+
+/* Gear count indicator */
+#gearCount{
+    position:absolute;
+    top:150px;
+    right:40px;
+    font-size:18px;
+    color:white;
+    z-index:50;
+    background:rgba(0,0,0,0.5);
+    padding:10px 15px;
+    border-radius:8px;
+    border:2px solid #333;
+}
+
+#gearCount span{
+    color:#00ff88;
+    font-weight:bold;
+}
+
+/* Power indicator - as button */
+#powerIndicator{
+    position:absolute;
+    top:200px;
+    right:40px;
+    font-size:18px;
+    color:white;
+    z-index:50;
+    background:rgba(0,0,0,0.5);
+    padding:10px 15px;
+    border-radius:8px;
+    border:2px solid #333;
+    cursor:pointer;
+    transition:background 0.2s, transform 0.2s, border-color 0.2s;
+    user-select:none;
+}
+
+#powerIndicator:hover{
+    background:rgba(50,50,50,0.7);
+    transform:scale(1.05);
+    border-color:#666;
+}
+
+#powerIndicator.power-on{
+    border-color:#00ff88;
+    box-shadow: 0 0 15px rgba(0,255,136,0.4);
+}
+
+#powerIndicator .powered-text{
+    color:#ff4444;
+    font-weight:bold;
+}
+
+#powerIndicator .powered-text.active{
+    color:#00ff88;
+}
+
+/* BACK BUTTON */
+.back-btn {
+    position: fixed;
+    left: 1rem;
+    top: 1rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 1000;
+    transition: background-color 0.3s;
+    color: white;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    #tray {
+        width: 120px;
+    }
+    
+    #world {
+        left: 120px;
+        width: calc(100vw - 120px);
+    }
+    
+    .gearBox {
+        height: 60px;
+    }
+    
+    #levelIndicator {
+        font-size: 18px;
+        right: 20px;
+        padding: 10px 15px;
+    }
+    
+    #instruction {
+        font-size: 14px;
+        bottom: 10px;
+        padding: 8px 15px;
+    }
+    
+    #gearCount {
+        font-size: 14px;
+        right: 20px;
+        top: 100px;
+    }
+    
+    #powerIndicator {
+        font-size: 14px;
+        right: 20px;
+        top: 140px;
+        padding: 8px 12px;
+    }
+    
+    #audioBtn, #aboutBtn {
+        width: 35px;
+        height: 35px;
+        font-size: 18px;
+        bottom: 10px;
+    }
+    
+    #aboutBtn {
+        right: 70px;
+    }
+    
+    #audioBtn {
+        right: 15px;
+    }
+    
+    #message {
+        font-size: 32px;
+    }
+    
+    .back-btn {
+        width: 2rem;
+        height: 2rem;
+        font-size: 1.2rem;
+    }
+    
+    #resetScoreBtn {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    #tray {
+        width: 80px;
+    }
+    
+    #world {
+        left: 80px;
+        width: calc(100vw - 80px);
+    }
+    
+    .gearBox {
+        height: 50px;
+    }
+    
+    .trayTitle {
+        font-size: 12px;
+        padding: 10px 0;
+    }
+    
+    #levelIndicator {
+        font-size: 14px;
+        right: 10px;
+        top: 10px;
+        padding: 8px 10px;
+    }
+    
+    #instruction {
+        font-size: 12px;
+        bottom: 5px;
+        padding: 6px 10px;
+    }
+    
+    #gearCount {
+        font-size: 12px;
+        right: 10px;
+        top: 70px;
+        padding: 6px 8px;
+    }
+    
+    #powerIndicator {
+        font-size: 12px;
+        right: 10px;
+        top: 100px;
+        padding: 6px 8px;
+    }
+    
+    #audioBtn, #aboutBtn {
+        width: 30px;
+        height: 30px;
+        font-size: 14px;
+        bottom: 5px;
+    }
+    
+    #aboutBtn {
+        right: 50px;
+    }
+    
+    #audioBtn {
+        right: 10px;
+    }
+    
+    #message {
+        font-size: 24px;
+    }
+    
+    .back-btn {
+        width: 1.8rem;
+        height: 1.8rem;
+        font-size: 1rem;
+    }
+    
+    #resetScoreBtn {
+        width: 35px;
+        height: 35px;
+        font-size: 18px;
+        left: 10px;
+        bottom: 10px;
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .gearBox:hover {
+        border-color: #444;
+    }
+    
+    .gear:hover {
+        filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
+    }
+    
+    .gear:active {
+        filter: drop-shadow(2px 2px 8px rgba(0,255,136,0.5));
+    }
+    
+    #audioBtn:hover, #aboutBtn:hover {
+        background: rgba(0,0,0,0.5);
+        transform: none;
+    }
+}
+</style>
+</head>
+
+<body>
+<!-- BACK BUTTON -->
+<button class="back-btn" onclick="window.location.href='skill-test.html'">←</button>
+
+<div id="tray">
+    <div class="trayTitle">GEARS</div>
+    <div id="gearContainer"></div>
+</div>
+
+<div id="world"></div>
+<div id="message"></div>
+<div id="levelIndicator">Level 1<br><span style="font-size:16px;color:#888">First Steps</span></div>
+<div id="instruction">Drag ALL gears to connect green to red!</div>
+<div id="gearCount">Gears: <span id="gearsPlaced">0</span> / <span id="gearsTotal">0</span></div>
+<div id="powerIndicator">Power: <span class="powered-text" id="powerStatus">OFF</span></div>
+
+<!-- Audio Button - Bottom Right -->
+<div id="audioBtn" onclick="toggleAudio()">🔊</div>
+
+<!-- About Button - Bottom Right -->
+<div id="aboutBtn" onclick="showAbout()">?</div>
+
+
+
+<!-- About Modal -->
+<div id="aboutModal" onclick="closeAbout(event)">
+    <div class="modal-content">
+        <h2>How to Play</h2>
+        <p>🎯 <strong>Goal:</strong> Connect the GREEN gear to the RED gear using all available gears!</p>
+        <p>🖱️ <strong>Drag</strong> gears from the left tray to the game area.</p>
+        <p>⚡ <strong>Power:</strong> Click the Power button to start the gears spinning!</p>
+        <p>🔗 <strong>Connect:</strong> Place gears close to each other - they will snap together!</p>
+        <p>🌟 <strong>Tip:</strong> Use all gears and make sure power reaches the red gear to win!</p>
+        <p>🎵 <strong>Sound:</strong> Toggle sound on/off using the speaker button.</p>
+        <hr style="border-color: #333; margin: 15px 0;">
+        <p style="text-align: center;"><strong>Current Progress:</strong> Level <span id="currentLevelDisplay">1</span></p>
+        <button class="close-btn" onclick="closeAbout(event)">Got it!</button>
+    </div>
+</div>
+
+<!-- Split screen overlay for level transition -->
+<div class="split-overlay" id="splitOverlay">
+    <div class="split-left"></div>
+    <div class="split-right"></div>
+</div>
+
+<script>
+
+/* ================= CORE ================= */
+let objects=[];
+let level=1;
+let solved=false;
+let holdingStarter=false;
+let spinningGears=new Set();
+let levelTransitioning=false;
+let soundEnabled=true;
+let powerOn=false;
+
+const audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+
+function playSnapSound(){
+    if(!soundEnabled) return;
+    const osc=audioCtx.createOscillator();
+    const gain=audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.frequency.value=800;
+    osc.type="square";
+    gain.gain.setValueAtTime(0.1,audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+0.1);
+    osc.start();
+    osc.stop(audioCtx.currentTime+0.1);
+}
+
+function playWinSound(){
+    if(!soundEnabled) return;
+    const notes=[523,659,784,1047];
+    notes.forEach((freq,i)=>{
+        setTimeout(()=>{
+            const osc=audioCtx.createOscillator();
+            const gain=audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.value=freq;
+            osc.type="sine";
+            gain.gain.setValueAtTime(0.2,audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+0.3);
+            osc.start();
+            osc.stop(audioCtx.currentTime+0.3);
+        },i*100);
+    });
+}
+
+function playConnectSound(){
+    if(!soundEnabled) return;
+    const osc=audioCtx.createOscillator();
+    const gain=audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.frequency.value=400;
+    osc.type="sine";
+    gain.gain.setValueAtTime(0.05,audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+0.15);
+    osc.start();
+    osc.stop(audioCtx.currentTime+0.15);
+}
+
+function toggleAudio(){
+    soundEnabled=!soundEnabled;
+    document.getElementById("audioBtn").textContent=soundEnabled?"🔊":"🔇";
+}
+
+function showAbout(){
+    // Update current level display
+    const currentLevelSpan = document.getElementById("currentLevelDisplay");
+    if(currentLevelSpan) {
+        const savedScore = localStorage.getItem("gameLogicScore");
+        currentLevelSpan.textContent = savedScore ? savedScore : "1";
+    }
+    document.getElementById("aboutModal").classList.add("show");
+}
+
+function closeAbout(event){
+    if(event.target.id === "aboutModal" || event.target.classList.contains("close-btn")){
+        document.getElementById("aboutModal").classList.remove("show");
+    }
+}
+
+/* ================= RESET SCORE ================= */
+function resetGameScore(){
+    if(confirm("Are you sure you want to reset your game progress? This will set you back to Level 1.")){
+        localStorage.removeItem("gameLogicScore");
+        level = 1;
+        loadLevel(1);
+        alert("Game progress has been reset!");
+    }
+}
+
+/* ================= POWER TOGGLE ================= */
+function togglePower(){
+    powerOn = !powerOn;
+    
+    const powerIndicator = document.getElementById("powerIndicator");
+    const powerStatus = document.getElementById("powerStatus");
+    
+    if(powerOn){
+        powerIndicator.classList.add("power-on");
+        powerStatus.textContent = "ON";
+        powerStatus.classList.add("active");
+    } else {
+        powerIndicator.classList.remove("power-on");
+        powerStatus.textContent = "OFF";
+        powerStatus.classList.remove("active");
+        
+        holdingStarter = false;
+        spinningGears.clear();
+        objects.forEach(o => {
+            o.speed = 0;
+            o.powered = false;
+            o.isSpinning = false;
+            o.element.classList.remove("powered");
+        });
+    }
+}
+
+// Add click event to power indicator
+document.getElementById("powerIndicator").addEventListener("click", togglePower);
+
+const world=document.getElementById("world");
+const message=document.getElementById("message");
+const levelIndicator=document.getElementById("levelIndicator");
+const instruction=document.getElementById("instruction");
+const gearContainer=document.getElementById("gearContainer");
+const splitOverlay=document.getElementById("splitOverlay");
+
+/* ================= CREATE GEAR ================= */
+function createGear(size,teeth,x,y,type="normal",fromTray=false){
+
+    const svgNS="http://www.w3.org/2000/svg";
+    const svg=document.createElementNS(svgNS,"svg");
+    svg.setAttribute("width",size);
+    svg.setAttribute("height",size);
+    svg.setAttribute("viewBox","-100 -100 200 200");
+    svg.classList.add("gear");
+
+    const group=document.createElementNS(svgNS,"g");
+
+    let color="#d4a017";
+    if(type==="starter") color="#33dd55";
+    if(type==="goal") color="#ff4444";
+    if(type==="golden") color="#ffd700";
+    if(type==="diamond") color="#00ffff";
+    if(type==="ruby") color="#ff0066";
+    if(type==="emerald") color="#50C878";
+    if(type==="sapphire") color="#0F52BA";
+    if(type==="amethyst") color="#9966CC";
+    if(type==="obsidian") color="#1A1A2E";
+    if(type==="platinum") color="#E5E4E2";
+    if(type==="titanium") color="#878681";
+    if(type==="crystal") color="#A7D1D3";
+    if(type==="nebula") color="#4B0082";
+    if(type==="quantum") color="#00FF80";
+    if(type==="void") color="#000000";
+    if(type==="galactic") color="#1E90FF";
+    if(type==="cosmic") color="#FF1493";
+    if(type==="stellar") color="#FFD700";
+    if(type==="infinity") color="#800080";
+    if(type==="legendary") color="#FF6B35";
+
+    for(let i=0;i<teeth;i++){
+        const rect=document.createElementNS(svgNS,"rect");
+        rect.setAttribute("x",-6);
+        rect.setAttribute("y",-100);
+        rect.setAttribute("width",12);
+        rect.setAttribute("height",30);
+        rect.setAttribute("fill",color);
+        rect.setAttribute("rx",2);
+        rect.setAttribute("transform",`rotate(${360/teeth*i})`);
+        group.appendChild(rect);
+    }
+
+    const circle=document.createElementNS(svgNS,"circle");
+    circle.setAttribute("r",80);
+    circle.setAttribute("fill",color);
+
+    const innerCircle=document.createElementNS(svgNS,"circle");
+    innerCircle.setAttribute("r",50);
+    innerCircle.setAttribute("fill",darkenColor(color,10));
+
+    const hole=document.createElementNS(svgNS,"circle");
+    hole.setAttribute("r",25);
+    hole.setAttribute("fill","#111");
+    
+    const rim=document.createElementNS(svgNS,"circle");
+    rim.setAttribute("r",82);
+    rim.setAttribute("fill","none");
+    rim.setAttribute("stroke",lightenColor(color,20));
+    rim.setAttribute("stroke-width",3);
+
+    group.appendChild(rim);
+    group.appendChild(circle);
+    group.appendChild(innerCircle);
+    group.appendChild(hole);
+    svg.appendChild(group);
+
+    const gear={
+        element:svg,
+        group:group,
+        size:size,
+        teeth:teeth,
+        x:x,
+        y:y,
+        angle:0,
+        speed:0,
+        connections:[],
+        type:type,
+        powered:false,
+        placed:!fromTray,
+        isSpinning:false,
+        torqueLimit:size>80?4:(size>50?3:2)
+    };
+
+    if(fromTray){
+        const container=document.createElement("div");
+        container.className="gearBox";
+        svg.classList.add("trayGear");
+        container.appendChild(svg);
+        gearContainer.appendChild(container);
+    } else {
+        svg.style.left=x+"px";
+        svg.style.top=y+"px";
+        world.appendChild(svg);
+    }
+
+    makeDraggable(gear);
+    objects.push(gear);
+    
+    updateGearCount();
+}
+
+function lightenColor(hex, percent) {
+    const num = parseInt(hex.replace('#',''), 16);
+    const amt = Math.round(2.55 * percent);
+    const R = Math.min(255, (num >> 16) + amt);
+    const G = Math.min(255, ((num >> 8) & 0x00FF) + amt);
+    const B = Math.min(255, (num & 0x0000FF) + amt);
+    return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+}
+
+function darkenColor(hex, percent) {
+    const num = parseInt(hex.replace('#',''), 16);
+    const amt = Math.round(2.55 * percent);
+    const R = Math.max(0, (num >> 16) - amt);
+    const G = Math.max(0, ((num >> 8) & 0x00FF) - amt);
+    const B = Math.max(0, (num & 0x0000FF) - amt);
+    return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+}
+
+function makeDraggable(obj){
+    let dragging=false;
+    let startX, startY;
+    let touchId = null;
+
+    // Mouse events
+    obj.element.onmousedown=e=>{
+        if(obj.type==="starter" || obj.type==="goal") return;
+        if(levelTransitioning) return;
+        
+        dragging=true;
+        startX=e.clientX;
+        startY=e.clientY;
+        
+        if(obj.element.parentElement && obj.element.parentElement.classList.contains("gearBox")){
+            obj.element.parentElement.remove();
+            world.appendChild(obj.element);
+            obj.placed=true;
+            obj.x=e.clientX - 200 - obj.size/2;
+            obj.y=e.clientY - obj.size/2;
+            obj.element.style.left=obj.x+"px";
+            obj.element.style.top=obj.y+"px";
+            updateGearCount();
+        }
+    };
+
+    window.addEventListener("mousemove",e=>{
+        if(!dragging) return;
+        const dx=e.clientX-startX;
+        const dy=e.clientY-startY;
+        startX=e.clientX;
+        startY=e.clientY;
+        obj.x+=dx;
+        obj.y+=dy;
+        obj.element.style.left=obj.x+"px";
+        obj.element.style.top=obj.y+"px";
+    });
+
+    window.addEventListener("mouseup",()=>{
+        if(!dragging) return;
+        dragging=false;
+        checkSnap(obj);
+    });
+
+    // Touch events for mobile/tablet
+    obj.element.addEventListener("touchstart", e => {
+        if(obj.type==="starter" || obj.type==="goal") return;
+        if(levelTransitioning) return;
+        
+        e.preventDefault();
+        const touch = e.touches[0];
+        touchId = touch.identifier;
+        dragging=true;
+        startX=touch.clientX;
+        startY=touch.clientY;
+        
+        if(obj.element.parentElement && obj.element.parentElement.classList.contains("gearBox")){
+            obj.element.parentElement.remove();
+            world.appendChild(obj.element);
+            obj.placed=true;
+            // Account for tray width on mobile
+            const trayWidth = window.innerWidth <= 480 ? 80 : (window.innerWidth <= 768 ? 120 : 200);
+            obj.x=touch.clientX - trayWidth - obj.size/2;
+            obj.y=touch.clientY - obj.size/2;
+            obj.element.style.left=obj.x+"px";
+            obj.element.style.top=obj.y+"px";
+            updateGearCount();
+        }
+    }, { passive: false });
+
+    obj.element.addEventListener("touchmove", e => {
+        if(!dragging) return;
+        e.preventDefault();
+        
+        const touch = Array.from(e.touches).find(t => t.identifier === touchId) || e.touches[0];
+        if (!touch) return;
+        
+        const dx=touch.clientX-startX;
+        const dy=touch.clientY-startY;
+        startX=touch.clientX;
+        startY=touch.clientY;
+        obj.x+=dx;
+        obj.y+=dy;
+        obj.element.style.left=obj.x+"px";
+        obj.element.style.top=obj.y+"px";
+    }, { passive: false });
+
+    obj.element.addEventListener("touchend", e => {
+        if(!dragging) return;
+        dragging=false;
+        touchId = null;
+        checkSnap(obj);
+    });
+    
+    obj.element.addEventListener("touchcancel", e => {
+        dragging=false;
+        touchId = null;
+    });
+}
+
+function checkSnap(gear){
+    objects.forEach(other=>{
+        if(other===gear || other.type==="starter" || other.type==="goal") return;
+        
+        const dx=gear.x - other.x;
+        const dy=gear.y - other.y;
+        const dist=Math.sqrt(dx*dx + dy*dy);
+        const idealDist=(gear.size + other.size)/2;
+        
+        if(Math.abs(dist - idealDist) < 50){
+            const snapX=other.x + (dx/dist) * idealDist;
+            const snapY=other.y + (dy/dist) * idealDist;
+            
+            gear.x=snapX;
+            gear.y=snapY;
+            gear.element.style.left=gear.x + "px";
+            gear.element.style.top=gear.y + "px";
+            
+            gear.element.classList.add("snapping");
+            setTimeout(()=>gear.element.classList.remove("snapping"),300);
+            
+            playSnapSound();
+            playConnectSound();
+        }
+    });
+}
+
+function connectAll(){
+    objects.forEach(o=>o.connections=[]);
+    objects.forEach(a=>{
+        objects.forEach(b=>{
+            if(a===b) return;
+            const dx=a.x-b.x;
+            const dy=a.y-b.y;
+            const dist=Math.sqrt(dx*dx+dy*dy);
+            if(Math.abs(dist-(a.size/2+b.size/2))<38){
+                const ratio=a.teeth/b.teeth;
+                if(ratio>0.5 && ratio<2){
+                    a.connections.push(b);
+                }
+            }
+        });
+    });
+}
+
+function updatePhysics(){
+    objects.forEach(o=>{
+        if(!spinningGears.has(o)){
+            o.powered=false;
+            o.speed=0;
+        }
+        o.element.classList.remove("powered");
+    });
+
+    const starter=objects.find(o=>o.type==="starter");
+    
+    if(!powerOn || !starter) return;
+
+    starter.powered=true;
+    starter.speed=2;
+    starter.element.classList.add("powered");
+
+    const queue=[starter];
+
+    while(queue.length){
+        const current=queue.shift();
+        current.connections.forEach(neighbor=>{
+            if(!neighbor.powered && !spinningGears.has(neighbor)){
+                const torque=-current.speed*(current.teeth/neighbor.teeth);
+                
+                if(Math.abs(torque) > neighbor.torqueLimit){
+                    neighbor.powered=true;
+                    neighbor.speed=Math.sign(torque) * neighbor.torqueLimit * 0.5;
+                } else {
+                    neighbor.powered=true;
+                    neighbor.speed=torque;
+                }
+                neighbor.element.classList.add("powered");
+                queue.push(neighbor);
+            }
+        });
+    }
+}
+
+function updateGearCount(){
+    const levelData=levels[Math.min(level,25)] || levels[25];
+    const totalGears=levelData.gears.length;
+    const placedGears=objects.filter(o=>o.type!=="starter" && o.type!=="goal" && o.placed).length;
+    
+    document.getElementById("gearsPlaced").textContent=placedGears;
+    document.getElementById("gearsTotal").textContent=totalGears;
+}
+
+function createWinParticles(){
+    const colors=["#00ff88","#ffd700","#ff4444","#4488ff","#ff44ff","#00ffff"];
+    const goal=objects.find(o=>o.type==="goal");
+    if(!goal) return;
+    
+    for(let i=0;i<60;i++){
+        const particle=document.createElement("div");
+        particle.className="particle";
+        
+        const size=Math.random()*25 + 10;
+        const angle=Math.random() * Math.PI * 2;
+        const distance=Math.random()*350 + 100;
+        const duration=Math.random()*0.5 + 0.5;
+        
+        particle.style.width=size + "px";
+        particle.style.height=size + "px";
+        particle.style.background=colors[Math.floor(Math.random()*colors.length)];
+        particle.style.left=goal.x + goal.size/2 + "px";
+        particle.style.top=goal.y + goal.size/2 + "px";
+        particle.style.animationDuration=duration + "s";
+        
+        world.appendChild(particle);
+        
+        setTimeout(()=>{
+            particle.style.transform=`translate(${Math.cos(angle)*distance}px, ${Math.sin(angle)*distance}px)`;
+        },10);
+        
+        setTimeout(()=>particle.remove(),duration*1000);
+    }
+}
+
+function triggerLevelTransition(callback){
+    splitOverlay.classList.add("split-active");
+    
+    setTimeout(()=>{
+        callback();
+        setTimeout(()=>{
+            splitOverlay.classList.remove("split-active");
+        },300);
+    },500);
+}
+
+function getRandomPosition(isStart, gearSize = 140, gap = 200){
+    const margin = gearSize / 2 + 30;
+    const worldWidth = world.clientWidth;
+    const worldHeight = world.clientHeight;
+    
+    const worldLeft = margin;
+    const worldRight = worldWidth - margin;
+    const worldTop = margin;
+    const worldBottom = worldHeight - margin;
+    
+    let x, y;
+    
+    if(isStart){
+        // Place starter gear on the left side, closer to center based on gap
+        x = Math.random() * (worldRight * 0.35 - worldLeft) + worldLeft;
+        y = Math.random() * (worldBottom - worldTop) + worldTop;
+    } else {
+        // Place goal gear on the right side, closer to starter based on gap
+        x = worldRight - gap + Math.random() * (gap * 0.5);
+        y = Math.random() * (worldBottom - worldTop) + worldTop;
+    }
+    
+    // Ensure gears stay within bounds
+    x = Math.max(worldLeft, Math.min(x, worldRight));
+    y = Math.max(worldTop, Math.min(y, worldBottom));
+    
+    return {x:x, y:y};
+}
+
+/* ================= LEVELS ================= */
+const levels={
+    1:{name:"First Steps",gears:[
+        {size:150,teeth:22},{size:150,teeth:22}, {size:150,teeth:22},{size:120,teeth:16}, {size:100,teeth:14}, {size:100,teeth:14}, {size:100,teeth:14} 
+    ],gap:10},
+    2:{name:"Getting Started",gears:[
+        {size:70,teeth:12},{size:90,teeth:15},{size:70,teeth:12},{size:90,teeth:15},{size:70,teeth:12}, {size:70,teeth:12},{size:90,teeth:15},{size:70,teeth:12},{size:90,teeth:15},{size:70,teeth:12},{size:70,teeth:12},{size:90,teeth:15}
+    ],gap:220},
+    3:{name:"Zigzag",gears:[
+        {size:60,teeth:10},{size:80,teeth:14},{size:60,teeth:10},{size:80,teeth:14},
+        {size:60,teeth:10},{size:80,teeth:14},{size:60,teeth:10}
+    ],gap:280},
+    4:{name:"Chain Reaction",gears:[
+        {size:50,teeth:9},{size:70,teeth:12},{size:90,teeth:15},{size:50,teeth:9},
+        {size:70,teeth:12},{size:90,teeth:15},{size:50,teeth:9},{size:70,teeth:12},{size:90,teeth:15}
+    ],gap:340},
+    5:{name:"Branching Out",gears:[
+        {size:45,teeth:8},{size:65,teeth:11},{size:85,teeth:14},{size:45,teeth:8},
+        {size:65,teeth:11},{size:85,teeth:14},{size:45,teeth:8},{size:65,teeth:11},
+        {size:85,teeth:14},{size:45,teeth:8},{size:65,teeth:11}
+    ],gap:400},
+    6:{name:"Golden Glory",gears:[
+        {size:50,teeth:9,golden:true},{size:70,teeth:12},{size:90,teeth:15},
+        {size:50,teeth:9,golden:true},{size:70,teeth:12},{size:90,teeth:15},
+        {size:50,teeth:9,golden:true},{size:70,teeth:12},{size:90,teeth:15},
+        {size:50,teeth:9,golden:true},{size:70,teeth:12},{size:90,teeth:15}
+    ],golden:true,gap:450},
+    7:{name:"Expert Challenge",gears:[
+        {size:40,teeth:7},{size:60,teeth:10},{size:80,teeth:13},{size:40,teeth:7},
+        {size:60,teeth:10},{size:80,teeth:13},{size:40,teeth:7},{size:60,teeth:10},
+        {size:80,teeth:13},{size:40,teeth:7},{size:60,teeth:10},{size:80,teeth:13},
+        {size:40,teeth:7},{size:60,teeth:10},{size:80,teeth:13}
+    ],gap:500},
+    8:{name:"Diamond Master",gears:[
+        {size:35,teeth:6,diamond:true},{size:55,teeth:9},{size:75,teeth:12},{size:35,teeth:6,diamond:true},
+        {size:55,teeth:9},{size:75,teeth:12},{size:35,teeth:6,diamond:true},{size:55,teeth:9},
+        {size:75,teeth:12},{size:35,teeth:6,diamond:true},{size:55,teeth:9},{size:75,teeth:12},
+        {size:35,teeth:6,diamond:true},{size:55,teeth:9},{size:75,teeth:12},{size:35,teeth:6,diamond:true},
+        {size:55,teeth:9},{size:75,teeth:12}
+    ],diamond:true,gap:550},
+    9:{name:"Ruby Extreme",gears:[
+        {size:30,teeth:5,ruby:true},{size:50,teeth:8},{size:70,teeth:11},{size:30,teeth:5,ruby:true},
+        {size:50,teeth:8},{size:70,teeth:11},{size:30,teeth:5,ruby:true},{size:50,teeth:8},
+        {size:70,teeth:11},{size:30,teeth:5,ruby:true},{size:50,teeth:8},{size:70,teeth:11},
+        {size:30,teeth:5,ruby:true},{size:50,teeth:8},{size:70,teeth:11},{size:30,teeth:5,ruby:true},
+        {size:50,teeth:8},{size:70,teeth:11}
+    ],ruby:true,gap:600},
+    10:{name:"Ultimate Gear",gears:[
+        {size:25,teeth:4},{size:45,teeth:7},{size:65,teeth:10},{size:25,teeth:4},
+        {size:45,teeth:7},{size:65,teeth:10},{size:25,teeth:4},{size:45,teeth:7},
+        {size:65,teeth:10},{size:25,teeth:4},{size:45,teeth:7},{size:65,teeth:10},
+        {size:25,teeth:4},{size:45,teeth:7},{size:65,teeth:10},{size:25,teeth:4},
+        {size:45,teeth:7},{size:65,teeth:10},{size:25,teeth:4},{size:45,teeth:7},
+        {size:65,teeth:10},{size:25,teeth:4},{size:45,teeth:7},{size:65,teeth:10}
+    ],gap:700},
+    11:{name:"Emerald Express",gears:[
+        {size:55,teeth:9,emerald:true},{size:75,teeth:12},{size:95,teeth:15},{size:55,teeth:9,emerald:true},
+        {size:75,teeth:12},{size:95,teeth:15},{size:55,teeth:9,emerald:true},{size:75,teeth:12},
+        {size:95,teeth:15},{size:55,teeth:9,emerald:true},{size:75,teeth:12},{size:95,teeth:15},
+        {size:55,teeth:9,emerald:true},{size:75,teeth:12},{size:95,teeth:15},{size:55,teeth:9,emerald:true},
+        {size:75,teeth:12},{size:95,teeth:15},{size:55,teeth:9,emerald:true},{size:75,teeth:12}
+    ],emerald:true,gap:500},
+    12:{name:"Sapphire Storm",gears:[
+        {size:45,teeth:8,sapphire:true},{size:65,teeth:11},{size:85,teeth:14},{size:45,teeth:8,sapphire:true},
+        {size:65,teeth:11},{size:85,teeth:14},{size:45,teeth:8,sapphire:true},{size:65,teeth:11},
+        {size:85,teeth:14},{size:45,teeth:8,sapphire:true},{size:65,teeth:11},{size:85,teeth:14},
+        {size:45,teeth:8,sapphire:true},{size:65,teeth:11},{size:85,teeth:14},{size:45,teeth:8,sapphire:true},
+        {size:65,teeth:11},{size:85,teeth:14},{size:45,teeth:8,sapphire:true},{size:65,teeth:11},
+        {size:85,teeth:14},{size:45,teeth:8,sapphire:true},{size:65,teeth:11}
+    ],sapphire:true,gap:550},
+    13:{name:"Amethyst Arena",gears:[
+        {size:40,teeth:7,amethyst:true},{size:60,teeth:10},{size:80,teeth:13},{size:40,teeth:7,amethyst:true},
+        {size:60,teeth:10},{size:80,teeth:13},{size:40,teeth:7,amethyst:true},{size:60,teeth:10},
+        {size:80,teeth:13},{size:40,teeth:7,amethyst:true},{size:60,teeth:10},{size:80,teeth:13},
+        {size:40,teeth:7,amethyst:true},{size:60,teeth:10},{size:80,teeth:13},{size:40,teeth:7,amethyst:true},
+        {size:60,teeth:10},{size:80,teeth:13},{size:40,teeth:7,amethyst:true},{size:60,teeth:10},
+        {size:80,teeth:13},{size:40,teeth:7,amethyst:true},{size:60,teeth:10}
+    ],amethyst:true,gap:600},
+    14:{name:"Obsidian Overload",gears:[
+        {size:35,teeth:6,obsidian:true},{size:55,teeth:9},{size:75,teeth:12},{size:35,teeth:6,obsidian:true},
+        {size:55,teeth:9},{size:75,teeth:12},{size:35,teeth:6,obsidian:true},{size:55,teeth:9},
+        {size:75,teeth:12},{size:35,teeth:6,obsidian:true},{size:55,teeth:9},{size:75,teeth:12},
+        {size:35,teeth:6,obsidian:true},{size:55,teeth:9},{size:75,teeth:12},{size:35,teeth:6,obsidian:true},
+        {size:55,teeth:9},{size:75,teeth:12},{size:35,teeth:6,obsidian:true},{size:55,teeth:9},
+        {size:75,teeth:12},{size:35,teeth:6,obsidian:true},{size:55,teeth:9},{size:75,teeth:12}
+    ],obsidian:true,gap:650},
+    15:{name:"Platinum Puzzle",gears:[
+        {size:50,teeth:9,platinum:true},{size:70,teeth:12},{size:90,teeth:15},{size:50,teeth:9,platinum:true},
+        {size:70,teeth:12},{size:90,teeth:15},{size:50,teeth:9,platinum:true},{size:70,teeth:12},
+        {size:90,teeth:15},{size:50,teeth:9,platinum:true},{size:70,teeth:12},{size:90,teeth:15},
+        {size:50,teeth:9,platinum:true},{size:70,teeth:12},{size:90,teeth:15},{size:50,teeth:9,platinum:true},
+        {size:70,teeth:12},{size:90,teeth:15},{size:50,teeth:9,platinum:true},{size:70,teeth:12},
+        {size:90,teeth:15},{size:50,teeth:9,platinum:true},{size:70,teeth:12},{size:90,teeth:15}
+    ],platinum:true,gap:600},
+    16:{name:"Titanium Trial",gears:[
+        {size:30,teeth:5,titanium:true},{size:50,teeth:8},{size:70,teeth:11},{size:30,teeth:5,titanium:true},
+        {size:50,teeth:8},{size:70,teeth:11},{size:30,teeth:5,titanium:true},{size:50,teeth:8},
+        {size:70,teeth:11},{size:30,teeth:5,titanium:true},{size:50,teeth:8},{size:70,teeth:11},
+        {size:30,teeth:5,titanium:true},{size:50,teeth:8},{size:70,teeth:11},{size:30,teeth:5,titanium:true},
+        {size:50,teeth:8},{size:70,teeth:11},{size:30,teeth:5,titanium:true},{size:50,teeth:8},
+        {size:70,teeth:11},{size:30,teeth:5,titanium:true},{size:50,teeth:8},{size:70,teeth:11},
+        {size:30,teeth:5,titanium:true},{size:50,teeth:8},{size:70,teeth:11}
+    ],titanium:true,gap:700},
+    17:{name:"Crystal Cascade",gears:[
+        {size:45,teeth:8,crystal:true},{size:65,teeth:11},{size:85,teeth:14},{size:45,teeth:8,crystal:true},
+        {size:65,teeth:11},{size:85,teeth:14},{size:45,teeth:8,crystal:true},{size:65,teeth:11},
+        {size:85,teeth:14},{size:45,teeth:8,crystal:true},{size:65,teeth:11},{size:85,teeth:14},
+        {size:45,teeth:8,crystal:true},{size:65,teeth:11},{size:85,teeth:14},{size:45,teeth:8,crystal:true},
+        {size:65,teeth:11},{size:85,teeth:14},{size:45,teeth:8,crystal:true},{size:65,teeth:11},
+        {size:85,teeth:14},{size:45,teeth:8,crystal:true},{size:65,teeth:11},{size:85,teeth:14}
+    ],crystal:true,gap:650},
+    18:{name:"Nebula Nexus",gears:[
+        {size:35,teeth:6,nebula:true},{size:55,teeth:9},{size:75,teeth:12},{size:35,teeth:6,nebula:true},
+        {size:55,teeth:9},{size:75,teeth:12},{size:35,teeth:6,nebula:true},{size:55,teeth:9},
+        {size:75,teeth:12},{size:35,teeth:6,nebula:true},{size:55,teeth:9},{size:75,teeth:12},
+        {size:35,teeth:6,nebula:true},{size:55,teeth:9},{size:75,teeth:12},{size:35,teeth:6,nebula:true},
+        {size:55,teeth:9},{size:75,teeth:12},{size:35,teeth:6,nebula:true},{size:55,teeth:9},
+        {size:75,teeth:12},{size:35,teeth:6,nebula:true},{size:55,teeth:9},{size:75,teeth:12},
+        {size:35,teeth:6,nebula:true},{size:55,teeth:9},{size:75,teeth:12}
+    ],nebula:true,gap:700},
+    19:{name:"Quantum Quest",gears:[
+        {size:28,teeth:5,quantum:true},{size:48,teeth:8},{size:68,teeth:11},{size:28,teeth:5,quantum:true},
+        {size:48,teeth:8},{size:68,teeth:11},{size:28,teeth:5,quantum:true},{size:48,teeth:8},
+        {size:68,teeth:11},{size:28,teeth:5,quantum:true},{size:48,teeth:8},{size:68,teeth:11},
+        {size:28,teeth:5,quantum:true},{size:48,teeth:8},{size:68,teeth:11},{size:28,teeth:5,quantum:true},
+        {size:48,teeth:8},{size:68,teeth:11},{size:28,teeth:5,quantum:true},{size:48,teeth:8},
+        {size:68,teeth:11},{size:28,teeth:5,quantum:true},{size:48,teeth:8},{size:68,teeth:11},
+        {size:28,teeth:5,quantum:true},{size:48,teeth:8},{size:68,teeth:11},{size:28,teeth:5,quantum:true}
+    ],quantum:true,gap:750},
+    20:{name:"Void Victory",gears:[
+        {size:25,teeth:4,void:true},{size:45,teeth:7},{size:65,teeth:10},{size:25,teeth:4,void:true},
+        {size:45,teeth:7},{size:65,teeth:10},{size:25,teeth:4,void:true},{size:45,teeth:7},
+        {size:65,teeth:10},{size:25,teeth:4,void:true},{size:45,teeth:7},{size:65,teeth:10},
+        {size:25,teeth:4,void:true},{size:45,teeth:7},{size:65,teeth:10},{size:25,teeth:4,void:true},
+        {size:45,teeth:7},{size:65,teeth:10},{size:25,teeth:4,void:true},{size:45,teeth:7},
+        {size:65,teeth:10},{size:25,teeth:4,void:true},{size:45,teeth:7},{size:65,teeth:10},
+        {size:25,teeth:4,void:true},{size:45,teeth:7},{size:65,teeth:10},{size:25,teeth:4,void:true}
+    ],void:true,gap:800},
+    21:{name:"Galactic Grand",gears:[
+        {size:30,teeth:5,galactic:true},{size:50,teeth:8},{size:70,teeth:11},{size:30,teeth:5,galactic:true},
+        {size:50,teeth:8},{size:70,teeth:11},{size:30,teeth:5,galactic:true},{size:50,teeth:8},
+        {size:70,teeth:11},{size:30,teeth:5,galactic:true},{size:50,teeth:8},{size:70,teeth:11},
+        {size:30,teeth:5,galactic:true},{size:50,teeth:8},{size:70,teeth:11},{size:30,teeth:5,galactic:true},
+        {size:50,teeth:8},{size:70,teeth:11},{size:30,teeth:5,galactic:true},{size:50,teeth:8},
+        {size:70,teeth:11},{size:30,teeth:5,galactic:true},{size:50,teeth:8},{size:70,teeth:11},
+        {size:30,teeth:5,galactic:true},{size:50,teeth:8},{size:70,teeth:11}
+    ],galactic:true,gap:750},
+    22:{name:"Cosmic Challenge",gears:[
+        {size:28,teeth:5,cosmic:true},{size:48,teeth:8},{size:68,teeth:11},{size:28,teeth:5,cosmic:true},
+        {size:48,teeth:8},{size:68,teeth:11},{size:28,teeth:5,cosmic:true},{size:48,teeth:8},
+        {size:68,teeth:11},{size:28,teeth:5,cosmic:true},{size:48,teeth:8},{size:68,teeth:11},
+        {size:28,teeth:5,cosmic:true},{size:48,teeth:8},{size:68,teeth:11},{size:28,teeth:5,cosmic:true},
+        {size:48,teeth:8},{size:68,teeth:11},{size:28,teeth:5,cosmic:true},{size:48,teeth:8},
+        {size:68,teeth:11},{size:28,teeth:5,cosmic:true},{size:48,teeth:8},{size:68,teeth:11},
+        {size:28,teeth:5,cosmic:true},{size:48,teeth:8},{size:68,teeth:11},{size:28,teeth:5,cosmic:true}
+    ],cosmic:true,gap:800},
+    23:{name:"Stellar Storm",gears:[
+        {size:25,teeth:4,stellar:true},{size:45,teeth:7},{size:65,teeth:10},{size:25,teeth:4,stellar:true},
+        {size:45,teeth:7},{size:65,teeth:10},{size:25,teeth:4,stellar:true},{size:45,teeth:7},
+        {size:65,teeth:10},{size:25,teeth:4,stellar:true},{size:45,teeth:7},{size:65,teeth:10},
+        {size:25,teeth:4,stellar:true},{size:45,teeth:7},{size:65,teeth:10},{size:25,teeth:4,stellar:true},
+        {size:45,teeth:7},{size:65,teeth:10},{size:25,teeth:4,stellar:true},{size:45,teeth:7},
+        {size:65,teeth:10},{size:25,teeth:4,stellar:true},{size:45,teeth:7},{size:65,teeth:10},
+        {size:25,teeth:4,stellar:true},{size:45,teeth:7},{size:65,teeth:10},{size:25,teeth:4,stellar:true}
+    ],stellar:true,gap:850},
+    24:{name:"Infinity Insane",gears:[
+        {size:22,teeth:4,infinity:true},{size:42,teeth:7},{size:62,teeth:10},{size:22,teeth:4,infinity:true},
+        {size:42,teeth:7},{size:62,teeth:10},{size:22,teeth:4,infinity:true},{size:42,teeth:7},
+        {size:62,teeth:10},{size:22,teeth:4,infinity:true},{size:42,teeth:7},{size:62,teeth:10},
+        {size:22,teeth:4,infinity:true},{size:42,teeth:7},{size:62,teeth:10},{size:22,teeth:4,infinity:true},
+        {size:42,teeth:7},{size:62,teeth:10},{size:22,teeth:4,infinity:true},{size:42,teeth:7},
+        {size:62,teeth:10},{size:22,teeth:4,infinity:true},{size:42,teeth:7},{size:62,teeth:10},
+        {size:22,teeth:4,infinity:true},{size:42,teeth:7},{size:62,teeth:10},{size:22,teeth:4,infinity:true},
+        {size:42,teeth:7},{size:62,teeth:10}
+    ],infinity:true,gap:900},
+    25:{name:"LEGENDARY",gears:[
+        {size:20,teeth:4,legendary:true},{size:40,teeth:7},{size:60,teeth:10},{size:20,teeth:4,legendary:true},
+        {size:40,teeth:7},{size:60,teeth:10},{size:20,teeth:4,legendary:true},{size:40,teeth:7},
+        {size:60,teeth:10},{size:20,teeth:4,legendary:true},{size:40,teeth:7},{size:60,teeth:10},
+        {size:20,teeth:4,legendary:true},{size:40,teeth:7},{size:60,teeth:10},{size:20,teeth:4,legendary:true},
+        {size:40,teeth:7},{size:60,teeth:10},{size:20,teeth:4,legendary:true},{size:40,teeth:7},
+        {size:60,teeth:10},{size:20,teeth:4,legendary:true},{size:40,teeth:7},{size:60,teeth:10},
+        {size:20,teeth:4,legendary:true},{size:40,teeth:7},{size:60,teeth:10},{size:20,teeth:4,legendary:true},
+        {size:40,teeth:7},{size:60,teeth:10},{size:20,teeth:4,legendary:true},{size:40,teeth:7}
+    ],legendary:true,gap:1000}
+};
+
+function getGearType(g) {
+    if(g.golden) return "golden";
+    if(g.diamond) return "diamond";
+    if(g.ruby) return "ruby";
+    if(g.emerald) return "emerald";
+    if(g.sapphire) return "sapphire";
+    if(g.amethyst) return "amethyst";
+    if(g.obsidian) return "obsidian";
+    if(g.platinum) return "platinum";
+    if(g.titanium) return "titanium";
+    if(g.crystal) return "crystal";
+    if(g.nebula) return "nebula";
+    if(g.quantum) return "quantum";
+    if(g.void) return "void";
+    if(g.galactic) return "galactic";
+    if(g.cosmic) return "cosmic";
+    if(g.stellar) return "stellar";
+    if(g.infinity) return "infinity";
+    if(g.legendary) return "legendary";
+    return "normal";
+}
+
+function getLevelMainSize(levelData) {
+    if(levelData.golden) return 180;
+    if(levelData.diamond) return 190;
+    if(levelData.ruby) return 190;
+    if(levelData.emerald) return 190;
+    if(levelData.sapphire) return 180;
+    if(levelData.amethyst) return 170;
+    if(levelData.obsidian) return 160;
+    if(levelData.platinum) return 180;
+    if(levelData.titanium) return 150;
+    if(levelData.crystal) return 180;
+    if(levelData.nebula) return 160;
+    if(levelData.quantum) return 140;
+    if(levelData.void) return 140;
+    if(levelData.galactic) return 150;
+    if(levelData.cosmic) return 140;
+    if(levelData.stellar) return 130;
+    if(levelData.infinity) return 120;
+    if(levelData.legendary) return 120;
+    return 140;
+}
+
+function loadLevel(lvl){
+    level=lvl;
+    const levelData=levels[Math.min(lvl,25)] || levels[25];
+    
+    world.innerHTML="";
+    gearContainer.innerHTML="";
+    objects=[];
+    solved=false;
+    message.innerHTML="";
+    spinningGears.clear();
+    levelTransitioning=false;
+    
+    levelIndicator.innerHTML="Level " + level + "<br><span style='font-size:16px;color:#888'>" + levelData.name + "</span>";
+    
+    const mainSize=getLevelMainSize(levelData);
+    
+    const startPos=getRandomPosition(true, mainSize);
+    const endPos=getRandomPosition(false, mainSize);
+    const mainTeeth=Math.floor(mainSize/6);
+    
+    createGear(mainSize,mainTeeth,startPos.x,startPos.y,"starter");
+    createGear(mainSize,mainTeeth,endPos.x,endPos.y,"goal");
+    
+    const gears=levelData.gears;
+    instruction.innerHTML=`Level ${level} - ${levelData.name}: Drag all ${gears.length} gears!`;
+    
+    gears.forEach(g=>{
+        const gearType=getGearType(g);
+        createGear(g.size,g.teeth,0,0,gearType,true);
+    });
+    
+    updateGearCount();
+}
+
+/* ================= CLICK TO ADVANCE ================= */
+document.addEventListener("click",(e)=>{
+    if(solved && !levelTransitioning){
+        levelTransitioning=true;
+        holdingStarter=false;
+        
+        const maxLevel = level + 1;
+        const currentStored = localStorage.getItem("gameLogicScore");
+        if (!currentStored || maxLevel > parseInt(currentStored)) {
+            localStorage.setItem("gameLogicScore", maxLevel);
+        }
+        
+        if (level >= 25) {
+            localStorage.setItem("gameLogicScore", 25);
+        }
+        
+        spinningGears.clear();
+        objects.forEach(o=>{
+            o.speed=0;
+            o.powered=false;
+            o.element.classList.remove("powered");
+        });
+        
+        message.innerHTML="";
+        
+        triggerLevelTransition(()=>{
+            loadLevel(level+1);
+        });
+    }
+});
+
+/* ================= GAME LOOP ================= */
+function gameLoop(){
+    connectAll();
+    updatePhysics();
+
+    objects.forEach(o=>{
+        o.angle+=o.speed;
+        if(o.group)
+            o.group.setAttribute("transform","rotate("+o.angle+")");
+    });
+
+    const goal=objects.find(o=>o.type==="goal");
+    if(goal && goal.powered && !solved && !levelTransitioning){
+        solved=true;
+        
+        const trayPlacedGears=objects.filter(o=>o.type!=="starter" && o.type!=="goal");
+        const placedGears=trayPlacedGears.filter(o=>o.placed);
+        const levelData=levels[Math.min(level,25)] || levels[25];
+        const totalGears=levelData.gears.length;
+        
+        if(placedGears.length===totalGears && placedGears.every(o=>o.powered)){
+            message.innerHTML="AWESOME!<br><span style='font-size:30px'>Click for Level " + (level+1) + "</span>";
+            createWinParticles();
+            playWinSound();
+        } else if(placedGears.every(o=>o.powered)){
+            message.innerHTML="GOOD!<br><span style='font-size:25px'>Red Gear is now WORKING!</span>";
+        } else {
+            message.innerHTML="KEEP TRYING!<br><span style='font-size:25px'>Connect all gears!</span>";
+        }
+    }
+    
+    updateGearCount();
+    requestAnimationFrame(gameLoop);
+}
+
+// Start the game loop
+gameLoop();
+
+// Load saved level or start at level 1
+const savedScore = localStorage.getItem("gameLogicScore");
+const startLevel = savedScore ? parseInt(savedScore) : 1;
+loadLevel(startLevel);
+
+</script>
+</body>
+</html>

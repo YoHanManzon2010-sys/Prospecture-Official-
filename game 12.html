@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Debug Challenge</title>
+
+<style>
+  body {
+    background: url('Background.png') no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+    animation: fadeIn 0.8s ease-in-out;
+  }
+
+  h1 { margin-bottom: 10px; }
+  p { font-size: 1.2rem; }
+
+  #level-counter {
+    font-family: 'Courier New', Courier, monospace;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+    opacity: 0.9;
+  }
+
+  #game-container {
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  #code-snippet {
+    font-family: 'Courier New', Courier, monospace;
+    color: #fff;
+    display: inline-block;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 15px 0;
+    min-width: 300px;
+    animation: slideUp 0.6s ease;
+  }
+
+  textarea {
+    width: 80%;
+    height: 190px;
+    margin: 10px 0;
+    font-size: 1.2rem;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    background: #ffffff;
+    color: #000000;
+    font-family: 'Courier New', Courier, monospace;
+    animation: slideUp 0.6s ease;
+  }
+
+  .btn-group {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 10px;
+    animation: slideUp 0.6s ease;
+  }
+
+  button {
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(to right, #6113e8, #00c9ff);
+    color: white;
+    font-family: 'Courier New', Courier, monospace;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
+  }
+
+  button:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  }
+
+  button:disabled {
+    background: #555;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  #result {
+    margin-top: 20px;
+    font-size: 1.4rem;
+    animation: slideUp 0.6s ease;
+  }
+
+  .back-btn {
+    position: absolute;
+    left: 20px;
+    top: 18px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    border: none;
+    color: #fff;
+    font-size: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    transition: transform 0.25s ease, background 0.25s ease;
+  }
+
+  .back-btn:hover {
+    transform: scale(1.1);
+  }
+
+  .flow-out {
+    animation: fadeOut 0.8s ease forwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  @keyframes fadeOut {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+</style>
+</head>
+
+<body>
+
+<button class="back-btn" onclick="window.location='skill-test.html'">←</button>
+
+<div id="game-container">
+  <h1>Debug Challenge</h1>
+  <div id="level-counter">Level 1 / 10</div>
+  <p id="level-title"></p>
+  <p id="code-snippet"></p>
+
+  <textarea id="answer" placeholder="Type your corrected code here"></textarea>
+
+  <div class="btn-group">
+    <button onclick="checkAnswer()">Submit</button>
+    <button onclick="nextLevel()" id="next-btn" disabled>Next Level</button>
+  </div>
+
+  <div id="result"></div>
+</div>
+
+<script>
+const levels = [
+  { title: "Level 1: Write an H1 tag that displays the text 'My Name'", code: '<h1>My Name</h1>', answer: '<h1>My Name</h1>' },
+  { title: "Level 2: Complete the paragraph tag so it properly shows the text 'I love coding'", code: '<p>I love coding', answer: '<p>I love coding</p>' },
+  { title: "Level 3: Fix the image tag so the profile picture source is correctly written", code: '<img src=profile.png width="100px" height="100px">', answer: '<img src="profile.png">' },
+  { title: "Level 4: Correct the anchor tag so it links properly to Wikipedia using HTTPS", code: '<a href=wikipedia.com>Learn more</a>', answer: '<a href="https://wikipedia.com">Learn more</a>' },
+  { title: "Level 5: Fix the unordered list so all three food items have proper list tags", code: '<ul><li>Pizza<li>Burger<li>Sushi</ul>', answer: '<ul><li>Pizza</li><li>Burger</li><li>Sushi</li></ul>' },
+  { title: "Level 6: Correct the CSS rule so the paragraph text color becomes blue", code: 'p { color red; }', answer: 'p { color: blue; }' },
+  { title: "Level 7: Modify the CSS so the H1 font size is exactly 30 pixels", code: 'h1 { font-size 20px; }', answer: 'h1 { font-size: 30px; }' },
+  { title: "Level 8: Fix the CSS syntax so the body background color becomes light gray", code: 'body { background-color #fff; }', answer: 'body { background-color: #d3d3d3; }' },
+  { title: "Level 9: Correct the CSS so the div element has a margin of 15 pixels", code: 'div { margin 10px; }', answer: 'div { margin: 15px; }' },
+  { title: "Level 10: Fix the CSS rule so the section element has 25 pixels of padding", code: 'section { padding 20px }', answer: 'section { padding: 25px; }' }
+];
+
+let currentLevel = 0;
+let score = 0;
+
+function loadLevel() {
+  const container = document.getElementById("game-container");
+
+  container.style.opacity = 0;
+  container.style.transform = "translateY(20px)";
+
+  setTimeout(() => {
+    document.getElementById('level-title').textContent = levels[currentLevel].title;
+    document.getElementById('code-snippet').innerHTML = `<code>${levels[currentLevel].code}</code>`;
+    document.getElementById('level-counter').textContent = `Level ${currentLevel + 1} / ${levels.length}`;
+    document.getElementById('answer').value = '';
+    document.getElementById('result').textContent = '';
+    document.getElementById('next-btn').disabled = true;
+
+    container.style.opacity = 1;
+    container.style.transform = "translateY(0)";
+  }, 250);
+}
+
+function checkAnswer() {
+  const userInput = document.getElementById('answer').value.replace(/\s/g,'');
+  const correctAnswer = levels[currentLevel].answer.replace(/\s/g,'');
+
+  if (userInput === correctAnswer) {
+    document.getElementById('result').textContent = "Correct! ✅";
+    document.getElementById('next-btn').disabled = false;
+    score++;
+  } else {
+    document.getElementById('result').textContent = "Incorrect! ❌";
+  }
+}
+
+function nextLevel() {
+  currentLevel++;
+
+  localStorage.setItem("game12Score", score);
+  localStorage.setItem("game12Total", levels.length);
+
+  if (currentLevel < levels.length) {
+    loadLevel();
+  } else {
+    document.getElementById('level-title').textContent = "Challenge Completed 🎉";
+    document.getElementById('code-snippet').innerHTML = "";
+    document.getElementById('level-counter').textContent = "";
+    document.querySelector('textarea').style.display = "none";
+    document.querySelector('.btn-group').innerHTML =
+      `<button onclick="window.location.href='skill-test.html'">Take More Tests</button>`;
+    document.getElementById('result').innerHTML =
+      `You scored <strong>${score} / ${levels.length}</strong> 👏`;
+  }
+}
+
+loadLevel();
+</script>
+
+</body>
+</html>

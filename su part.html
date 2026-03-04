@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Virtual Builder – System Unit</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:"Segoe UI",sans-serif;
+}
+
+body{
+  min-height:100vh;
+  background:url("table and esd.png") no-repeat center/cover fixed;
+}
+
+.wrapper{
+  display:flex;
+  height:100vh;
+  background:rgba(0,0,0,.45);
+}
+
+/* PARTS PANEL */
+.parts-panel{
+  width:25%;
+  min-width:260px;
+  padding:10px;
+  background:rgba(255,255,255,.12);
+  backdrop-filter:blur(8px);
+  overflow-y:auto;
+}
+
+.panel-header{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:15px;
+}
+
+.panel-header h2{
+  color:#fff;
+  font-size:1.1rem;
+}
+
+.back-btn{
+  padding:6px 12px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:bold;
+  background:linear-gradient(135deg,#7b74fc,#3b44f5);
+}
+
+/* PART ITEMS */
+.part{
+  background:rgba(0,0,0,.85);
+  padding:10px;
+  border-radius:14px;
+  margin-bottom:10px;
+  cursor:grab;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.part.placed{
+  background:transparent;
+  padding:0;
+  cursor:default;
+}
+
+.part img{
+  width:80px;
+  height:80px;
+  object-fit:contain;
+}
+
+/* SYSTEM PANEL */
+.system-panel{
+  flex:1;
+  padding:40px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.system-panel h1{
+  color:#fff;
+  margin-bottom:10px;
+}
+
+.status{
+  color:#00ffae;
+  font-weight:bold;
+  margin-bottom:10px;
+}
+
+/* SYSTEM UNIT */
+.system-unit{
+  width:100%;
+  max-width:1200px;
+  height:900px;
+  padding:20px;
+  background:linear-gradient(145deg,#111,#1a1a1a);
+  border-radius:25px;
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  grid-template-rows:repeat(5,1fr);
+  gap:20px;
+}
+
+/* MOTHERBOARD */
+.motherboard{
+  grid-column:1/6;
+  grid-row:1/6;
+  padding:20px;
+  border-radius:24px;
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  grid-template-rows:repeat(4,1fr);
+  gap:20px;
+  background:linear-gradient(145deg,#1f5f2b,#143d1f);
+}
+
+/* SIDE BOARD */
+.side-board{
+  grid-column:6/8;
+  grid-row:1/6;
+  padding:20px;
+  border-radius:24px;
+  display:grid;
+  grid-template-rows:repeat(5,1fr);
+  gap:20px;
+  background:linear-gradient(145deg,#4a4a4a,#2f2f2f);
+}
+
+/* SLOTS */
+.slot{
+  border:2px dashed rgba(255,255,255,.4);
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+}
+
+.slot span{
+  position:absolute;
+  bottom:5px;
+  font-size:.8rem;
+  color:#ddd;
+}
+
+/* prevent resizing */
+.slot .part{
+  margin:0;
+  padding:0;
+}
+
+
+.slot .part img{
+  max-width:90%;
+  max-height:90%;
+  object-fit:contain;
+  pointer-events:none;
+}
+
+/* SLOT POSITIONS */
+.slot[data-slot="cpu"]{grid-column:2;grid-row:1}
+.slot[data-slot="cooling"]{grid-column:2;grid-row:2}
+.slot[data-slot="ram1"]{grid-column:3;grid-row:1}
+.slot[data-slot="ram2"]{grid-column:4;grid-row:1}
+.slot[data-slot="ram3"]{grid-column:3;grid-row:2}
+.slot[data-slot="ram4"]{grid-column:4;grid-row:2}
+.slot[data-slot="gpu1"]{grid-column:2;grid-row:3}
+.slot[data-slot="gpu2"]{grid-column:2;grid-row:4}
+.slot[data-slot="expansion"]{grid-column:4;grid-row:4}
+
+/* SHAKE + HINT */
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-6px)}
+  50%{transform:translateX(6px)}
+  75%{transform:translateX(-6px)}
+}
+
+.slot.wrong{
+  animation:shake .3s;
+  border-color:#ff4d4d;
+}
+
+.slot.hint{
+  border-color:#00ffae;
+  box-shadow:0 0 12px rgba(0,255,174,.7);
+}
+
+/* BUTTONS */
+.reset-btn{
+  margin-top:15px;
+  padding:14px 32px;
+  border-radius:16px;
+  background:linear-gradient(135deg,#7f5cff,#00c6ff);
+  color:#fff;
+  border:none;
+  cursor:pointer;
+}
+
+/* GOOD JOB */
+#goodJob{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.7);
+  align-items:center;
+  justify-content:center;
+}
+
+.good-job-overlay{
+  background:#000;
+  padding:40px;
+  border-radius:16px;
+  text-align:center;
+}
+
+.good-job-overlay h1{color:#ff00a2}
+.good-job-overlay p{color:#fff;margin:10px 0 20px}
+.good-job-overlay button{
+  padding:12px 30px;
+  border:none;
+  border-radius:10px;
+  background:linear-gradient(135deg,#7f5cff,#00c6ff);
+  color:#fff;
+}
+
+.slot.filled span{
+  display:none;
+}
+
+/* Landscape Required Overlay for Mobile - MOBILE ONLY */
+.landscape-warning {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  z-index: 9999;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+.landscape-warning .rotate-icon {
+  font-size: 60px;
+  margin-bottom: 20px;
+  animation: rotateHint 1.5s ease-in-out infinite;
+}
+
+.landscape-warning p {
+  font-size: 18px;
+  opacity: 0.9;
+  max-width: 300px;
+}
+
+@keyframes rotateHint {
+  0%, 100% { transform: rotate(-90deg); }
+  50% { transform: rotate(0deg); }
+}
+
+/* Show landscape warning on mobile portrait only - MOBILE ONLY */
+@media screen and (orientation: portrait) and (max-width: 900px) {
+  .landscape-warning {
+    display: flex;
+  }
+  body {
+    display: none;
+  }
+}
+
+/* Mobile Landscape - Larger Buttons - MOBILE ONLY */
+@media screen and (orientation: landscape) and (max-width: 900px) {
+  .wrapper {
+    flex-direction: column;
+  }
+  .parts-panel {
+    width: 100%;
+    min-width: auto;
+    height: 25%;
+    flex-direction: row;
+    padding: 5px;
+  }
+  .part {
+    padding: 5px;
+    margin-right: 5px;
+  }
+  .part img {
+    width: 50px;
+    height: 50px;
+  }
+  .system-panel {
+    padding: 10px;
+  }
+  .system-panel h1 {
+    font-size: 1.2rem;
+  }
+  .system-unit {
+    height: 400px;
+    padding: 10px;
+    gap: 10px;
+  }
+  .motherboard, .side-board {
+    padding: 10px;
+    gap: 10px;
+  }
+  .back-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+  .reset-btn {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- Landscape Required Overlay for Mobile - MOBILE ONLY -->
+<div class="landscape-warning">
+  <div class="rotate-icon">📱</div>
+  <p>Please rotate your device to landscape mode for the best experience!</p>
+</div>
+
+<audio id="sound-correct" src="Sound/correct.mp3"></audio>
+<audio id="sound-wrong" src="Sound/wrong.mp3"></audio>
+<audio id="sound-finish" src="Sound/finish.mp3"></audio>
+
+<div class="wrapper">
+
+<div class="parts-panel">
+  <div class="panel-header">
+    <button class="back-btn" onclick="location.href='skill-test.html'">← Back</button>
+    <h2>System Unit Parts</h2>
+  </div>
+
+  <div class="part" data-part="cpu"><img src="computer parts/cpu.png"></div>
+  <div class="part" data-part="cooling"><img src="computer parts/cooling.png"></div>
+
+  <div class="part" data-part="ram"><img src="computer parts/ram.png"></div>
+  <div class="part" data-part="ram"><img src="computer parts/ram.png"></div>
+  <div class="part" data-part="ram"><img src="computer parts/ram.png"></div>
+  <div class="part" data-part="ram"><img src="computer parts/ram.png"></div>
+
+  <div class="part" data-part="gpu"><img src="computer parts/gpu.png"></div>
+  <div class="part" data-part="gpu"><img src="computer parts/gpu.png"></div>
+
+  <div class="part" data-part="ssd"><img src="computer parts/ssd.png"></div>
+  <div class="part" data-part="ssd"><img src="computer parts/ssd.png"></div>
+
+  <div class="part" data-part="hdd"><img src="computer parts/hdd.png"></div>
+  <div class="part" data-part="hdd"><img src="computer parts/hdd.png"></div>
+
+  <div class="part" data-part="expansion"><img src="computer parts/exp.jpg"></div>
+  <div class="part" data-part="psu"><img src="computer parts/psu.png"></div>
+</div>
+
+<div class="system-panel">
+<h1>System Unit Assembly</h1>
+<div class="status">Progress: 0/14</div>
+
+<div class="system-unit">
+  <div class="motherboard">
+    <div class="slot" data-slot="cpu"><span>CPU</span></div>
+    <div class="slot" data-slot="cooling"><span>Cooling</span></div>
+    <div class="slot" data-slot="ram1"><span>RAM</span></div>
+    <div class="slot" data-slot="ram2"><span>RAM</span></div>
+    <div class="slot" data-slot="ram3"><span>RAM</span></div>
+    <div class="slot" data-slot="ram4"><span>RAM</span></div>
+    <div class="slot" data-slot="gpu1"><span>GPU</span></div>
+    <div class="slot" data-slot="gpu2"><span>GPU</span></div>
+    <div class="slot" data-slot="expansion"><span>Expansion</span></div>
+  </div>
+
+  <div class="side-board">
+    <div class="slot" data-slot="ssd1"><span>SSD</span></div>
+    <div class="slot" data-slot="ssd2"><span>SSD</span></div>
+    <div class="slot" data-slot="hdd1"><span>HDD</span></div>
+    <div class="slot" data-slot="hdd2"><span>HDD</span></div>
+    <div class="slot" data-slot="psu"><span>PSU</span></div>
+  </div>
+</div>
+
+<button class="reset-btn" onclick="location.reload()">Reset</button>
+</div>
+</div>
+
+<div id="goodJob">
+  <div class="good-job-overlay">
+    <h1>Good Job!</h1>
+    <p>All components assembled.</p>
+    <button onclick="location.href='skill-test.html'">Back to Skills</button>
+  </div>
+</div>
+
+<script>
+// Preload the sound
+const soundCorrect = new Audio('Sound/correct.mp3');
+const soundWrong = new Audio('Sound/wrong.mp3');
+const soundFinish = new Audio('Sound/finish.mp3');
+soundCorrect.preload = 'auto';
+soundWrong.preload = 'auto';
+soundFinish.preload = 'auto';
+
+// Play instantly on click
+document.addEventListener('click', () => {
+    // Reset time to 0 to allow rapid, overlapping sounds
+    sound.currentTime = 0; 
+    sound.play();
+});
+
+
+const rules={
+  cpu:["cpu"], cooling:["cooling"],
+  ram:["ram1","ram2","ram3","ram4"],
+  gpu:["gpu1","gpu2"],
+  ssd:["ssd1","ssd2"],
+  hdd:["hdd1","hdd2"],
+  expansion:["expansion"],
+  psu:["psu"]
+};
+
+let dragged=null,type="",score=0;
+const totalParts=document.querySelectorAll(".part").length;
+
+const sCorrect=document.getElementById("sound-correct");
+const sWrong= document.getElementById("sound-wrong");
+const sFinish=document.getElementById("sound-finish");
+
+localStorage.setItem("systemUnitScore",0);
+localStorage.setItem("systemUnitTotal",totalParts);
+
+// Touch drag state variables
+let touchDragged = null;
+let touchType = "";
+let touchStartX = 0;
+let touchStartY = 0;
+let touchClone = null;
+let touchId = null;
+
+document.querySelectorAll(".part").forEach(p=>{
+  p.draggable=true;
+  p.addEventListener("dragstart",()=>{
+    if(p.classList.contains("placed"))return;
+    dragged=p; type=p.dataset.part;
+    setTimeout(()=>p.style.display="none",0);
+  });
+  p.addEventListener("dragend",()=>{
+    if(dragged)dragged.style.display="block";
+    dragged=null; type="";
+    clearHints();
+  });
+  
+  // Touch events for mobile drag support
+  p.addEventListener("touchstart", function(e) {
+    if(this.classList.contains("placed")) return;
+    e.preventDefault();
+    
+    const touch = e.touches[0];
+    touchId = touch.identifier;
+    touchDragged = this;
+    touchType = this.dataset.part;
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
+    
+    // Create a clone for visual feedback during drag
+    touchClone = this.cloneNode(true);
+    touchClone.style.position = "fixed";
+    touchClone.style.zIndex = "9999";
+    touchClone.style.opacity = "0.8";
+    touchClone.style.pointerEvents = "none";
+    touchClone.style.width = "80px";
+    touchClone.style.height = "80px";
+    touchClone.style.left = (touch.clientX - 40) + "px";
+    touchClone.style.top = (touch.clientY - 40) + "px";
+    document.body.appendChild(touchClone);
+    
+    // Hide original temporarily
+    this.style.opacity = "0.3";
+  }, { passive: false });
+  
+  p.addEventListener("touchmove", function(e) {
+    if(!touchDragged || touchDragged !== this) return;
+    e.preventDefault();
+    
+    const touch = Array.from(e.touches).find(t => t.identifier === touchId) || e.touches[0];
+    if (!touch) return;
+    
+    if(touchClone) {
+      touchClone.style.left = (touch.clientX - 40) + "px";
+      touchClone.style.top = (touch.clientY - 40) + "px";
+    }
+  }, { passive: false });
+  
+  p.addEventListener("touchend", function(e) {
+    if(!touchDragged || touchDragged !== this) return;
+    e.preventDefault();
+    
+    // Remove clone
+    if(touchClone) {
+      touchClone.remove();
+      touchClone = null;
+    }
+    
+    // Restore original opacity
+    this.style.opacity = "1";
+    
+    // Find if dropped on a slot
+    const touch = e.changedTouches[0];
+    const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
+    
+    if(dropTarget && dropTarget.classList.contains("slot")) {
+      handleTouchDrop(dropTarget);
+    } else if(dropTarget && dropTarget.closest('.slot')) {
+      handleTouchDrop(dropTarget.closest('.slot'));
+    }
+    
+    touchDragged = null;
+    touchType = "";
+    touchId = null;
+    clearHints();
+  }, { passive: false });
+  
+  p.addEventListener("touchcancel", function(e) {
+    if(touchClone) {
+      touchClone.remove();
+      touchClone = null;
+    }
+    this.style.opacity = "1";
+    touchDragged = null;
+    touchType = "";
+    touchId = null;
+  });
+});
+
+function handleTouchDrop(slot) {
+  if(!touchDragged || slot.querySelector(".part")) return;
+  
+  const partType = touchType;
+  const slotType = slot.dataset.slot;
+  
+  if(!rules[partType]?.includes(slotType)){
+    slot.classList.add("wrong");
+    sWrong.currentTime=0; sWrong.play();
+    setTimeout(()=>slot.classList.remove("wrong"),300);
+    return;
+  }
+
+  touchDragged.classList.add("placed");
+  slot.classList.add("filled");
+  slot.appendChild(touchDragged);
+
+  score++;
+  localStorage.setItem("systemUnitScore",score);
+  document.querySelector(".status").textContent=`Progress: ${score}/${totalParts}`;
+
+  sCorrect.currentTime=0; sCorrect.play();
+
+  if(score===totalParts){
+    sFinish.play();
+    localStorage.setItem("systemUnitGrade","PASSED");
+    document.getElementById("goodJob").style.display="flex";
+  }
+}
+
+document.querySelectorAll(".slot").forEach(slot=>{
+  slot.addEventListener("dragover",e=>e.preventDefault());
+  slot.addEventListener("drop",()=>{
+    if(!dragged||slot.querySelector(".part"))return;
+
+    if(!rules[type]?.includes(slot.dataset.slot)){
+      slot.classList.add("wrong");
+      sWrong.currentTime=0; sWrong.play();
+      setTimeout(()=>slot.classList.remove("wrong"),300);
+      return;
+    }
+
+   dragged.classList.add("placed");
+slot.classList.add("filled");   // ✅ hides label
+slot.appendChild(dragged);
+
+
+    score++;
+    localStorage.setItem("systemUnitScore",score);
+    document.querySelector(".status").textContent=`Progress: ${score}/${totalParts}`;
+
+    sCorrect.currentTime=0; sCorrect.play();
+
+    if(score===totalParts){
+      sFinish.play();
+      localStorage.setItem("systemUnitGrade","PASSED");
+      document.getElementById("goodJob").style.display="flex";
+    }
+  });
+});
+
+function showHint(){
+  if(!dragged)return;
+  clearHints();
+  (rules[type]||[]).forEach(s=>{
+    document.querySelector(`[data-slot="${s}"]`)?.classList.add("hint");
+  });
+}
+function clearHints(){
+  document.querySelectorAll(".slot").forEach(s=>s.classList.remove("hint"));
+}
+</script>
+
+</body>
+</html>

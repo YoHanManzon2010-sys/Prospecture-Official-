@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aptitude Test</title>
+
+  <!-- Import Fredoka font -->
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Fredoka', sans-serif;
+      background: url("Background.png") no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-align: center;
+      transition: opacity 0.6s ease, transform 0.6s ease;
+      overflow-x: hidden;
+      overflow-y: hidden;
+      padding: 1rem;
+    }
+
+    /* Flow-out animation */
+    body.fade-out {
+      opacity: 0;
+      transform: translateY(-40px);
+    }
+
+    /* Back button as logo */
+    .back-btn {
+      position: absolute;
+      top: 25px;
+      left: 25px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+    }
+
+    .back-btn img {
+      width: clamp(50px, 10vw, 80px);
+      height: clamp(50px, 10vw, 80px);
+    }
+
+    /* Header text */
+    .header-text {
+      font-size: clamp(1.5rem, 6vw, 40px);
+      font-weight: 700;
+      margin-bottom: clamp(1.5rem, 5vw, 40px);
+      letter-spacing: 2px;
+      animation: floatIn 0.8s ease-out forwards;
+    }
+
+    /* Gradient Aptitude Test box */
+    .aptitude-box {
+      font-size: clamp(2rem, 8vw, 70px);
+      font-weight: 900;
+      background: linear-gradient(90deg, #9b5cff, #00d4ff);
+      color: white;
+      padding: clamp(1.5rem, 4vw, 30px) clamp(2rem, 6vw, 60px);
+      border-radius: clamp(25px, 5vw, 35px);
+      margin: clamp(1.5rem, 4vw, 30px) 0;
+      display: inline-block;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+      animation: floatIn 1s ease-out forwards;
+      opacity: 0;
+    }
+
+    /* Start Button */
+    .start-btn {
+      display: inline-block;
+      padding: clamp(1rem, 3vw, 18px) clamp(2rem, 6vw, 60px);
+      font-size: clamp(1.25rem, 3.5vw, 26px);
+      font-weight: 700;
+      border: none;
+      border-radius: clamp(30px, 5vw, 40px);
+      background: linear-gradient(90deg, #9b5cff, #00d4ff);
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+      text-decoration: none;
+      animation: floatIn 1.2s ease-out forwards, pulse 2s infinite ease-in-out;
+      opacity: 0;
+    }
+
+    .start-btn:hover {
+      transform: scale(1.08);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    }
+
+    /* Float-in animation */
+    @keyframes floatIn {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    /* Pulse glow for button */
+    @keyframes pulse {
+      0%, 100% {
+        box-shadow: 0 0 10px #9b5cff, 0 0 20px #00d4ff;
+      }
+      50% {
+        box-shadow: 0 0 20px #9b5cff, 0 0 40px #00d4ff;
+      }
+    }
+
+    /* Mobile responsive */
+    @media (max-width: 600px) {
+      .back-btn {
+        top: 15px;
+        left: 15px;
+      }
+    }
+
+    /* Touch device */
+    @media (hover: none) and (pointer: coarse) {
+      .start-btn:hover {
+        transform: none;
+      }
+      .start-btn:active {
+        transform: scale(0.98);
+      }
+    }
+  </style>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Capture all links and buttons
+      const links = document.querySelectorAll("a, button");
+
+      links.forEach(link => {
+        link.addEventListener("click", (e) => {
+          const target = link.getAttribute("href") || link.dataset.href;
+          if (!target) return;
+
+          e.preventDefault();
+          document.body.classList.add("fade-out");
+
+          setTimeout(() => {
+            window.location.href = target;
+          }, 600); // match transition duration
+        });
+      });
+    });
+  </script>
+</head>
+<body>
+
+  <!-- Back Button as Logo -->
+  <button class="back-btn" data-href="Homepage.html">
+    <img src="career-icon.png" alt="Back to Homepage">
+  </button>
+
+  <!-- Title -->
+  <div class="header-text">FIND YOUR CAREER PATH</div>
+
+  <!-- Aptitude Test Banner -->
+  <div class="aptitude-box">APTITUDE TEST</div>
+
+  <!-- Start Button -->
+  <a href="test.html" class="start-btn">START NOW</a>
+
+</body>
+</html>

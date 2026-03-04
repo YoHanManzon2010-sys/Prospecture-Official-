@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Physics Quiz</title>
+
+<style>
+/* ===== YOUR UI (UNCHANGED) ===== */
+body{
+  margin:0;
+  font-family:'Segoe UI', sans-serif;
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  overflow:hidden;
+  background:black;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  width:200%;
+  height:200%;
+  background:
+    radial-gradient(white 1px, transparent 1px),
+    radial-gradient(#00d4ff 1px, transparent 1px),
+    radial-gradient(#7b2ff7 1px, transparent 1px);
+  background-size:100px 100px, 150px 150px, 200px 200px;
+  animation:moveStars 60s linear infinite;
+  opacity:0.3;
+}
+
+@keyframes moveStars{
+  from{transform:translate(0,0);}
+  to{transform:translate(-500px,-500px);}
+}
+
+.quiz-container{width:900px;text-align:center;z-index:1;}
+.counter{font-size:20px;margin-bottom:20px;}
+.question-box{
+  padding:50px;margin-bottom:50px;border-radius:40px;
+  border:3px solid #00d4ff;box-shadow:0 0 30px #00d4ff;
+  background:rgba(255,255,255,0.05);font-size:28px;
+}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:30px;}
+.option{
+  padding:25px;font-size:20px;border-radius:40px;
+  border:2px solid #7b2ff7;cursor:pointer;transition:0.3s;
+  background:rgba(255,255,255,0.05);
+}
+.option:hover{transform:scale(1.05);}
+.correct{ background:#00c853 !important; }
+.wrong{ background:#d50000 !important; }
+
+/* Fun Fact Popup Styles */
+.fun-fact-popup{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:linear-gradient(135deg,#1a1a2e,#16213e);
+  border:3px solid #00d4ff;border-radius:20px;
+  padding:30px;max-width:500px;width:90%;
+  text-align:center;z-index:100;
+  box-shadow:0 0 50px rgba(0,212,255,0.5);
+}
+.fun-fact-popup h3{
+  color:#00d4ff;font-size:24px;margin-bottom:15px;
+}
+.fun-fact-popup p{
+  color:white;font-size:18px;line-height:1.6;margin-bottom:20px;
+}
+.fun-fact-popup .correct-answer{
+  color:#00c853;font-weight:bold;font-size:20px;margin-bottom:15px;
+}
+.fun-fact-popup button{
+  padding:12px 30px;font-size:16px;border-radius:25px;
+  border:none;cursor:pointer;background:linear-gradient(45deg,#00d4ff,#7b2ff7);
+  color:white;font-weight:bold;transition:0.3s;
+}
+.fun-fact-popup button:hover{transform:scale(1.05);}
+.overlay{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.7);z-index:99;
+}
+
+.back-btn{
+position:absolute;left:20px;top:18px;width:60px;height:60px;
+border-radius:50%;border:none;background:rgba(255,255,255,0.12);
+color:#fff;font-size:36px;cursor:pointer;z-index:10;
+display:flex;align-items:center;justify-content:center;transition:0.3s;
+}
+.back-btn:hover{transform:scale(1.1);}
+
+.final-screen{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:black;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;text-align:center;
+}
+.final-screen h1{ font-size:50px; }
+.final-screen h2{ font-size:30px; }
+.rank{ font-size:28px;margin-top:10px;color:#00d4ff; }
+.final-buttons{ margin-top:40px; }
+.final-buttons button{
+  margin:10px;padding:15px 40px;font-size:18px;
+  border-radius:40px;border:none;cursor:pointer;
+}
+.retake{ background: linear-gradient(45deg, #00d4ff, #7b2ff7); color: black; }
+.home{ background: linear-gradient(45deg, #7b2ff7, #00d4ff); color: white; }
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .quiz-container {
+    width: 95%;
+    padding: 15px;
+  }
+  
+  .counter {
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
+  
+  .question-box {
+    padding: 25px;
+    margin-bottom: 30px;
+    border-radius: 25px;
+    font-size: 20px;
+  }
+  
+  .options {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .option {
+    padding: 18px;
+    font-size: 16px;
+    border-radius: 25px;
+  }
+  
+  .back-btn {
+    left: 10px;
+    top: 10px;
+    width: 45px;
+    height: 45px;
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .quiz-container {
+    width: 100%;
+    padding: 10px;
+  }
+  
+  .question-box {
+    padding: 18px;
+    margin-bottom: 20px;
+    border-radius: 20px;
+    font-size: 16px;
+  }
+  
+  .option {
+    padding: 14px;
+    font-size: 14px;
+    border-radius: 20px;
+  }
+  
+  .counter {
+    font-size: 14px;
+  }
+  
+  .back-btn {
+    left: 8px;
+    top: 8px;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+  
+  .final-screen h1 {
+    font-size: 32px;
+  }
+  
+  .final-screen h2 {
+    font-size: 20px;
+  }
+  
+  .rank {
+    font-size: 20px;
+  }
+  
+  .final-buttons button {
+    padding: 12px 25px;
+    font-size: 14px;
+    margin: 8px;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .option:hover {
+    transform: none;
+  }
+  
+  .option:active {
+    transform: scale(0.98);
+  }
+}
+</style>
+</head>
+<body>
+
+<button class="back-btn" onclick="window.location.href='science.html'">←</button>
+
+<div class="quiz-container">
+  <div class="counter" id="counter"></div>
+  <div class="question-box" id="question"></div>
+  <div class="options" id="options"></div>
+</div>
+
+<script>
+
+// ✅ IMPORTANT — DEFINE STORAGE KEY
+const highScoreKey = "physicsHighScore";
+
+const questionBank = [
+{q:"Unit of force?",a:["Newton","Joule","Volt","Watt"],correct:0,fact:"Newton is named after Sir Isaac Newton, the famous scientist who discovered gravity! One Newton is the force needed to accelerate 1 kilogram at 1 meter per second squared."},
+{q:"Energy of motion?",a:["Potential","Kinetic","Thermal","Chemical"],correct:1,fact:"Kinetic energy is the energy an object has due to its motion. A car moving at 60 mph has much more kinetic energy than one moving at 30 mph!"},
+{q:"Speed = distance divided by?",a:["Time","Mass","Force","Energy"],correct:0,fact:"Speed is calculated by dividing distance by time. That's why we measure speed in units like meters per second (m/s) or miles per hour (mph)!"},
+{q:"Force that slows motion?",a:["Friction","Gravity","Magnetism","Tension"],correct:0,fact:"Friction is the force that opposes motion between two surfaces touching each other. Without friction, you couldn't walk or drive a car!"},
+{q:"SI unit of energy?",a:["Joule","Newton","Volt","Ampere"],correct:0,fact:"The Joule is named after James Prescott Joule, who studied the relationship between heat and mechanical work. 1 joule is roughly the energy needed to lift an apple!"},
+{q:"Acceleration is change in?",a:["Velocity","Mass","Energy","Force"],correct:0,fact:"Acceleration measures how quickly velocity changes. When you speed up in a car, you're accelerating! It's measured in meters per second squared (m/s²)."},
+{q:"Object at rest stays at rest due to?",a:["Inertia","Gravity","Energy","Magnetism"],correct:0,fact:"Inertia is Newton's First Law - an object will keep doing what it's doing unless a force acts on it. That's why seatbelts are so important!"},
+{q:"Speed of light is fastest in?",a:["Vacuum","Water","Air","Glass"],correct:0,fact:"Light travels at about 300,000 km/s in a vacuum - nothing in the universe can travel faster! It slows down when passing through materials like water or glass."},
+{q:"Voltage unit?",a:["Volt","Watt","Newton","Joule"],correct:0,fact:"Volts are named after Alessandro Volta, inventor of the first battery. Voltage is like 'electrical pressure' that pushes electricity through wires!"},
+{q:"Power is measured in?",a:["Watt","Volt","Newton","Joule"],correct:0,fact:"Watts measure how fast energy is used or produced. A 100-watt light bulb uses 100 joules of energy every second!"},
+{q:"Gravity pulls objects toward?",a:["Earth","Sun","Moon","Space"],correct:0,fact:"Gravity pulls everything toward Earth's center - that's why we stay on the ground! The Moon's gravity causes ocean tides."},
+{q:"Simple machine for lifting?",a:["Pulley","Battery","Wire","Motor"],correct:0,fact:"Pulleys have been used since ancient times to lift heavy objects! A system of pulleys can reduce the force needed to lift something dramatically."},
+{q:"Work = force × ?",a:["Distance","Time","Mass","Energy"],correct:0,fact:"Work is done when a force moves an object over a distance. Pushing against a wall without moving it does zero work!"},
+{q:"Sound travels fastest in?",a:["Solid","Liquid","Gas","Vacuum"],correct:0,fact:"Sound travels about 4x faster in steel than in air! In a vacuum, sound can't travel at all - that's why space is silent!"},
+{q:"Magnetic poles are?",a:["North & South","East & West","Up & Down","Hot & Cold"],correct:0,fact:"Earth itself is a giant magnet with North and South poles! That's why compass needles align with Earth's magnetic field."},
+{q:"Mirror reflection is?",a:["Light","Sound","Heat","Force"],correct:0,fact:"Mirrors reflect light, not sound or heat. That's why you can see your reflection - light bounces off the mirror surface!"},
+{q:"Electrical current unit?",a:["Ampere","Volt","Watt","Joule"],correct:0,fact:"Amperes (amps) measure how many electrons flow past a point each second. The larger the amp, the more electricity flows!"},
+{q:"Mass measures amount of?",a:["Matter","Energy","Force","Speed"],correct:0,fact:"Mass is the amount of matter in an object. Your mass stays the same everywhere in the universe, but your weight changes with gravity!"},
+{q:"Energy stored due to position?",a:["Potential","Kinetic","Thermal","Electrical"],correct:0,fact:"Potential energy is stored energy waiting to be released. A roller coaster at the top of a hill has maximum potential energy!"},
+{q:"Newton's First Law is law of?",a:["Inertia","Gravity","Action","Reaction"],correct:0,fact:"Newton's First Law is also called the Law of Inertia. It explains why passengers lurch forward when a car suddenly stops!"},
+{q:"Device to measure temperature?",a:["Thermometer","Barometer","Speedometer","Voltmeter"],correct:0,fact:"Thermometers measure temperature using materials that expand when heated. Old thermometers used mercury, but modern ones use alcohol or digital sensors!"},
+{q:"Heat travels by?",a:["Conduction","Photosynthesis","Digestion","Fusion"],correct:0,fact:"Conduction is how heat moves through solids - like when a metal spoon gets hot from being in soup. It's one of three ways heat travels!"},
+{q:"Opposite charges?",a:["Attract","Repel","Explode","Ignore"],correct:0,fact:"Opposite charges attract, like protons and electrons! That's why electrons orbit around the nucleus - they're attracted to the positive charge!"},
+{q:"Unit of frequency?",a:["Hertz","Volt","Watt","Newton"],correct:0,fact:"Hertz measures how many cycles happen per second. Your phone's 5GHz WiFi actually cycles 5 billion times per second!"},
+{q:"Energy cannot be created or destroyed is law of?",a:["Conservation","Inertia","Motion","Gravity"],correct:0,fact:"The Law of Conservation of Energy means energy just changes forms - from electrical to heat, light, or motion. It never disappears!"},
+{q:"Force equals mass × ?",a:["Acceleration","Velocity","Energy","Time"],correct:0,fact:"F = ma is Newton's Second Law! The more mass an object has, the more force you need to accelerate it."},
+{q:"Earth's pull is?",a:["Gravity","Magnetism","Friction","Voltage"],correct:0,fact:"Gravity keeps the Moon in orbit around Earth and Earth orbiting the Sun. Without it, everything would float away into space!"},
+{q:"Device converting electrical to mechanical?",a:["Motor","Battery","Wire","Switch"],correct:0,fact:"Electric motors are everywhere - from fans to electric cars! They use magnetic fields to convert electrical energy into motion."},
+{q:"Pressure unit?",a:["Pascal","Volt","Watt","Joule"],correct:0,fact:"Pascals measure pressure (force per area). One Pascal is very small - atmospheric pressure is about 101,325 pascals!"},
+{q:"Reflection angle equals?",a:["Angle of incidence","Zero","180°","45°"],correct:0,fact:"The law of reflection says the angle light hits a surface equals the angle it reflects off. This is how mirrors work!"}
+];
+
+function showFunFactPopup(correctAnswer, fact, isCorrect) {
+  // Create overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  document.body.appendChild(overlay);
+  
+  // Determine button text based on current question
+  const isLastQuestion = current === quiz.length - 1;
+  const buttonText = isLastQuestion ? "Finish Test" : "Next Question ➜";
+  
+  // Create popup
+  const popup = document.createElement('div');
+  popup.className = 'fun-fact-popup';
+  
+  if (isCorrect) {
+    popup.innerHTML = `
+      <h3>✅ Correct!</h3>
+      <p class="correct-answer">The answer is: ${correctAnswer}</p>
+      <p>${fact}</p>
+      <button onclick="closePopup()">${buttonText}</button>
+    `;
+  } else {
+    popup.innerHTML = `
+      <h3>❌ Not Quite!</h3>
+      <p class="correct-answer">The correct answer is: ${correctAnswer}</p>
+      <p>${fact}</p>
+      <button onclick="closePopup()">${buttonText}</button>
+    `;
+  }
+  
+  document.body.appendChild(popup);
+  
+  window.closePopup = function() {
+    overlay.remove();
+    popup.remove();
+    current++;
+    loadQuestion();
+  };
+}
+
+function shuffle(array){
+  for(let i=array.length-1;i>0;i--){
+    let j=Math.floor(Math.random()*(i+1));
+    [array[i],array[j]]=[array[j],array[i]];
+  }
+  return array;
+}
+
+let quiz = shuffle([...questionBank]).slice(0,10);
+let current=0;
+let score=0;
+
+function loadQuestion(){
+  if(current>=quiz.length){ showFinal(); return; }
+
+  document.getElementById("counter").innerText =
+    (current+1) + " / " + quiz.length;
+
+  let q = quiz[current];
+  document.getElementById("question").innerText=q.q;
+
+  let options = shuffle([...q.a]);
+  let correctAnswer = q.a[q.correct];
+  let fact = q.fact;
+  const opts=document.getElementById("options");
+  opts.innerHTML="";
+
+  options.forEach(choice=>{
+    const btn=document.createElement("div");
+    btn.className="option";
+    btn.innerText=choice;
+
+    btn.onclick=function(){
+      if(choice===correctAnswer){ 
+        btn.classList.add("correct"); 
+        score++; 
+        showFunFactPopup(correctAnswer, fact, true);
+      } else { 
+        btn.classList.add("wrong"); 
+        showFunFactPopup(correctAnswer, fact, false);
+      }
+    };
+
+    opts.appendChild(btn);
+  });
+}
+
+function showFinal(){
+
+  let savedHigh = parseInt(localStorage.getItem(highScoreKey)) || 0;
+
+  if(score > savedHigh){
+    localStorage.setItem(highScoreKey, score);
+    savedHigh = score;
+  }
+
+  let ranking="";
+  if(score>=9) ranking="🌟 Excellent!";
+  else if(score>=7) ranking="👍 Great Job!";
+  else if(score>=5) ranking="🙂 Good Effort!";
+  else ranking="📘 Keep Practicing!";
+
+  document.body.innerHTML=`
+    <div class="final-screen">
+      <h1>🎉 Good Job! 🎉</h1>
+      <h2>Your Final Score: ${score} / ${quiz.length}</h2>
+      <h2>🏆 High Score: ${savedHigh}</h2>
+      <div class="rank">${ranking}</div>
+      <div class="final-buttons">
+        <button class="retake" onclick="location.reload()">Retake Quiz</button>
+        <button class="home" onclick="window.location.href='science.html'">Go Back to Topics</button>
+      </div>
+    </div>
+  `;
+}
+
+loadQuestion();
+</script>
+</body>
+</html>
+

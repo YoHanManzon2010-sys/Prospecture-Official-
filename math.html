@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mathematics Galaxy UI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:"Segoe UI", sans-serif;
+}
+
+body{
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:radial-gradient(circle at center,#0f2027,#203a43,#2c5364);
+  overflow:hidden;
+}
+
+/* Landscape Required Overlay for Mobile */
+.landscape-warning {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  z-index: 9999;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+.landscape-warning .rotate-icon {
+  font-size: 60px;
+  margin-bottom: 20px;
+  animation: rotateHint 1.5s ease-in-out infinite;
+}
+
+.landscape-warning p {
+  font-size: 18px;
+  opacity: 0.9;
+  max-width: 300px;
+}
+
+@keyframes rotateHint {
+  0%, 100% { transform: rotate(-90deg); }
+  50% { transform: rotate(0deg); }
+}
+
+/* Show landscape warning on mobile portrait */
+@media screen and (orientation: portrait) and (max-width: 768px) {
+  .landscape-warning {
+    display: flex;
+  }
+  body {
+    display: none;
+  }
+}
+
+/* Mobile Landscape - Larger Buttons */
+@media screen and (orientation: landscape) and (max-width: 900px) {
+  .container {
+    transform: scale(0.75);
+  }
+  .center-circle {
+    width: 140px;
+    height: 140px;
+    font-size: 16px;
+  }
+  .topic {
+    width: 100px;
+    height: 100px;
+    font-size: 11px;
+    margin: -50px;
+    transform: rotate(var(--angle)) translate(180px) rotate(calc(-1 * var(--angle)));
+  }
+  .back-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 28px;
+  }
+  .orbit-ring-visual {
+    width: 380px;
+    height: 380px;
+  }
+}
+
+/* Floating symbols */
+.symbol{
+  position:absolute;
+  color:rgba(255,255,255,0.12);
+  font-size:28px;
+  animation:floatUp 20s linear infinite;
+  bottom: -50px;
+}
+
+@keyframes floatUp {
+  from { transform: translateY(0) rotate(0deg); opacity: 1; }
+  to { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+}
+
+/* Container */
+.container{
+  position:relative;
+  width:600px;
+  height:600px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Center */
+.center-circle{
+  position:absolute;
+  z-index: 10;
+  width:180px;
+  height:180px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.05);
+  border:2px solid rgba(255,255,255,0.4);
+  backdrop-filter:blur(15px);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:white;
+  font-size:20px;
+  font-weight:bold;
+  letter-spacing:2px;
+  text-decoration:none;
+  box-shadow:0 0 40px rgba(255,255,255,0.3);
+  animation: centerPulse 3s ease-in-out infinite alternate;
+  transition: transform 0.3s ease;
+}
+
+.center-circle:hover { transform: scale(1.1); }
+
+@keyframes centerPulse {
+  from { box-shadow: 0 0 20px rgba(255,255,255,0.2); }
+  to { box-shadow: 0 0 60px rgba(255,255,255,0.6); }
+}
+
+/* Orbit wrapper */
+.orbit-system {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  animation: mainSpin 40s linear infinite; /* Rotation speed */
+}
+
+@keyframes mainSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Individual Topics */
+.topic {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 130px;
+  height: 130px;
+  margin: -65px; /* Half of width/height to center precisely */
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  
+  /* POSITIONING LOGIC */
+  /* Move them out by 260px and stay upright */
+  transform: rotate(var(--angle)) translate(260px) rotate(calc(-1 * var(--angle)));
+}
+
+/* This animation keeps the text upright while the system spins */
+.topic-content {
+    animation: keepUpright 40s linear infinite;
+}
+
+@keyframes keepUpright {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(-360deg); }
+}
+
+/* Set specific angles for 6 items (360 / 6 = 60 degrees) */
+.topic:nth-child(1) { --angle: 0deg; }
+.topic:nth-child(2) { --angle: 60deg; }
+.topic:nth-child(3) { --angle: 120deg; }
+.topic:nth-child(4) { --angle: 180deg; }
+.topic:nth-child(5) { --angle: 240deg; }
+.topic:nth-child(6) { --angle: 300deg; }
+
+/* Visual orbit ring background */
+.orbit-ring-visual {
+  position: absolute;
+  width: 520px;
+  height: 520px;
+  border-radius: 50%;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.back-btn {
+      position: absolute;
+      left: 20px;
+      top: 20px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      font-size: 36px;
+      cursor: pointer;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.3s;
+      text-decoration: none;
+    }
+
+     .back-btn:hover { background: rgba(255,255,255,0.3); }
+
+</style>
+</head>
+<body>
+
+<!-- Landscape Required Overlay for Mobile -->
+<div class="landscape-warning">
+  <div class="rotate-icon">📱</div>
+  <p>Please rotate your device to landscape mode for the best experience!</p>
+</div>
+
+ <a class="back-btn" href="skill-test.html">←</a>
+<!-- Floating symbols -->
+<div class="symbol" style="left:10%; animation-delay:0s;">+</div>
+<div class="symbol" style="left:25%; animation-delay:5s;">π</div>
+<div class="symbol" style="left:40%; animation-delay:3s;">√</div>
+<div class="symbol" style="left:60%; animation-delay:7s;">∑</div>
+<div class="symbol" style="left:75%; animation-delay:2s;">∞</div>
+<div class="symbol" style="left:85%; animation-delay:6s;">∫</div>
+<div class="symbol" style="left:15%; animation-delay:0s;">+</div>
+<div class="symbol" style="left:30%; animation-delay:5s;">π</div>
+<div class="symbol" style="left:45%; animation-delay:3s;">√</div>
+<div class="symbol" style="left:65%; animation-delay:7s;">∑</div>
+<div class="symbol" style="left:80%; animation-delay:2s;">∞</div>
+<div class="symbol" style="left:90%; animation-delay:6s;">∫</div>
+
+<div class="container">
+  
+  <div class="orbit-ring-visual"></div>
+
+  <a href="math-quiz.html" class="center-circle">Take Quiz</a>
+
+  <div class="orbit-system">
+    <div class="topic"><div class="topic-content">Algebra</div></div>
+    <div class="topic"><div class="topic-content">Geometry</div></div>
+    <div class="topic"><div class="topic-content">Statistics</div></div>
+    <div class="topic"><div class="topic-content">Probability </div></div>
+    <div class="topic"><div class="topic-content">Grouped Data</div></div>
+    <div class="topic"><div class="topic-content">Ungrouped Data</div></div>
+  </div>
+
+</div>
+
+</body>
+</html>

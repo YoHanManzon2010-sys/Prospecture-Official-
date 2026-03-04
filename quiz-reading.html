@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multi-Story Reading Quiz</title>
+<style>
+:root{
+--bg:linear-gradient(-45deg,#dfe9f3,#ffffff,#e3f2fd,#ffffff);
+--text:#222;
+--hover:#f2f2f2;
+}
+body.dark{
+--bg:linear-gradient(-45deg,#1e1e1e,#2c2c2c,#1a1a1a,#2c2c2c);
+--text:#f5f5f5;
+--hover:#3c3c3c;
+}
+body{
+margin:0;
+font-family:"Times New Roman",serif;
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+background:linear-gradient(-45deg,#ffecd2,#fcb69f,#a1c4fd,#c2e9fb);
+background-size:400% 400%;
+animation:gradientMove 18s ease infinite;
+overflow:hidden;
+}
+@keyframes gradientMove{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+}
+/* Aurora Effect */
+.aurora-bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+.aurora-bg::before,.aurora-bg::after{content:"";position:absolute;width:120%;height:120%;background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.3), transparent 60%),radial-gradient(circle at 70% 70%, rgba(173,216,230,0.3), transparent 60%);filter:blur(90px);animation:auroraMove 20s infinite alternate ease-in-out;}
+.aurora-bg::after{animation-duration:28s;opacity:0.7;}
+@keyframes auroraMove{0%{transform:translate(-5%,-5%) scale(1);}100%{transform:translate(5%,5%) scale(1.2);}}
+/* Grid Overlay */
+.grid-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background-image:linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);background-size:40px 40px;animation:gridMove 25s linear infinite;z-index:0;pointer-events:none;}
+@keyframes gridMove{0%{background-position:0 0;}100%{background-position:40px 40px;}}
+/* Particle Canvas */
+#bgCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+/* Floating Shapes */
+.floating-shapes{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;overflow:hidden;}
+.shape{position:absolute;opacity:0.12;animation:float 20s infinite ease-in-out;border-radius:50%;}
+.shape-1{width:250px;height:250px;background:linear-gradient(135deg,#ff6b6b,#feca57);top:5%;left:10%;animation-delay:0s;}
+.shape-2{width:180px;height:180px;background:linear-gradient(135deg,#48dbfb,#1dd1a1);top:55%;right:10%;animation-delay:-5s;}
+.shape-3{width:120px;height:120px;background:linear-gradient(135deg,#a55eea,#ff6b6b);bottom:15%;left:25%;animation-delay:-10s;}
+.shape-4{width:160px;height:160px;background:linear-gradient(135deg,#feca57,#48dbfb);top:25%;right:25%;animation-delay:-3s;}
+@keyframes float{0%,100%{transform:translateY(0) rotate(0deg);}25%{transform:translateY(-25px) rotate(5deg);}50%{transform:translateY(0) rotate(0deg);}75%{transform:translateY(25px) rotate(-5deg);}}
+/* Shooting Stars */
+.shooting-stars{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;overflow:hidden;}
+.shooting-star{position:absolute;width:80px;height:2px;background:linear-gradient(to right,transparent,rgba(255,255,255,0.8),transparent);opacity:0;animation:shoot 10s infinite;}
+.shooting-star:nth-child(1){top:15%;animation-delay:0s;}
+.shooting-star:nth-child(2){top:35%;animation-delay:4s;}
+.shooting-star:nth-child(3){top:60%;animation-delay:7s;}
+@keyframes shoot{0%{transform:translateX(0) rotate(-45deg);opacity:0;}3%{opacity:1;}15%{transform:translateX(calc(100vw+200px)) rotate(-45deg);opacity:0;}100%{opacity:0;}}
+/* Paper */
+.paper{width:820px;background:var(--bg);padding:40px 50px;border-radius:20px;box-shadow:0 25px 50px rgba(0,0,0,0.35);color:var(--text);position:relative;z-index:2;max-height:90vh;overflow-y:auto;}
+button{padding:10px 20px;border-radius:25px;cursor:pointer;background:rgba(255,255,255,0.2);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.4);font-weight:bold;color:var(--text);transition:0.3s;}
+button:hover{transform:scale(1.08);}
+button:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+.question{margin-bottom:18px;}
+.options label{display:block;padding:10px;margin:5px 0;border-radius:8px;cursor:pointer;transition:0.3s;}
+.options label:hover{background:var(--hover);}
+.slide{display:none;opacity:0;transform:translateY(20px);transition:0.4s;}
+.slide.active{display:block;opacity:1;transform:translateY(0);}
+.progress{height:10px;background:#eee;border-radius:5px;overflow:hidden;margin-bottom:20px;}
+.progress-fill{width:0%;height:100%;background:linear-gradient(to right,#4a6fa5,#6c8cd5);transition:width 0.4s;}
+#result{text-align:center;font-size:20px;}
+.top-bar{display:flex;justify-content:space-between;margin-bottom:15px;gap:10px;}
+.btn-group{display:flex;gap:10px;}
+</style>
+</head>
+<body>
+<!-- Background Effects -->
+<div class="aurora-bg"></div>
+<div class="grid-overlay"></div>
+<canvas id="bgCanvas"></canvas>
+<div class="floating-shapes">
+  <div class="shape shape-1"></div>
+  <div class="shape shape-2"></div>
+  <div class="shape shape-3"></div>
+  <div class="shape shape-4"></div>
+</div>
+<div class="shooting-stars">
+  <div class="shooting-star"></div>
+  <div class="shooting-star"></div>
+  <div class="shooting-star"></div>
+</div>
+
+<div class="paper" id="paperContainer">
+<div class="top-bar">
+<div class="btn-group">
+<button onclick="goBack()">⬅ Back</button>
+<button onclick="prevSlide()" id="prevBtn" disabled>← Prev</button>
+</div>
+<button onclick="toggleDarkMode()" id="modeBtn">🌙 Dark Mode</button>
+</div>
+<h1 style="text-align:center;">Multi-Story Reading Quiz</h1>
+<div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+<div id="quizSlides"></div>
+<div id="result"></div>
+</div>
+
+<script>
+/* ==== 5 Full Stories ==== */
+const stories = [
+{
+title: "The Lost Puppy",
+passage: `
+<p>Lila was walking home from school when she heard a faint whimper coming from behind a bush. Curious, she carefully peeked through the leaves and saw a small brown puppy shivering.</p>
+<p>"Oh, you poor thing!" Lila said softly. She gently picked up the puppy and wrapped it in her jacket. She looked around, hoping to see someone searching for the puppy, but the street was empty.</p>
+<p>Lila decided to take the puppy home. She gave it some water and a little food. The puppy wagged its tail happily, licking Lila's hand. She spent the afternoon playing with it and making sure it was warm and comfortable.</p>
+<p>The next day, Lila made colorful posters with the puppy's picture and put them around the neighborhood. Soon, a woman came knocking at her door. "Is this your puppy?" she asked. Lila handed over the puppy, feeling a little sad but happy that it was going back home.</p>
+<p>The woman smiled warmly. "Thank you so much for taking care of him. You are very kind." Lila waved goodbye, knowing she had done the right thing by helping an animal in need.</p>
+`,
+questions: [
+{q:"Where did Lila hear the puppy?",o:["In her house","Behind a bush","In the school","On the street"],a:1},
+{q:"What did Lila do when she found the puppy?",o:["Ignored it","Gave it to a stranger","Picked it up and wrapped it","Left it outside"],a:2},
+{q:"What did Lila give the puppy at home?",o:["Water and food","A toy","Clothes","Nothing"],a:0},
+{q:"How did the puppy react?",o:["Ran away","Wagged tail and licked her","Barked angrily","Stayed silent"],a:1},
+{q:"How did Lila try to find the owner?",o:["Asked friends","Made posters","Took to school","Kept it home"],a:1},
+{q:"Who came to Lila's door?",o:["Friend","Woman looking for puppy","Teacher","Stranger"],a:1},
+{q:"How did Lila feel returning the puppy?",o:["Angry","Sad but happy","Confused","Excited"],a:1},
+{q:"What lesson does the story teach?",o:["Develop good habits","Ignore animals","Avoid helping","Compete"],a:0},
+{q:"Why was the puppy shivering?",o:["Scared","Hungry","Wet","Cold"],a:0},
+{q:"How did the woman react?",o:["Angry","Thanked her","Ignored","Scolded"],a:1}
+]
+},
+{
+title:"The New Library",
+passage:`<p>Emma's school had just opened a new library. The building was bright and welcoming, filled with rows upon rows of colorful books. She had always loved stories and was excited to explore all the different genres.</p>
+<p>She wandered along the shelves, carefully picking out books with bright covers. Her eyes lit up when she found an adventure story about a young explorer. She borrowed it and took it home, eager to read it that evening.</p>
+<p>The next day at school, Emma shared the story with her friends. Soon, a few classmates started borrowing books from the library too, inspired by Emma's enthusiasm. The library quickly became a favorite place for many students.</p>
+<p>Emma realized that reading was not only fun, but it also allowed her to learn new things and imagine exciting adventures beyond her own world.</p>`,
+questions:[
+{q:"What opened at Emma's school?",o:["Cafeteria","Gym","New library","Playground"],a:2},
+{q:"What kind of books did Emma borrow?",o:["Adventure","Romance","Horror","Science"],a:0},
+{q:"Who did Emma share books with?",o:["Teachers","Friends","Parents","Strangers"],a:1},
+{q:"Where is the library located?",o:["Near school","In the park","Online","At home"],a:0},
+{q:"How did Emma feel?",o:["Excited","Bored","Sad","Angry"],a:0},
+{q:"What lesson does story teach?",o:["Reading is fun","Games are better","Libraries are boring","Avoid books"],a:0},
+{q:"What did she do first in the library?",o:["Borrowed book","Played","Ate snack","Slept"],a:0},
+{q:"Why did she explore the shelves?",o:["To see books","To play","To eat","To nap"],a:0},
+{q:"What did Emma inspire?",o:["Friends to read","No one","Teachers to quit","Parents to cook"],a:0},
+{q:"Which book type did she enjoy most?",o:["Adventure","Romance","Science","History"],a:0}
+]
+},
+{
+title:"The Garden Adventure",
+passage:`<p>Tom loved exploring his backyard garden. Every day after school, he would look for insects, observe flowers, and discover tiny hidden corners.</p>
+<p>One afternoon, he noticed a bright green caterpillar inching across a leaf. He carefully followed it, noting its movement. He also found a small frog hiding near the pond. Tom loved documenting his findings in a notebook, drawing pictures and writing observations.</p>
+<p>Through these adventures, Tom learned the importance of patience and careful observation. His garden became a place of discovery, where every plant or insect taught him something new about nature.</p>`,
+questions:[
+{q:"What did Tom explore?",o:["Garage","Garden","School","Park"],a:1},
+{q:"What did he discover?",o:["Cars","Insects and flowers","Computers","Books"],a:1},
+{q:"What lesson did he learn?",o:["Patience and observation","Anger","Running","Cooking"],a:0},
+{q:"Where did he explore?",o:["City","Backyard","School","Mall"],a:1},
+{q:"Who joined Tom?",o:["Brother","Sister","No one","Dog"],a:2},
+{q:"How did he feel?",o:["Curious","Bored","Sad","Angry"],a:0},
+{q:"Why explore the garden?",o:["Adventure","Sleep","Cooking","Gaming"],a:0},
+{q:"What did he observe?",o:["Flowers and insects","Cars","Furniture","Books"],a:0},
+{q:"What is the story theme?",o:["Nature appreciation","Math","Video games","Movies"],a:0},
+{q:"What skill improved?",o:["Observation","Running","Painting","Cooking"],a:0}
+]
+},
+{
+title:"The Kind Neighbor",
+passage:`<p>Mr. Lee noticed his elderly neighbor struggling to carry groceries up the stairs. Without hesitation, he rushed over and offered his help.</p>
+<p>The neighbor smiled gratefully as Mr. Lee carefully lifted the heavy bags and carried them inside. "Thank you so much," said the neighbor. "I don't know what I would have done without you."</p>
+<p>Mr. Lee felt happy that he could make a difference. The neighbor later baked some cookies as a small thank you. Through this experience, Mr. Lee realized that small acts of kindness can greatly impact others and make the community friendlier.</p>`,
+questions:[
+{q:"Who needed help?",o:["Mr. Lee","Neighbor","Teacher","Friend"],a:1},
+{q:"What did Mr. Lee do?",o:["Ignored","Helped carry groceries","Played games","Slept"],a:1},
+{q:"How did the neighbor feel?",o:["Angry","Grateful","Bored","Sad"],a:1},
+{q:"What did neighbor promise?",o:["Bake cookies","Play","Leave","Sing"],a:0},
+{q:"What lesson does story teach?",o:["Kindness matters","Ignore people","Be lazy","Shout"],a:0},
+{q:"Who carried groceries?",o:["Neighbor","Mr. Lee","Friend","Teacher"],a:1},
+{q:"Was help voluntary?",o:["Yes","No","Maybe","Not mentioned"],a:0},
+{q:"Where did this happen?",o:["Street","Mall","School","Park"],a:0},
+{q:"How did Mr. Lee feel?",o:["Happy","Sad","Angry","Bored"],a:0},
+{q:"Why help neighbor?",o:["To be kind","To compete","To sleep","To avoid"],a:0}
+]
+},
+{
+title:"The Lost Kite",
+passage:`<p>Sara ran across the park, flying her bright red kite. She laughed as it danced in the sky, soaring higher with each gust of wind.</p>
+<p>Suddenly, a strong gust blew the kite out of her hands. Sara chased it, but the wind was too fast. She called for her friends to help, and together, they caught the kite just before it landed in a pond.</p>
+<p>Relieved, Sara thanked her friends. From this experience, she learned that teamwork and asking for help can solve problems that seem too big to handle alone. She promised herself to always work together with others when needed.</p>`,
+questions:[
+{q:"What did Sara fly?",o:["Ball","Kite","Frisbee","Drone"],a:1},
+{q:"Where was she flying it?",o:["School","Park","Home","Mall"],a:1},
+{q:"What happened to kite?",o:["It fell","Wind blew it away","It broke","She lost interest"],a:1},
+{q:"Who helped Sara?",o:["Friends","Parents","Teachers","No one"],a:0},
+{q:"What lesson did she learn?",o:["Teamwork","Anger","Running","Cooking"],a:0},
+{q:"Why did kite fly away?",o:["Strong wind","Weak wind","Rain","Sun"],a:0},
+{q:"How did she feel?",o:["Sad then happy","Bored","Angry","Sleepy"],a:0},
+{q:"What did she retrieve?",o:["Ball","Kite","Book","Bag"],a:1},
+{q:"Where did lesson take place?",o:["Park","School","Home","Mall"],a:0},
+{q:"What is main idea?",o:["Teamwork matters","Games better","Kites boring","Friends unhelpful"],a:0}
+]
+}
+];
+
+/* ====== Quiz Logic ====== */
+const slidesContainer=document.getElementById("quizSlides");
+const paperContainer=document.getElementById("paperContainer");
+const prevBtn=document.getElementById("prevBtn");
+let currentSlide=0;
+let score=0;
+
+/* Create Slides for Each Story */
+stories.forEach((story,index)=>{
+  let slide=document.createElement("div");
+  slide.classList.add("slide");
+  if(index===0) slide.classList.add("active");
+  let html=`<h2>${story.title}</h2>${story.passage}`;
+  story.questions.forEach((item,qIndex)=>{
+    html+=`<div class="question"><p><strong>${qIndex+1}. ${item.q}</strong></p><div class="options">${item.o.map((opt,optIndex)=>`<label><input type="radio" name="s${index}q${qIndex}" value="${optIndex}">${opt}</label>`).join("")}</div></div>`;
+  });
+  html+=`<button onclick="nextSlide()">Next Story ➜</button>`;
+  slide.innerHTML=html;
+  slidesContainer.appendChild(slide);
+});
+
+/* Update button states */
+function updateButtons(){
+  prevBtn.disabled = currentSlide === 0;
+}
+
+/* Auto Next when all 10 answered */
+slidesContainer.addEventListener("change",function(){
+  let slide=document.querySelectorAll(".slide")[currentSlide];
+  let checked=slide.querySelectorAll("input[type=radio]:checked");
+  if(checked.length===10){setTimeout(()=>{nextSlide();},400);}
+});
+
+function nextSlide(){
+  let slides=document.querySelectorAll(".slide");
+  slides[currentSlide].classList.remove("active");
+  currentSlide++;
+  if(currentSlide<slides.length){
+    slides[currentSlide].classList.add("active");
+    paperContainer.scrollTop = 0;
+  } else {
+    calculateScore();
+  }
+  document.getElementById("progressFill").style.width=((currentSlide)/(slides.length))+"%";
+  updateButtons();
+}
+
+function prevSlide(){
+  if(currentSlide > 0){
+    let slides=document.querySelectorAll(".slide");
+    slides[currentSlide].classList.remove("active");
+    currentSlide--;
+    slides[currentSlide].classList.add("active");
+    paperContainer.scrollTop = 0;
+    document.getElementById("progressFill").style.width=((currentSlide)/(slides.length))+"%";
+    updateButtons();
+  }
+}
+
+function calculateScore(){
+  stories.forEach((story,sIndex)=>{
+    story.questions.forEach((item,qIndex)=>{
+      let selected=document.querySelector(`input[name="s${sIndex}q${qIndex}"]:checked`);
+      if(selected && parseInt(selected.value)===item.a) score++;
+    });
+  });
+  let message=score<=25?"Needs Improvement 📘":score<=40?"Good Job 👍":"Excellent Work 🌟";
+  document.getElementById("quizSlides").style.display="none";
+  document.getElementById("result").innerHTML=`🎉 Quiz Finished!<br><br>Your Score: <strong>${score}/${stories.length*10}</strong><br><br>Performance: <strong>${message}</strong><br><br><button onclick="goToNextQuiz()" style="padding:12px 25px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:25px;cursor:pointer;font-size:16px;font-weight:bold;margin-top:20px;">Next: Vocabulary Quiz ➜</button>`;
+}
+
+function goToNextQuiz(){
+  window.location.href="quiz-vocabulary.html";
+}
+
+/* Dark Mode */
+function toggleDarkMode(){
+  document.body.classList.toggle("dark");
+  const btn=document.getElementById("modeBtn");
+  btn.textContent=document.body.classList.contains("dark")?"☀️ Light Mode":"🌙 Dark Mode";
+}
+function goBack(){window.location.href="language.html";}
+
+/* Particle Animation */
+const canvas=document.getElementById("bgCanvas");
+const ctx=canvas.getContext("2d");
+let particles=[];
+function resizeCanvas(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+window.addEventListener("resize",resizeCanvas);resizeCanvas();
+for(let i=0;i<80;i++){particles.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,radius:Math.random()*2+1,speedX:(Math.random()-0.5)*0.5,speedY:(Math.random()-0.5)*0.5,alpha:Math.random()*0.5+0.2});}
+function drawParticles(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  for(let p of particles){
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.radius,0,Math.PI*2);
+    ctx.fillStyle=`rgba(255,255,255,${p.alpha})`;
+    ctx.fill();
+    p.x+=p.speedX;p.y+=p.speedY;
+    if(p.x>canvas.width)p.x=0;if(p.x<0)p.x=canvas.width;
+    if(p.y>canvas.height)p.y=0;if(p.y<0)p.y=canvas.height;
+  }
+  requestAnimationFrame(drawParticles);
+}
+drawParticles();
+</script>
+</body>
+</html>

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Strand Skill Test Page</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+/* 1. TRANSITION OVERLAY STYLE */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", sans-serif;
+  min-height: 100vh;
+  background: url("Background.png") no-repeat center/cover fixed;
+  /* Initial state for fade-in */
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+  overflow-x: hidden;
+}
+
+/* Class to trigger when page is ready */
+body.fade-in {
+  opacity: 1;
+}
+
+/* Class to trigger before leaving the page */
+body.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* REST OF YOUR STYLES */
+.overlay{
+  min-height:100vh;
+  background:rgba(0,0,0,.18);
+  padding: clamp(15px, 5vw, 40px);
+}
+
+.back-btn{
+  position:absolute;
+  left:20px;
+  top:18px;
+  width: clamp(45px, 8vw, 60px);
+  height: clamp(45px, 8vw, 60px);
+  border-radius:50%;
+  border:none;
+  background:rgba(255,255,255,.12);
+  color:#fff;
+  font-size: clamp(24px, 5vw, 36px);
+  cursor:pointer;
+  transition: 0.3s;
+}
+
+.back-btn:hover { background: rgba(255,255,255,0.3); }
+
+.reset-btn{
+  position:fixed;
+  bottom:20px;
+  left:20px;
+  width: clamp(40px, 7vw, 50px);
+  height: clamp(40px, 7vw, 50px);
+  border-radius:50%;
+  border:none;
+  background:rgba(255,255,255,.12);
+  color:#fff;
+  font-size: clamp(20px, 4vw, 28px);
+  cursor:pointer;
+  transition: 0.3s;
+  z-index:100;
+}
+
+.reset-btn:hover { background: rgba(255,255,255,0.3); }
+
+.grid{
+  max-width:1200px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap: clamp(15px, 4vw, 30px);
+}
+
+.row-header{
+  grid-column:1/-1;
+  font-size: clamp(16px, 3vw, 24px);
+  font-weight:700;
+  color:#fff;
+  margin-bottom: 5px;
+}
+
+.card{
+  height: clamp(120px, 22vw, 170px);
+  border-radius: clamp(15px, 3vw, 22px);
+  background:linear-gradient(135deg,#8b5cf6,#38bdf8);
+  box-shadow:0 10px 25px rgba(0,0,0,.25);
+  display:flex;
+  flex-direction: column;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  position:relative;
+  transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+ .card:hover{
+  transform:translateY(-10px) scale(1.03);
+  box-shadow:0 15px 30px rgba(0,0,0,.35);
+ }
+
+.card img{
+  width:auto;
+  height:69%;
+  object-fit:contain;
+  pointer-events:none;
+}
+
+.score-badge{
+  position:absolute;
+  top:12px;
+  right:14px;
+  background:rgba(0,0,0,.7);
+  color:#fff;
+  padding:6px 10px;
+  border-radius:12px;
+  font-size: clamp(10px, 1.5vw, 12px);
+  font-weight:bold;
+}
+
+a{ text-decoration:none; }
+
+p{
+  color:#fff;
+  font-size: clamp(14px, 2.5vw, 20px);
+  font-weight:600;
+  margin-top: 2px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  
+  .overlay {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .overlay {
+    padding: 15px;
+    padding-top: 60px;
+  }
+  
+  .back-btn {
+    left: 10px;
+    top: 10px;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+  
+  .reset-btn {
+    bottom: 10px;
+    left: 10px;
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+  
+  .card {
+    height: clamp(100px, 25vw, 140px);
+  }
+  
+  .row-header {
+    font-size: 18px;
+    text-align: center;
+  }
+  
+  .card img {
+    height: 50%;
+  }
+  
+  .score-badge {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+  
+  p {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 400px) {
+  .grid {
+    gap: 12px;
+  }
+  
+  .card {
+    height: 100px;
+    border-radius: 12px;
+  }
+  
+  .row-header {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+}
+
+/* Touch device */
+@media (hover: none) and (pointer: coarse) {
+  .card:hover {
+    transform: none;
+  }
+  
+  .card:active {
+    transform: translateY(-5px) scale(1.02);
+  }
+  
+  .back-btn:hover {
+    background: rgba(255,255,255,0.12);
+  }
+  
+  .back-btn:active {
+    background: rgba(255,255,255,0.25);
+  }
+}
+
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // Trigger Fade In on Load
+  document.body.classList.add("fade-in");
+
+  // Capture all links and buttons
+  const links = document.querySelectorAll("a, .back-btn");
+
+  links.forEach(link => {
+    link.addEventListener("click", (e) => {
+      // Get URL from href (for <a>) or onclick/custom data (for <button>)
+      let target = link.getAttribute("href");
+      
+      // Special check for buttons using onclick="window.location=..."
+      if (!target && link.getAttribute("onclick")) {
+         const match = link.getAttribute("onclick").match(/'([^']+)'/);
+         if (match) target = match[1];
+      }
+
+      if (!target || target.startsWith("#")) return;
+
+      e.preventDefault();
+      document.body.classList.add("fade-out");
+
+      setTimeout(() => {
+        window.location.href = target;
+      }, 500); // Must match CSS transition duration
+    });
+  });
+});
+</script>
+</head>
+
+<body>
+
+<button class="back-btn" href="skills.html">←</button>
+
+<button class="reset-btn" id="resetBtn" title="Reset Scores">⟳</button>
+
+<div class="overlay">
+<div class="grid">
+
+  <!-- ROW 1 -->
+  <div class="row-header">Academic Tracks</div>
+  <a href="Science222.html"><div class="card"><img src="skill based pic/science.png"><p>Science</p></div></a>
+  <a href="math.html"><div class="card"><img src="skill based pic/math.png"><p>Math</p></div></a>
+  <a href="language.html"><div class="card"><img src="skill based pic/language.png"><p>Language</p></div></a>
+
+  <!-- ROW 2 -->
+  <div class="row-header">Technical-Professional Track</div>
+
+  <a href="Coding Test.html">
+    <div class="card">
+      <span class="score-badge" id="debug-score">0/10</span>
+      <img src="Skills Containers/Coding.png">
+      <p>Debug Challenge</p>
+    </div>
+  </a>
+
+  <a href="su part.html">
+    <div class="card">
+      <span class="score-badge" id="system-score">0/14</span>
+      <img src="skill based pic/system unit.png">
+      <p>System Unit Assembly</p>
+    </div>
+  </a>
+
+  <a href="gear1.html">
+    <div class="card">
+      <span class="score-badge" id="game-score">0/25</span>
+      <img src="skill based pic/6387426.png">
+      <p>Game Logic</p>
+    </div>
+  </a>
+</div>
+</div>
+
+<script>
+// Load scores from LocalStorage
+function loadScores() {
+  const suScore = localStorage.getItem("systemUnitScore");
+  const suTotal = localStorage.getItem("systemUnitTotal");
+
+  if(suScore !== null && suTotal !== null){
+    const scoreEl = document.getElementById("system-score");
+    if(scoreEl) scoreEl.textContent = `${suScore}/${suTotal}`;
+  }
+
+  // Load Game Logic score from LocalStorage
+  const glScore = localStorage.getItem("gameLogicScore");
+  if(glScore !== null){
+    const scoreEl = document.getElementById("game-score");
+    if(scoreEl) scoreEl.textContent = `${glScore}/25`;
+  } else {
+    const scoreEl = document.getElementById("game-score");
+    if(scoreEl) scoreEl.textContent = `0/25`;
+  }
+}
+
+// Reset all scores
+document.getElementById("resetBtn").addEventListener("click", function() {
+  if(confirm("Are you sure you want to reset all scores?")) {
+    // Clear all score-related localStorage items
+    localStorage.removeItem("systemUnitScore");
+    localStorage.removeItem("systemUnitTotal");
+    localStorage.removeItem("gameLogicScore");
+    localStorage.removeItem("debugScore");
+    localStorage.removeItem("debugTotal");
+    
+    // Reset score displays
+    const systemScoreEl = document.getElementById("system-score");
+    if(systemScoreEl) systemScoreEl.textContent = "0/14";
+    
+    const gameScoreEl = document.getElementById("game-score");
+    if(gameScoreEl) gameScoreEl.textContent = "0/25";
+    
+    const debugScoreEl = document.getElementById("debug-score");
+    if(debugScoreEl) debugScoreEl.textContent = "0/10";
+    
+    alert("All scores have been reset!");
+  }
+});
+
+// Load scores on page load
+loadScores();
+</script>
+
+</body>
+</html>

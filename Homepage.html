@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prospecture - Tests</title>
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Fredoka", sans-serif;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: url("Background.png") no-repeat center center/cover;
+      text-align: center;
+      color: white;
+      overflow: hidden;
+    }
+
+    /* Canva-like flow transition */
+    body.flow-out .container {
+      animation: flowOut 1s ease forwards;
+    }
+
+    @keyframes flowOut {
+      from {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateY(-80px);
+      }
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 90%;
+      max-width: 1200px;
+
+      /* Flow-in entrance */
+      opacity: 0;
+      transform: translateY(50px);
+      animation: flowIn 1s ease forwards;
+    }
+
+    @keyframes flowIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 10px; /* Reduced space between title and logo */
+    }
+
+    .header h1 {
+      font-size: 7rem;
+      font-weight: 800;
+      margin-right: 20px; /* Reduced space between logo and text */
+    }
+
+    .header p {
+      font-size: 3rem; /* Increased font size of paragraph */
+      margin-top: 10px; /* Reduced space between title and paragraph */
+      color: white;
+    }
+
+    .header img {
+      width: 150px; /* Increased logo size */
+      height: 150px; /* Increased logo size */
+      object-fit: contain;
+    }
+
+    .cards {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    .card {
+      flex: 1;
+      min-width: 350px;
+      max-width: 450px;
+      background: linear-gradient(to bottom right, #7f7fd5, #86a8e7, #91eae4);
+      border-radius: 20px;
+      padding: 30px 20px;
+      text-align: center;
+      color: white;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      opacity: 0;
+      transform: translateY(100px);
+      animation: floatIn 1s ease forwards;
+    }
+
+    /* Add delay so they don’t come at the same time */
+    .card:nth-child(1) {
+      animation-delay: 0.2s;
+    }
+
+    .card:nth-child(2) {
+      animation-delay: 0.5s;
+    }
+
+    @keyframes floatIn {
+      from {
+        opacity: 0;
+        transform: translateY(100px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+    }
+
+    .card h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    /* Specific fixed sizes for icons */
+    .card img {
+      width: 300px;
+      height: 300px;
+      object-fit: contain;
+    }
+
+    @media (max-width: 800px) {
+      .header h1 {
+        font-size: 2.2rem;
+      }
+
+      .header p {
+        font-size: 1.5rem;
+      }
+
+      .cards {
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .card img {
+        width: 120px;
+        height: 120px;
+      }
+    }
+  </style>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const cards = document.querySelectorAll(".card");
+
+      cards.forEach(card => {
+        card.addEventListener("click", (e) => {
+          e.preventDefault();
+          const target = card.getAttribute("onclick").match(/'([^']+)'/)[1]; // extract URL
+
+          // Add flow-out animation
+          document.body.classList.add("flow-out");
+
+          setTimeout(() => {
+            window.location.href = target;
+          }, 1000); // match flowOut duration
+        });
+      });
+    });
+  </script>
+  
+</head>
+<body>
+   
+   <audio id="bgMusic" autoplay loop controls style="display:none;">
+  <source src="This One's For Me.mp3" type="audio">
+   </audio>
+ 
+ <script>
+    document.getElementById('bgMusic').volume = 0.2;
+</script>
+
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <img src="career-icon.png" alt="Logo"> <!-- Logo added here -->
+      <h1>Prospecture</h1>
+    </div>
+    <p style="font-size: 2rem; color: white; margin-top: 2px;">Uncertain Future Career</p> <!-- The paragraph with subtitle added back -->
+
+    <!-- Cards -->
+    <div class="cards">
+      <div class="card" onclick="window.location.href='intelligence.html'">
+        <h2>Find Your Career Path</h2>
+        <img src="brain.png" alt="Brain Icon">
+      </div>
+      <div class="card" onclick="window.location.href='skills.html'">
+        <h2>Test your Intelligence and Skills</h2>
+        <img src="skills.png" alt="Skills Icon">
+      </div>
+    </div>
+  </div>
+</body>
+</html>

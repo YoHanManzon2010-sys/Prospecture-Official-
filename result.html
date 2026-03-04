@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Aptitude Test - Result</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:'Fredoka',sans-serif}
+    body{
+      background: url("Background.png") center/cover no-repeat fixed;
+      color:#fff;
+    }
+
+    .container{
+      width:95%;
+      max-width:1200px;
+      margin:15px auto;
+      min-height:calc(100vh - 36px);
+      position:relative;
+      padding:20px;
+    }
+
+    .back-btn {
+     position: right;
+     top: 15px;
+     left: px;
+     display: inline-block;
+    }
+
+    .back-btn img {
+     width: 90px;   /* adjust size */
+     height: 90px;  /* adjust size */
+     cursor: pointer;
+    transition: transform 0.2s ease;
+    }
+
+    .back-btn img:hover {
+     transform: scale(1.1);
+    }
+
+    .header{
+      text-align:center;
+      margin-top:6px;
+    }
+    .title{
+      font-size:62px;
+      margin:0;
+      text-transform:uppercase;
+    }
+    .subtitle{
+      font-size:32px;
+      margin:8px 0 28px;
+      opacity:0.95;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(3,1fr);
+      gap:25px;
+      margin-top:20px;
+    }
+
+    .mi-card{
+      border-radius:25px;
+      padding:30px 20px;
+      min-height:140px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      font-size:24px;
+      font-weight:700;
+      background: linear-gradient(90deg,#7a4bff,#4fe2dd);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+      color:#fff;
+      position:relative;
+      transition: transform .18s ease, box-shadow .18s ease;
+      cursor:pointer;
+    }
+
+    .mi-card.small{min-height:140px;padding:40px}
+
+    .mi-card.top{
+      /* highlighted */
+      background: linear-gradient(90deg,#7a4bff,#4fe2dd);
+      color:#ffffff;
+      transform: scale(1.04);
+      box-shadow: 0 28px 60px rgba(0,0,0,0.45);
+    }
+
+    .mi-card:hover {
+      transform: scale(1.08);
+      box-shadow: 0 30px 65px rgba(0,0,0,0.5);
+    }
+
+    .mi-score{
+      position:absolute;
+      right:16px;
+      bottom:12px;
+      font-size:14px;
+      opacity:0.85;
+      font-weight:700;
+    }
+
+    .actions{
+      margin-top:28px;
+      display:flex;
+      gap:18px;
+      justify-content:center;
+    }
+
+    .btn{
+      padding:16px 26px;
+      border-radius:34px;
+      background: linear-gradient(90deg,#9b5cff,#00d4ff);
+      color:#fff;
+      font-weight:800;
+      text-decoration:none;
+      border:none;
+      cursor:pointer;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+      font-size:18px;
+    }
+
+    .explain{
+      margin-top:15px;
+      text-align:center;
+      font-size:16px;
+      opacity:0.95;
+      max-width:900px;
+      margin-left:auto;margin-right:auto;
+    }
+
+    @media (max-width:1000px){
+      .grid{grid-template-columns:1fr}
+      .title{font-size:36px}
+      .subtitle{font-size:20px}
+    }
+
+    /* Mobile responsive */
+    @media (max-width: 600px) {
+      .container {
+        width: 100%;
+        padding: 15px;
+        margin: 10px auto;
+      }
+      
+      .back-btn {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 10px;
+      }
+      
+      .back-btn img {
+        width: 70px;
+        height: 70px;
+      }
+      
+      .header {
+        margin-top: 10px;
+      }
+      
+      .title {
+        font-size: 28px;
+      }
+      
+      .subtitle {
+        font-size: 18px;
+      }
+      
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        margin-top: 15px;
+      }
+      
+      .mi-card {
+        min-height: 100px;
+        padding: 20px 15px;
+        font-size: 16px;
+        border-radius: 18px;
+      }
+      
+      .mi-card.top {
+        transform: scale(1.02);
+      }
+      
+      .mi-card.small {
+        min-height: 90px;
+        padding: 15px;
+        font-size: 14px;
+      }
+      
+      .mi-score {
+        font-size: 12px;
+        right: 12px;
+        bottom: 8px;
+      }
+      
+      .actions {
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 20px;
+      }
+      
+      .btn {
+        width: 100%;
+        padding: 14px 20px;
+        font-size: 16px;
+      }
+      
+      .explain {
+        font-size: 14px;
+        padding: 0 10px;
+        margin-top: 15px;
+      }
+    }
+
+    /* Small mobile */
+    @media (max-width: 400px) {
+      .title {
+        font-size: 24px;
+      }
+      
+      .subtitle {
+        font-size: 16px;
+      }
+      
+      .mi-card {
+        font-size: 14px;
+        padding: 15px 12px;
+      }
+    }
+
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+      .mi-card:hover {
+        transform: none;
+      }
+      
+      .mi-card:active {
+        transform: scale(1.02);
+      }
+    }
+
+    .congrats-box {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    background: rgba(0,0,0,0.4); /* transparent backdrop */
+  }
+
+  .congrats-content {
+    background: linear-gradient(135deg, #a1c4fd, #c2e9fb, #d8b4fe);
+    padding: 40px 60px;
+    border-radius: 25px;
+    text-align: center;
+    color: #fff;
+    font-size: 28px;
+    font-weight: 700;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+    animation: popIn 0.6s ease forwards;
+  }
+
+  .congrats-content p {
+    font-size: 20px;
+    margin: 15px 0 25px;
+    font-weight: 400;
+  }
+
+  .congrats-content button {
+    padding: 12px 32px;
+    border: none;
+    border-radius: 30px;
+    background: #7f5cff;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  .congrats-content button:hover {
+    transform: scale(1.08);
+    background: #5b36d6;
+  }
+
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.7); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  </style>
+   
+</head>
+     <script>
+        function closePopup(){
+        document.getElementById("congratsBox").style.display = "none";
+      }
+      
+      window.onload = function () {
+    const shown = localStorage.getItem("popupShown");
+    if (shown === "true") {
+      document.getElementById("congratsBox").style.display = "none";
+    }
+  };
+
+  function closePopup() {
+    document.getElementById("congratsBox").style.display = "none";
+    localStorage.setItem("popupShown", "true"); // remember popup was shown
+  }
+   </script>
+<body>
+
+  <!-- Pop-up Message Box -->
+<div class="congrats-box" id="congratsBox">
+  <div class="congrats-content">
+    🎉 Congratulations! 🎉
+    <p>You’ve completed the test!</p>
+    <button onclick="closePopup()">Thank You</button>
+  </div>
+</div>
+  <div class="container">
+    <!-- Back button as image -->
+    <a href="Homepage.html" class="back-btn">
+        <img src="career-icon.png" alt="Back to Homepage">
+    </a>
+
+    <div class="header">
+      <div class="subtitle" id="subtitle">You Are:</div>
+    </div>
+
+    <div class="grid" id="grid"></div>
+
+    <div class="actions">
+      <button class="btn" onclick="retake()">Retake Test</button>
+      <button class="btn" onclick="downloadReport()">Download Result</button>
+    </div>
+
+    <div class="explain" id="explainText"></div>
+  </div>
+
+  <script>
+    const NAMES = [
+      "Linguistic",
+      "Logical/Mathematical",
+      "Spatial",
+      "Bodily Kinesthetic",
+      "Musical",
+      "Interpersonal",
+      "Intrapersonal",
+      "Naturalistic",
+      "Existential"
+    ];
+
+    const PAGES = [
+      "linguistic.html",
+      "logical.html",
+      "spatial.html",
+      "bodily.html",
+      "musical.html",
+      "interpersonal.html",
+      "intrapersonal.html",
+      "naturalistic.html",
+      "existential.html"
+    ];
+
+    // read scores
+    const raw = localStorage.getItem('mi_scores');
+    let scores = raw ? JSON.parse(raw) : null;
+    if(!scores || scores.length !== 9){
+      scores = new Array(9).fill(0);
+    }
+
+    // compute top score(s)
+    const maxScore = Math.max(...scores);
+    const topIndices = [];
+    scores.forEach((s,i)=>{
+      if(s === maxScore) topIndices.push(i);
+    });
+
+    // update subtitle
+    const subtitle = document.getElementById('subtitle');
+    if(topIndices.length === 1){
+      subtitle.textContent = "You Are:";
+    } else {
+      subtitle.textContent = "You Are Either:";
+    }
+
+    // display grid (now clickable)
+    const grid = document.getElementById('grid');
+    for(let i=0;i<NAMES.length;i++){
+      const card = document.createElement('div');
+      card.className = 'mi-card' + (i<6 ? ' small' : '');
+      if(topIndices.includes(i)) card.classList.add('top');
+      card.innerHTML = `<div>${NAMES[i]}</div><div class="mi-score">${scores[i]} pts</div>`;
+      card.onclick = () => { window.location = PAGES[i]; }; // 🔗 clickable
+      grid.appendChild(card);
+    }
+
+    // generate explanation text
+    const explain = document.getElementById('explainText');
+    if(maxScore === 0){
+      explain.innerHTML = "You did not answer questions (or all were skipped). Try taking the test to get your result.";
+    } else {
+      const topNames = topIndices.map(i=>NAMES[i]).join(', ');
+      explain.innerHTML = `<strong>Top intelligence(s):</strong> ${topNames}.<br><br>
+        This result is a summary of your answers. It suggests which of Howard Gardner's Multiple Intelligences you most strongly prefer based on your selections. You can explore activities that fit your intelligence to strengthen skills and career choices.`;
+    }
+
+    function retake(){
+      localStorage.removeItem('mi_scores');
+      window.location = 'test.html';
+    }
+
+    function downloadReport(){
+      let report = "Multiple Intelligences Result\n\n";
+      report += "Scores:\n";
+      for(let i=0;i<NAMES.length;i++){
+        report += `${NAMES[i]}: ${scores[i]}\n`;
+      }
+      report += "\nTop: " + (maxScore>0 ? topIndices.map(i=>NAMES[i]).join(', ') : 'None');
+
+      const blob = new Blob([report], {type:'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'mi_result.txt';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>

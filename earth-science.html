@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Earth Science Quiz</title>
+
+<style>
+/* ===== YOUR UI (UNCHANGED) ===== */
+body{
+  margin:0;
+  font-family:'Segoe UI', sans-serif;
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  overflow:hidden;
+  background:black;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  width:200%;
+  height:200%;
+  background:
+    radial-gradient(white 1px, transparent 1px),
+    radial-gradient(#00d4ff 1px, transparent 1px),
+    radial-gradient(#7b2ff7 1px, transparent 1px);
+  background-size:100px 100px, 150px 150px, 200px 200px;
+  animation:moveStars 60s linear infinite;
+  opacity:0.3;
+}
+
+@keyframes moveStars{
+  from{transform:translate(0,0);}
+  to{transform:translate(-500px,-500px);}
+}
+
+.quiz-container{width:900px;text-align:center;z-index:1;}
+.counter{font-size:20px;margin-bottom:20px;}
+.question-box{
+  padding:50px;margin-bottom:50px;border-radius:40px;
+  border:3px solid #00d4ff;box-shadow:0 0 30px #00d4ff;
+  background:rgba(255,255,255,0.05);font-size:28px;
+}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:30px;}
+.option{
+  padding:25px;font-size:20px;border-radius:40px;
+  border:2px solid #7b2ff7;cursor:pointer;transition:0.3s;
+  background:rgba(255,255,255,0.05);
+}
+.option:hover{transform:scale(1.05);}
+.correct{ background:#00c853 !important; }
+.wrong{ background:#d50000 !important; }
+
+/* Fun Fact Popup Styles */
+.fun-fact-popup{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:linear-gradient(135deg,#1a1a2e,#16213e);
+  border:3px solid #00d4ff;border-radius:20px;
+  padding:30px;max-width:500px;width:90%;
+  text-align:center;z-index:100;
+  box-shadow:0 0 50px rgba(0,212,255,0.5);
+}
+.fun-fact-popup h3{
+  color:#00d4ff;font-size:24px;margin-bottom:15px;
+}
+.fun-fact-popup p{
+  color:white;font-size:18px;line-height:1.6;margin-bottom:20px;
+}
+.fun-fact-popup .correct-answer{
+  color:#00c853;font-weight:bold;font-size:20px;margin-bottom:15px;
+}
+.fun-fact-popup button{
+  padding:12px 30px;font-size:16px;border-radius:25px;
+  border:none;cursor:pointer;background:linear-gradient(45deg,#00d4ff,#7b2ff7);
+  color:white;font-weight:bold;transition:0.3s;
+}
+.fun-fact-popup button:hover{transform:scale(1.05);}
+.overlay{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.7);z-index:99;
+}
+
+.back-btn{
+position:absolute;left:20px;top:18px;width:60px;height:60px;
+border-radius:50%;border:none;background:rgba(255,255,255,0.12);
+color:#fff;font-size:36px;cursor:pointer;z-index:10;
+display:flex;align-items:center;justify-content:center;transition:0.3s;
+}
+.back-btn:hover{transform:scale(1.1);}
+
+.final-screen{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:black;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;text-align:center;
+}
+.final-screen h1{ font-size:50px; }
+.final-screen h2{ font-size:30px; }
+.rank{ font-size:28px;margin-top:10px;color:#00d4ff; }
+.final-buttons{ margin-top:40px; }
+.final-buttons button{
+  margin:10px;padding:15px 40px;font-size:18px;
+  border-radius:40px;border:none;cursor:pointer;
+}
+.retake{ background: linear-gradient(45deg, #00d4ff, #7b2ff7); color: black; }
+.home{ background: linear-gradient(45deg, #7b2ff7, #00d4ff); color: white; }
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .quiz-container {
+    width: 95%;
+    padding: 15px;
+  }
+  
+  .counter {
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
+  
+  .question-box {
+    padding: 25px;
+    margin-bottom: 30px;
+    border-radius: 25px;
+    font-size: 20px;
+  }
+  
+  .options {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .option {
+    padding: 18px;
+    font-size: 16px;
+    border-radius: 25px;
+  }
+  
+  .back-btn {
+    left: 10px;
+    top: 10px;
+    width: 45px;
+    height: 45px;
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .quiz-container {
+    width: 100%;
+    padding: 10px;
+  }
+  
+  .question-box {
+    padding: 18px;
+    margin-bottom: 20px;
+    border-radius: 20px;
+    font-size: 16px;
+  }
+  
+  .option {
+    padding: 14px;
+    font-size: 14px;
+    border-radius: 20px;
+  }
+  
+  .counter {
+    font-size: 14px;
+  }
+  
+  .back-btn {
+    left: 8px;
+    top: 8px;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+  
+  .final-screen h1 {
+    font-size: 32px;
+  }
+  
+  .final-screen h2 {
+    font-size: 20px;
+  }
+  
+  .rank {
+    font-size: 20px;
+  }
+  
+  .final-buttons button {
+    padding: 12px 25px;
+    font-size: 14px;
+    margin: 8px;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .option:hover {
+    transform: none;
+  }
+  
+  .option:active {
+    transform: scale(0.98);
+  }
+}
+</style>
+</head>
+<body>
+
+<button class="back-btn" onclick="window.location.href='science.html'">←</button>
+
+<div class="quiz-container">
+  <div class="counter" id="counter"></div>
+  <div class="question-box" id="question"></div>
+  <div class="options" id="options"></div>
+</div>
+
+<script>
+
+// ✅ IMPORTANT — DEFINE STORAGE KEY
+const highScoreKey = "earthHighScore";
+
+const questionBank = [
+{q:"Center of solar system?",a:["Sun","Earth","Moon","Mars"],correct:0,fact:"The Sun contains 99.86% of all the mass in our solar system! Its gravity keeps all the planets orbiting around it."},
+{q:"Closest planet to Sun?",a:["Mercury","Venus","Earth","Mars"],correct:0,fact:"Mercury is the smallest planet and closest to the Sun! Despite being closest, it's not the hottest - Venus is hotter!"},
+{q:"Layer we live on?",a:["Crust","Mantle","Core","Outer core"],correct:0,fact:"The Earth's crust is like the skin of an apple compared to the whole planet! It's only about 1% of Earth's volume but we live right on it."},
+{q:"Rock formed from lava?",a:["Igneous","Sedimentary","Metamorphic","Fossil"],correct:0,fact:"Igneous rocks form from cooled lava or magma! Granite and basalt are common igneous rocks - basalt makes up most of the ocean floor!"},
+{q:"Water cycle includes?",a:["Evaporation","Digestion","Respiration","Fusion"],correct:0,fact:"The water cycle is amazing! Water evaporates from oceans, forms clouds, falls as rain, and flows back to the sea - it never leaves Earth!"},
+{q:"Earth rotates on its?",a:["Axis","Orbit","Pole","Core"],correct:0,fact:"Earth rotates on its axis once every 24 hours! This rotation creates day and night. At the equator, you're moving at about 1,000 mph!"},
+{q:"Natural satellite of Earth?",a:["Moon","Sun","Mars","Venus"],correct:0,fact:"The Moon is Earth's only natural satellite! It's about 1/4 Earth's size - unusually large for a moon. It causes our ocean tides!"},
+{q:"Molten rock below surface?",a:["Magma","Lava","Rock","Soil"],correct:0,fact:"Magma is molten rock beneath Earth's surface! When it erupts through a volcano, it becomes called lava."},
+{q:"Weather occurs in?",a:["Troposphere","Stratosphere","Mesosphere","Core"],correct:0,fact:"The troposphere is the lowest layer of atmosphere - where all weather happens! It's about 7-12 miles thick."},
+{q:"Study of rocks?",a:["Geology","Biology","Physics","Chemistry"],correct:0,fact:"Geology is the study of Earth! Geologists study rocks, minerals, and the processes that shape our planet."},
+{q:"Largest ocean?",a:["Pacific","Atlantic","Indian","Arctic"],correct:0,fact:"The Pacific Ocean is huge - it covers more area than all land on Earth combined! It contains about half of Earth's seawater."},
+{q:"Earth's shape is?",a:["Oblate spheroid","Flat","Cube","Triangle"],correct:0,fact:"Earth is slightly bulged at the equator - an oblate spheroid! This happens because Earth spins, causing the equator to bulge out."},
+{q:"Earth revolves around?",a:["Sun","Moon","Mars","Jupiter"],correct:0,fact:"Earth takes 365.25 days to orbit the Sun! That's why we have leap years every 4 years."},
+{q:"Earthquake is caused by?",a:["Plate movement","Wind","Rain","Sun"],correct:0,fact:"Earthquakes happen when tectonic plates suddenly shift! The shaking we feel is energy releasing from deep within Earth."},
+{q:"Gas protecting Earth?",a:["Ozone","Hydrogen","Carbon","Helium"],correct:0,fact:"Ozone (O3) protects us from harmful UV radiation from the Sun! It's in the stratosphere and acts like a sunscreen for Earth."},
+{q:"Fossils are found in?",a:["Sedimentary rocks","Igneous rocks","Core","Mantle"],correct:0,fact:"Fossils form in sedimentary rocks! When ancient organisms die, they can be preserved in layers of sediment that harden into rock."},
+{q:"Instrument measuring earthquakes?",a:["Seismograph","Barometer","Thermometer","Voltmeter"],correct:0,fact:"Seismographs detect and measure earthquake waves! They record the magnitude and location of earthquakes worldwide."},
+{q:"Rain forms from?",a:["Condensation","Evaporation","Melting","Freezing"],correct:0,fact:"Rain forms through condensation! Water vapor in clouds condenses into droplets that become heavy enough to fall as rain."},
+{q:"Inner layer of Earth?",a:["Core","Crust","Mantle","Surface"],correct:0,fact:"Earth's core is incredibly hot - as hot as the Sun's surface! It has two parts: a solid inner core and liquid outer core."},
+{q:"Solar eclipse occurs when?",a:["Moon blocks Sun","Earth blocks Sun","Sun blocks Moon","Mars blocks Sun"],correct:0,fact:"A solar eclipse happens when the Moon blocks the Sun's light! The Moon is just the right distance to cover the Sun temporarily."},
+{q:"Minerals are?",a:["Natural solids","Liquids","Gases","Plastics"],correct:0,fact:"Minerals are naturally occurring, solid substances with a specific chemical structure! There are over 4,000 known minerals."},
+{q:"Wind erosion moves?",a:["Soil","Sun","Moon","Stars"],correct:0,fact:"Wind erosion is powerful in dry areas! It creates amazing formations like sand dunes and can transport dust across entire continents."},
+{q:"Volcano erupts from?",a:["Magma","Rain","Wind","Cloud"],correct:0,fact:"Volcanoes erupt when magma (melted rock) escapes to the surface! The Ring of Fire around the Pacific has 75% of the world's volcanoes."},
+{q:"Earth's atmosphere is made of?",a:["Gases","Water","Rock","Metal"],correct:0,fact:"Earth's atmosphere is mostly nitrogen (78%) and oxygen (21%)! These gases are essential for life as we know it."},
+{q:"Tsunami caused by?",a:["Underwater quake","Wind","Sun","Rain"],correct:0,fact:"Tsunamis are usually caused by underwater earthquakes! The water displaced by the quake creates powerful waves that can travel across oceans."},
+{q:"Earth tilts at about?",a:["23.5°","45°","90°","10°"],correct:0,fact:"Earth's 23.5° tilt causes seasons! As Earth orbits the Sun, different parts receive more direct sunlight throughout the year."},
+{q:"Galaxy we belong to?",a:["Milky Way","Andromeda","Orion","Pegasus"],correct:0,fact:"The Milky Way is our home galaxy! It contains about 100-400 billion stars, including our Sun."},
+{q:"Rock cycle changes?",a:["Rocks","Planets","Stars","Water"],correct:0,fact:"The rock cycle shows how rocks transform! Igneous → Sedimentary → Metamorphic, and the process can repeat for millions of years."},
+{q:"Day and night caused by?",a:["Rotation","Revolution","Eclipse","Rain"],correct:0,fact:"Day and night happen because Earth rotates! As Earth spins, different parts face the Sun (day) or face away (night)."},
+{q:"Outer space study?",a:["Astronomy","Biology","Chemistry","Physics"],correct:0,fact:"Astronomy is the study of outer space! Astronomers study stars, planets, galaxies, and the entire universe."}]
+;
+
+function showFunFactPopup(correctAnswer, fact, isCorrect) {
+  // Create overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  document.body.appendChild(overlay);
+  
+  // Determine button text based on current question
+  const isLastQuestion = current === quiz.length - 1;
+  const buttonText = isLastQuestion ? "Finish Test" : "Next Question ➜";
+  
+  // Create popup
+  const popup = document.createElement('div');
+  popup.className = 'fun-fact-popup';
+  
+  if (isCorrect) {
+    popup.innerHTML = `
+      <h3>✅ Correct!</h3>
+      <p class="correct-answer">The answer is: ${correctAnswer}</p>
+      <p>${fact}</p>
+      <button onclick="closePopup()">${buttonText}</button>
+    `;
+  } else {
+    popup.innerHTML = `
+      <h3>❌ Not Quite!</h3>
+      <p class="correct-answer">The correct answer is: ${correctAnswer}</p>
+      <p>${fact}</p>
+      <button onclick="closePopup()">${buttonText}</button>
+    `;
+  }
+  
+  document.body.appendChild(popup);
+  
+  window.closePopup = function() {
+    overlay.remove();
+    popup.remove();
+    current++;
+    loadQuestion();
+  };
+}
+
+function shuffle(array){
+  for(let i=array.length-1;i>0;i--){
+    let j=Math.floor(Math.random()*(i+1));
+    [array[i],array[j]]=[array[j],array[i]];
+  }
+  return array;
+}
+
+let quiz = shuffle([...questionBank]).slice(0,10);
+let current=0;
+let score=0;
+
+function loadQuestion(){
+  if(current>=quiz.length){ showFinal(); return; }
+
+  document.getElementById("counter").innerText =
+    (current+1) + " / " + quiz.length;
+
+  let q = quiz[current];
+  document.getElementById("question").innerText=q.q;
+
+  let options = shuffle([...q.a]);
+  let correctAnswer = q.a[q.correct];
+  let fact = q.fact;
+  const opts=document.getElementById("options");
+  opts.innerHTML="";
+
+  options.forEach(choice=>{
+    const btn=document.createElement("div");
+    btn.className="option";
+    btn.innerText=choice;
+
+    btn.onclick=function(){
+      if(choice===correctAnswer){ 
+        btn.classList.add("correct"); 
+        score++; 
+        showFunFactPopup(correctAnswer, fact, true);
+      } else { 
+        btn.classList.add("wrong"); 
+        showFunFactPopup(correctAnswer, fact, false);
+      }
+    };
+
+    opts.appendChild(btn);
+  });
+}
+
+function showFinal(){
+
+  let savedHigh = parseInt(localStorage.getItem(highScoreKey)) || 0;
+
+  if(score > savedHigh){
+    localStorage.setItem(highScoreKey, score);
+    savedHigh = score;
+  }
+
+  let ranking="";
+  if(score>=9) ranking="🌟 Excellent!";
+  else if(score>=7) ranking="👍 Great Job!";
+  else if(score>=5) ranking="🙂 Good Effort!";
+  else ranking="📘 Keep Practicing!";
+
+  document.body.innerHTML=`
+    <div class="final-screen">
+      <h1>🎉 Good Job! 🎉</h1>
+      <h2>Your Final Score: ${score} / ${quiz.length}</h2>
+      <h2>🏆 High Score: ${savedHigh}</h2>
+      <div class="rank">${ranking}</div>
+      <div class="final-buttons">
+        <button class="retake" onclick="location.reload()">Retake Quiz</button>
+        <button class="home" onclick="window.location.href='science.html'">Go Back to Topics</button>
+      </div>
+    </div>
+  `;
+}
+
+loadQuestion();
+</script>
+</body>
+</html>
+

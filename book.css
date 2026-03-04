@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>3D English Book</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#e6e6e6;
+  font-family:"Segoe UI", sans-serif;
+  perspective:2000px;
+}
+
+/* BOOK WRAPPER */
+.book-wrapper{
+  position:relative;
+  width:320px;
+  height:420px;
+}
+
+/* BOOK */
+.book{
+  width:100%;
+  height:100%;
+  position:relative;
+  transform-style:preserve-3d;
+  transition:transform 1.2s cubic-bezier(.65,.05,.36,1);
+}
+
+/* FRONT COVER */
+.cover{
+  position:absolute;
+  width:100%;
+  height:100%;
+  background:linear-gradient(145deg,#c94257,#9e2f40);
+  border-radius:18px;
+  box-shadow:
+    0 30px 60px rgba(0,0,0,0.35),
+    inset 5px 5px 15px rgba(255,255,255,0.2),
+    inset -5px -5px 15px rgba(0,0,0,0.3);
+  transform-origin:left;
+  transition:transform 1.2s cubic-bezier(.65,.05,.36,1);
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  padding-top:70px;
+  backface-visibility:hidden;
+}
+
+/* Spine line */
+.cover::before{
+  content:"";
+  position:absolute;
+  left:20px;
+  top:0;
+  height:100%;
+  width:8px;
+  background:rgba(0,0,0,0.15);
+  border-radius:5px;
+}
+
+/* Title */
+.title{
+  font-size:42px;
+  font-weight:bold;
+  color:black;
+  font-family:cursive;
+  text-shadow:
+    3px 3px 0px #fff,
+    6px 6px 10px rgba(0,0,0,0.3);
+}
+
+/* Bottom design line */
+.cover::after{
+  content:"";
+  position:absolute;
+  bottom:60px;
+  left:50%;
+  transform:translateX(-50%);
+  width:120px;
+  height:6px;
+  background:rgba(0,0,0,0.2);
+  border-radius:10px;
+}
+
+/* Pages */
+.pages{
+  position:absolute;
+  width:100%;
+  height:100%;
+  background:#f4e8dd;
+  border-radius:18px;
+  transform:translateZ(-8px);
+  box-shadow:
+    inset 0 0 20px rgba(0,0,0,0.1);
+}
+
+/* Page thickness bottom */
+.page-bottom{
+  position:absolute;
+  bottom:-15px;
+  left:20px;
+  width:85%;
+  height:25px;
+  background:#f1e3d6;
+  border-radius:6px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.25);
+}
+
+/* Bookmark */
+.bookmark{
+  position:absolute;
+  bottom:-10px;
+  left:40px;
+  width:20px;
+  height:60px;
+  background:#9e2f40;
+  clip-path:polygon(0 0,100% 0,100% 75%,50% 100%,0 75%);
+}
+
+/* Button */
+.flip-btn{
+  position:absolute;
+  right:25px;
+  top:180px;
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,#ffffff,#d8a5ad);
+  box-shadow:
+    0 5px 15px rgba(0,0,0,0.3),
+    inset 0 0 8px rgba(255,255,255,0.6);
+  cursor:pointer;
+  z-index:5;
+  transition:transform 0.3s;
+}
+
+.flip-btn:hover{
+  transform:scale(1.1);
+}
+
+/* FLIP EFFECT */
+.book.open .cover{
+  transform:rotateY(-180deg);
+}
+</style>
+</head>
+
+<body>
+
+<div class="book-wrapper">
+  <div class="book" id="book">
+
+    <div class="pages"></div>
+    <div class="page-bottom"></div>
+    <div class="bookmark"></div>
+
+    <div class="cover">
+      <div class="title">English</div>
+    </div>
+
+    <div class="flip-btn" onclick="flipBook()"></div>
+
+  </div>
+</div>
+
+<script>
+function flipBook(){
+  document.getElementById("book").classList.toggle("open");
+}
+</script>
+
+</body>
+</html>

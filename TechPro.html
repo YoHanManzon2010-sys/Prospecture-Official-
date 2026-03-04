@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Technical-Professional Track</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+ <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'Fredoka', sans-serif;
+      color: white;
+      text-align: center;
+      overflow-y: auto;
+    }
+
+    .background {
+      background: url("Strands-bg.png") no-repeat center center fixed;
+      background-size: cover;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: -1;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      padding: 20px;
+      background: linear-gradient(90deg, #b075f0, #669eff);
+      border-radius: 20px;
+      margin: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+
+    .logo {
+      width: 60px;
+      height: 60px;
+      cursor: pointer;
+      border-radius: 50%;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.25);
+      transition: transform 0.2s ease;
+    }
+    .logo:hover { transform: scale(1.1); }
+
+    .header h1 { margin: 0; font-size: 2rem; font-weight: 700; }
+
+    .content {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 30px;
+      flex-wrap: wrap;
+      min-height: 80vh;    
+    }
+
+    .strands {
+      flex: 1;
+      min-width: 300px;
+      padding: 20px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      text-align: left;
+    }
+
+    .strands h3 { font-size: 3rem; margin: 15px 0; }
+    .strands p { font-size: 1.5rem; line-height: 1.6; margin-bottom: 20px; }
+
+    .accordion {
+      margin: 15px 0;
+      border-radius: 15px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.1);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.25);
+    }
+
+    .accordion-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      font-size: 2rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: rgba(255,255,255,0.2);
+      transition: 0.3s;
+    }
+
+    .accordion-header span {
+      transition: transform 0.3s ease;
+    }
+    .accordion-header.active span {
+      transform: rotate(90deg);
+    }
+
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.4s ease;
+      padding: 0 30px;
+    }
+    .accordion-content.open {
+      max-height: 900px;
+      padding: 15px 30px;
+    }
+
+    .accordion-content.jobs-careers.open {
+      max-height: none;
+      overflow-y: visible;
+      padding: 15px 20px;
+    }
+
+    ul { padding-left: 20px; font-size: 1.5rem; }
+    ul li { margin: 8px 0; }
+
+    .job-item {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 30px;
+      background: rgba(255,255,255,0.15);
+      padding: 15px;
+      border-radius: 15px;
+    }
+
+    .job-item img {
+     width: 250px;
+  height: auto;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.25);
+  flex-shrink: 0;
+    }
+
+    .job-item p {
+      font-size: 23px;
+      text-align: justify;
+    }
+
+    footer { margin: 30px 0; }
+
+    .home-btn {
+      padding: 15px 30px;
+      border-radius: 25px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+    }
+
+    .infos  {
+      text-align: justify;
+      font-size: 2rem;
+      line-height: 1.2;
+      margin: 10px 0;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+<div class="background"></div>
+
+<header class="header">
+  <img src="career-icon.png" class="logo" onclick="window.location.href='result.html'">
+  <h1>Associated Tracks</h1>
+</header>
+
+<main class="content">
+<section class="strands">
+
+<h3>Technical-Professional Track</h3>
+
+<p>
+The Technical-Professional (TechPro) Track prepares students for technology-driven and professional careers by combining applied science, advanced technical skills, and real-world industry standards. This track is ideal for learners who plan to pursue technology-focused college programs, professional certifications, or careers in engineering support, IT, applied sciences, and modern industries.
+</p>
+
+<!-- Accordion 1 -->
+<div class="accordion">
+  <div class="accordion-header" onclick="toggleAccordion(this)">
+    <h4>What You Will Study?</h4><span>▶</span>
+  </div>
+  <div class="accordion-content">
+    <ul>
+    <div class="infos">
+      <li><strong>Applied Technology:</strong> Use modern tools, systems, and digital technologies.</li>
+      <li><strong>Advanced Mathematics:</strong> Learn applied math for engineering and technology.</li>
+      <li><strong>Computer & Information Systems:</strong> Study hardware, software, and data systems.</li>
+      <li><strong>Engineering Fundamentals:</strong> Understand design, systems, and technical processes.</li>
+      <li><strong>Scientific Applications:</strong> Apply science concepts in technical environments.</li>
+      <li><strong>Technical Research:</strong> Conduct applied research and documentation.</li>
+      <li><strong>Professional Communication:</strong> Technical writing and reporting skills.</li>
+      <li><strong>Technology Ethics & Safety:</strong> Industry standards and professional conduct.</li>
+      <li><strong>Innovation:</strong> Solve real-world problems using technology.</li>
+      <li><strong>Career Preparation:</strong> Readiness for certifications and college pathways.</li>
+    </div>
+    </ul>
+  </div>
+</div>
+
+<!-- Accordion 2 -->
+<div class="accordion">
+  <div class="accordion-header" onclick="toggleAccordion(this)">
+    <h4>Key Skills You Will Develop</h4><span>▶</span>
+  </div>
+  <div class="accordion-content">
+    <ul>
+    <div class="infos">
+     <li><strong>Technical Proficiency:</strong> Ability to use advanced tools, systems, and technologies effectively.</li>
+
+     <li><strong>Analytical Thinking:</strong> Evaluate technical problems and develop data-driven solutions.</li>
+
+     <li><strong>Applied Problem-Solving:</strong> Address real-world technical challenges using logic and innovation.</li>
+
+     <li><strong>Research Skills:</strong> Conduct technical investigations and present findings professionally.</li>
+
+     <li><strong>Digital Literacy:</strong> Use digital platforms, software, and emerging technologies confidently.</li>
+
+     <li><strong>Professional Work Ethics:</strong> Practice responsibility, accuracy, and accountability in technical tasks.</li>
+
+     <li><strong>Project Management:</strong> Plan, organize, and execute technical projects efficiently.</li>
+
+     <li><strong>Collaboration:</strong> Work effectively with teams in technical and professional environments.</li>
+
+     <li><strong>Adaptability:</strong> Keep up with evolving technologies and industry demands.</li>
+
+     <li><strong>College & Career Readiness:</strong> Be prepared for technology-focused degree programs and professional pathways.</li>
+    </div>
+    </ul>
+  </div>
+</div>
+
+<!-- Accordion 3 -->
+<div class="accordion">
+  <div class="accordion-header" onclick="toggleAccordion(this)">
+    <h4>Jobs and Careers</h4><span>▶</span>
+  </div>
+
+  <div class="accordion-content jobs-careers">
+
+    <div class="job-item">
+      <img src="TechPro/ET.jpg">
+      <p><strong>Engineering Technology:</strong>Engineering Technology (ET) is the practical application of scientific and engineering principles to design, build, maintain, and operate real-world systems, focusing on hands-on implementation rather than deep theory, bridging the gap between abstract engineering concepts and tangible solutions in industries like manufacturing, production, and design.</p>
+    </div>
+
+    <div class="job-item">
+      <img src="TechPro/IT.jpg">
+      <p><strong>Information Technology:</strong> Information technology (IT) refers to the use of computers, storage, networking, and other physical devices, infrastructure, and processes to create, process, store, secure, and exchange all forms of electronic data.</p>
+    </div>
+
+    <div class="job-item">
+      <img src="TechPro/CS.jpg">
+      <p><strong>Computer Science:</strong>Computer science is the study of computers, computational systems, and information processing, encompassing both theoretical foundations (algorithms, data structures) and practical applications (software/hardware design, AI). It focuses on how data is represented, manipulated, and stored, driving innovation in fields like cybersecurity, graphics, and machine learning. </p>
+    </div>
+
+    <div class="job-item">
+      <img src="TechPro/CE.jpg">
+      <p><strong>Computer Engineering:</strong> Computer Engineering (CE) blends electrical engineering and computer science to design, build, and maintain computer hardware (like processors, chips, circuit boards) and the software that runs them, bridging the gap between physical components and digital functionality, crucial for everything from smartphones and robotics to embedded systems in cars and appliances.</p>
+    </div>
+
+    <div class="job-item">
+      <img src="TechPro/SE.jpg">
+      <p><strong>Software Engineering:</strong> Software engineering is the systematic, disciplined, and quantifiable approach to the development, operation, and maintenance of software. It applies engineering principles and computer science to create reliable, efficient, and scalable software systems, moving beyond just coding to include requirements analysis, design, testing, and project management. </p>
+    </div>
+
+    <div class="job-item">
+      <img src="TechPro/EET.JPG">
+      <p><strong>Electronics Engineering Technology:</strong> Electronics Engineering Technology (EET) is a hands-on field focusing on the application of electrical and electronic principles to design, test, troubleshoot, and repair systems like circuits, robotics, and communication devices. Programs (often Associate or Bachelor's) prepare technologists for roles in manufacturing, automation, and technical support. </p>
+    </div>
+
+    <div class="job-item">
+      <img src="TechPro/ELECTRICAL.jpg">
+      <p><strong>Electrical Engineering Technology:</strong>Electrical Engineering Technology (EET) applies electrical/electronics principles to design, install, maintain, and troubleshoot electrical systems, focusing more on hands-on implementation and applied design than theoretical math in traditional Electrical Engineering (EE), covering areas like power, electronics, control systems, and telecommunications, with graduates working as technicians, technologists, or engineers in various industries. </p>
+    </div>
+
+    <div class="job-item">
+      <img src="TechPro/MEC.jpg">
+      <p><strong>Mechanical Engineering Technology:</strong>Mechanical Engineering Technology (MET) focuses on applying mechanical engineering principles for practical product development, using hands-on skills like CAD, CNC machining, and prototyping to build, test, and maintain machinery and systems, differing from pure Mechanical Engineering (ME) by emphasizing implementation and less complex theory (like calculus), though an ABET-accredited MET degree allows similar professional paths.  </p>
+    </div>
+
+     <div class="job-item">
+      <img src="TechPro/AUTO.jpg">
+      <p><strong>Automation & Robotics Technology:</strong>Automation and robotics technology involves using programmable machines (robots) and control systems to perform tasks automatically, reducing human intervention, improving precision, and increasing efficiency in industries like manufacturing, logistics, and healthcare. It integrates artificial intelligence, sensors, and software, serving as a core component of Industry 4.0 for smart factories.   </p>
+    </div>
+
+    <div class="job-item">
+      <img src="TechPro/DS.jpg">
+      <p><strong>Data Science:</strong>Data science is an interdisciplinary field combining statistics, AI, machine learning, and computer science to analyze large, complex datasets for actionable insights. It enables data-driven decision-making, predictive modeling, and pattern recognition across industries, using tools like Python, R, and SQL. Key roles include data scientists, analysts, and engineers, with applications spanning finance, healthcare, and marketing.    </p>
+    </div>
+  </div>
+</div>
+
+</section>
+</main>
+
+<footer>
+<button class="home-btn" onclick="window.location.href='result.html'">Back to Results</button>
+</footer>
+
+<script>
+function toggleAccordion(header){
+  header.classList.toggle("active");
+  header.nextElementSibling.classList.toggle("open");
+}
+</script>
+
+</body>
+</html>

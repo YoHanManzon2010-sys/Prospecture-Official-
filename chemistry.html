@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Chemistry Quiz</title>
+
+<style>
+/* ===== YOUR UI (UNCHANGED) ===== */
+body{
+  margin:0;
+  font-family:'Segoe UI', sans-serif;
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  overflow:hidden;
+  background:black;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  width:200%;
+  height:200%;
+  background:
+    radial-gradient(white 1px, transparent 1px),
+    radial-gradient(#00d4ff 1px, transparent 1px),
+    radial-gradient(#7b2ff7 1px, transparent 1px);
+  background-size:100px 100px, 150px 150px, 200px 200px;
+  animation:moveStars 60s linear infinite;
+  opacity:0.3;
+}
+
+@keyframes moveStars{
+  from{transform:translate(0,0);}
+  to{transform:translate(-500px,-500px);}
+}
+
+.quiz-container{width:900px;text-align:center;z-index:1;}
+.counter{font-size:20px;margin-bottom:20px;}
+.question-box{
+  padding:50px;margin-bottom:50px;border-radius:40px;
+  border:3px solid #00d4ff;box-shadow:0 0 30px #00d4ff;
+  background:rgba(255,255,255,0.05);font-size:28px;
+}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:30px;}
+.option{
+  padding:25px;font-size:20px;border-radius:40px;
+  border:2px solid #7b2ff7;cursor:pointer;transition:0.3s;
+  background:rgba(255,255,255,0.05);
+}
+.option:hover{transform:scale(1.05);}
+.correct{ background:#00c853 !important; }
+.wrong{ background:#d50000 !important; }
+
+/* Fun Fact Popup Styles */
+.fun-fact-popup{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:linear-gradient(135deg,#1a1a2e,#16213e);
+  border:3px solid #00d4ff;border-radius:20px;
+  padding:30px;max-width:500px;width:90%;
+  text-align:center;z-index:100;
+  box-shadow:0 0 50px rgba(0,212,255,0.5);
+}
+.fun-fact-popup h3{
+  color:#00d4ff;font-size:24px;margin-bottom:15px;
+}
+.fun-fact-popup p{
+  color:white;font-size:18px;line-height:1.6;margin-bottom:20px;
+}
+.fun-fact-popup .correct-answer{
+  color:#00c853;font-weight:bold;font-size:20px;margin-bottom:15px;
+}
+.fun-fact-popup button{
+  padding:12px 30px;font-size:16px;border-radius:25px;
+  border:none;cursor:pointer;background:linear-gradient(45deg,#00d4ff,#7b2ff7);
+  color:white;font-weight:bold;transition:0.3s;
+}
+.fun-fact-popup button:hover{transform:scale(1.05);}
+.overlay{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.7);z-index:99;
+}
+
+.back-btn{
+position:absolute;left:20px;top:18px;width:60px;height:60px;
+border-radius:50%;border:none;background:rgba(255,255,255,0.12);
+color:#fff;font-size:36px;cursor:pointer;z-index:10;
+display:flex;align-items:center;justify-content:center;transition:0.3s;
+}
+.back-btn:hover{transform:scale(1.1);}
+
+.final-screen{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:black;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;text-align:center;
+}
+.final-screen h1{ font-size:50px; }
+.final-screen h2{ font-size:30px; }
+.rank{ font-size:28px;margin-top:10px;color:#00d4ff; }
+.final-buttons{ margin-top:40px; }
+.final-buttons button{
+  margin:10px;padding:15px 40px;font-size:18px;
+  border-radius:40px;border:none;cursor:pointer;
+}
+.retake{ background: linear-gradient(45deg, #00d4ff, #7b2ff7); color: black; }
+.home{ background: linear-gradient(45deg, #7b2ff7, #00d4ff); color: white; }
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .quiz-container {
+    width: 95%;
+    padding: 15px;
+  }
+  
+  .counter {
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
+  
+  .question-box {
+    padding: 25px;
+    margin-bottom: 30px;
+    border-radius: 25px;
+    font-size: 20px;
+  }
+  
+  .options {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .option {
+    padding: 18px;
+    font-size: 16px;
+    border-radius: 25px;
+  }
+  
+  .back-btn {
+    left: 10px;
+    top: 10px;
+    width: 45px;
+    height: 45px;
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .quiz-container {
+    width: 100%;
+    padding: 10px;
+  }
+  
+  .question-box {
+    padding: 18px;
+    margin-bottom: 20px;
+    border-radius: 20px;
+    font-size: 16px;
+  }
+  
+  .option {
+    padding: 14px;
+    font-size: 14px;
+    border-radius: 20px;
+  }
+  
+  .counter {
+    font-size: 14px;
+  }
+  
+  .back-btn {
+    left: 8px;
+    top: 8px;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+  
+  .final-screen h1 {
+    font-size: 32px;
+  }
+  
+  .final-screen h2 {
+    font-size: 20px;
+  }
+  
+  .rank {
+    font-size: 20px;
+  }
+  
+  .final-buttons button {
+    padding: 12px 25px;
+    font-size: 14px;
+    margin: 8px;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .option:hover {
+    transform: none;
+  }
+  
+  .option:active {
+    transform: scale(0.98);
+  }
+}
+</style>
+</head>
+<body>
+
+<button class="back-btn" onclick="window.location.href='science.html'">←</button>
+
+<div class="quiz-container">
+  <div class="counter" id="counter"></div>
+  <div class="question-box" id="question"></div>
+  <div class="options" id="options"></div>
+</div>
+
+<script>
+
+// ✅ IMPORTANT — DEFINE STORAGE KEY
+const highScoreKey = "chemHighScore";
+
+const questionBank = [
+{q:"Chemical symbol for Oxygen?",a:["O","Ox","Og","Om"],correct:0,fact:"Oxygen has the symbol 'O' from the Latin word 'oxygenium'. It's essential for respiration and makes up about 21% of Earth's atmosphere!"},
+{q:"H2O is?",a:["Water","Salt","Oxygen","Hydrogen"],correct:0,fact:"H2O means 2 hydrogen atoms + 1 oxygen atom = water! Water is called the 'universal solvent' because it dissolves so many substances."},
+{q:"pH less than 7 is?",a:["Acid","Base","Neutral","Salt"],correct:0,fact:"Acids have pH below 7! Lemon juice (pH 2) and stomach acid (pH 1) are strong acids, while mild acids like tomatoes (pH 4) are weaker."},
+{q:"Periodic table contains?",a:["Elements","Cells","Planets","Organs"],correct:0,fact:"The periodic table has 118 known elements! They range from hydrogen (the lightest) to oganesson (the heaviest)."},
+{q:"Smallest particle of element?",a:["Atom","Cell","Molecule","Ion"],correct:0,fact:"Atoms are the smallest particles of an element! They consist of protons, neutrons, and electrons. Atoms are so tiny that a single drop of water contains about 5 sextillion atoms!"},
+{q:"NaCl is?",a:["Salt","Water","Acid","Gas"],correct:0,fact:"NaCl is table salt! Na (sodium) + Cl (chlorine) = sodium chloride. Salt is essential for life - your nerves need it to send signals!"},
+{q:"State of matter with definite shape?",a:["Solid","Liquid","Gas","Plasma"],correct:0,fact:"Solids have a definite shape and volume! The particles in solids are packed tightly together and vibrate in place."},
+{q:"Gas used in balloons?",a:["Helium","Oxygen","Nitrogen","Carbon"],correct:0,fact:"Helium is lighter than air, so it makes balloons float! It's also non-flammable, making it safe for party balloons."},
+{q:"Chemical reaction produces?",a:["New substance","Same substance","Nothing","Energy only"],correct:0,fact:"Chemical reactions create new substances with different properties! Rusting, burning, and cooking are all chemical reactions."},
+{q:"Atomic number equals?",a:["Protons","Neutrons","Electrons","Mass"],correct:0,fact:"Atomic number = number of protons! This determines what element an atom is. Carbon has 6 protons, so its atomic number is 6."},
+{q:"CO2 is?",a:["Carbon dioxide","Carbon monoxide","Oxygen","Hydrogen"],correct:0,fact:"CO2 is carbon dioxide - a greenhouse gas! Plants use it for photosynthesis, and we exhale it when we breathe."},
+{q:"Burning is example of?",a:["Chemical change","Physical change","Melting","Freezing"],correct:0,fact:"Burning (combustion) is a chemical change! It produces light and heat, and creates new substances like ash and smoke."},
+{q:"Acids taste?",a:["Sour","Sweet","Bitter","Salty"],correct:0,fact:"Acids taste sour! Lemons, vinegar, and sour candies all contain acids. But never taste chemicals in a lab!"},
+{q:"Base turns litmus paper?",a:["Blue","Red","Green","Yellow"],correct:0,fact:"Bases turn red litmus paper blue! Bases feel slippery and taste bitter. Soap and baking soda are common bases."},
+{q:"Matter is anything that has?",a:["Mass & volume","Energy","Light","Force"],correct:0,fact:"Matter has mass and takes up space (volume)! Everything around you - air, water, your phone - is matter."},
+{q:"Evaporation is?",a:["Liquid to gas","Solid to liquid","Gas to liquid","Solid to gas"],correct:0,fact:"Evaporation is liquid turning to gas! It's how water cycles in nature - the sun heats water in oceans and lakes, turning it into vapor."},
+{q:"Element with atomic number 1?",a:["Hydrogen","Helium","Oxygen","Carbon"],correct:0,fact:"Hydrogen is element #1 - the lightest and most abundant element in the universe! Stars are mostly hydrogen."},
+{q:"Gas essential for combustion?",a:["Oxygen","Hydrogen","Nitrogen","Helium"],correct:0,fact:"Oxygen is needed for fire to burn! That's why putting out fires with water works - it blocks oxygen from reaching the flames."},
+{q:"Mixture can be separated by?",a:["Physical means","Chemical means","Burning","Fusion"],correct:0,fact:"Mixtures can be separated physically! You can use filters, magnets, or evaporation to separate mixture components."},
+{q:"Boiling point of water?",a:["100°C","90°C","80°C","70°C"],correct:0,fact:"Water boils at 100°C (212°F) at sea level! At higher altitudes, boiling point decreases because air pressure is lower."},
+{q:"Table salt formula?",a:["NaCl","KCl","H2O","CO2"],correct:0,fact:"NaCl is sodium chloride - table salt! It's essential for nerve function and helps balance fluids in your body."},
+{q:"Neutral pH value?",a:["7","1","14","0"],correct:0,fact:"Pure water has a pH of 7 - perfectly neutral! It's neither acidic nor basic."},
+{q:"Protons are?",a:["Positive","Negative","Neutral","None"],correct:0,fact:"Protons have a positive charge! They sit in the atom's nucleus and determine the element's identity."},
+{q:"Electrons are?",a:["Negative","Positive","Neutral","Heavy"],correct:0,fact:"Electrons have a negative charge and orbit the nucleus! They determine how atoms bond together and conduct electricity."},
+{q:"Neutrons have?",a:["No charge","Positive","Negative","Energy"],correct:0,fact:"Neutrons have no electric charge! They add mass to atoms and help stabilize the nucleus."},
+{q:"Rusting is?",a:["Oxidation","Freezing","Melting","Boiling"],correct:0,fact:"Rusting is oxidation - iron reacting with oxygen and water! It's a slow chemical change that weakens metal over time."},
+{q:"Periodic table arranged by?",a:["Atomic number","Color","Mass only","Size"],correct:0,fact:"The periodic table is arranged by atomic number! Elements in the same column have similar properties."},
+{q:"Chemical bonds join?",a:["Atoms","Cells","Planets","Organs"],correct:0,fact:"Chemical bonds join atoms together! Ionic, covalent, and metallic bonds are the main types."},
+{q:"Water is example of?",a:["Compound","Element","Mixture","Ion"],correct:0,fact:"Water is a compound - two or more elements chemically combined! H2O is different from both hydrogen and oxygen."},
+{q:"Gas at room temperature?",a:["Oxygen","Iron","Gold","Silver"],correct:0,fact:"Oxygen is a gas at room temperature! Most metals are solids, but mercury is a liquid metal."}
+];
+
+function showFunFactPopup(correctAnswer, fact, isCorrect) {
+  // Create overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  document.body.appendChild(overlay);
+  
+  // Determine button text based on current question
+  const isLastQuestion = current === quiz.length - 1;
+  const buttonText = isLastQuestion ? "Finish Test" : "Next Question ➜";
+  
+  // Create popup
+  const popup = document.createElement('div');
+  popup.className = 'fun-fact-popup';
+  
+  if (isCorrect) {
+    popup.innerHTML = `
+      <h3>✅ Correct!</h3>
+      <p class="correct-answer">The answer is: ${correctAnswer}</p>
+      <p>${fact}</p>
+      <button onclick="closePopup()">${buttonText}</button>
+    `;
+  } else {
+    popup.innerHTML = `
+      <h3>❌ Not Quite!</h3>
+      <p class="correct-answer">The correct answer is: ${correctAnswer}</p>
+      <p>${fact}</p>
+      <button onclick="closePopup()">${buttonText}</button>
+    `;
+  }
+  
+  document.body.appendChild(popup);
+  
+  window.closePopup = function() {
+    overlay.remove();
+    popup.remove();
+    current++;
+    loadQuestion();
+  };
+}
+
+function shuffle(array){
+  for(let i=array.length-1;i>0;i--){
+    let j=Math.floor(Math.random()*(i+1));
+    [array[i],array[j]]=[array[j],array[i]];
+  }
+  return array;
+}
+
+let quiz = shuffle([...questionBank]).slice(0,10);
+let current=0;
+let score=0;
+
+function loadQuestion(){
+  if(current>=quiz.length){ showFinal(); return; }
+
+  document.getElementById("counter").innerText =
+    (current+1) + " / " + quiz.length;
+
+  let q = quiz[current];
+  document.getElementById("question").innerText=q.q;
+
+  let options = shuffle([...q.a]);
+  let correctAnswer = q.a[q.correct];
+  let fact = q.fact;
+  const opts=document.getElementById("options");
+  opts.innerHTML="";
+
+  options.forEach(choice=>{
+    const btn=document.createElement("div");
+    btn.className="option";
+    btn.innerText=choice;
+
+    btn.onclick=function(){
+      if(choice===correctAnswer){ 
+        btn.classList.add("correct"); 
+        score++; 
+        showFunFactPopup(correctAnswer, fact, true);
+      } else { 
+        btn.classList.add("wrong"); 
+        showFunFactPopup(correctAnswer, fact, false);
+      }
+    };
+
+    opts.appendChild(btn);
+  });
+}
+
+function showFinal(){
+
+  let savedHigh = parseInt(localStorage.getItem(highScoreKey)) || 0;
+
+  if(score > savedHigh){
+    localStorage.setItem(highScoreKey, score);
+    savedHigh = score;
+  }
+
+  let ranking="";
+  if(score>=9) ranking="🌟 Excellent!";
+  else if(score>=7) ranking="👍 Great Job!";
+  else if(score>=5) ranking="🙂 Good Effort!";
+  else ranking="📘 Keep Practicing!";
+
+  document.body.innerHTML=`
+    <div class="final-screen">
+      <h1>🎉 Good Job! 🎉</h1>
+      <h2>Your Final Score: ${score} / ${quiz.length}</h2>
+      <h2>🏆 High Score: ${savedHigh}</h2>
+      <div class="rank">${ranking}</div>
+      <div class="final-buttons">
+        <button class="retake" onclick="location.reload()">Retake Quiz</button>
+        <button class="home" onclick="window.location.href='science.html'">Go Back to Topics</button>
+      </div>
+    </div>
+  `;
+}
+
+loadQuestion();
+</script>
+</body>
+</html>
+
